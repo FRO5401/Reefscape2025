@@ -22,7 +22,8 @@ public class Constants {
         public static final double CONTROLLER_SENSITIVITY = 0.05;
     }
     public class ElevatorConstants{
-        public static final int elevatorID = 4;
+        public static final int elevatorID = 14;
+        public static final double testPosition = 5;
     }
     public class AutoConstants{
 

@@ -15,6 +15,15 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.generated.TunerConstants;
 
 public class Constants {
+    public static class ControlConstants{
+        //  Controller Specifications
+        public static final int XBOX_CONTROLLER_DRIVER = 0;
+        public static final int XBOX_CONTROLLER_OPERATOR = 1;
+        public static final double CONTROLLER_SENSITIVITY = 0.05;
+    }
+    public class ElevatorConstants{
+        public static final int elevatorID = 4;
+    }
     public class AutoConstants{
 
         public static final double kMaxSpeedMetersPerSecond = 3;

@@ -23,7 +23,7 @@ public class Constants {
     }
     public class ElevatorConstants{
         public static final int elevatorID = 14;
-        public static final double testPosition = 5;
+        public static final double testPosition = 50;
     }
     public class AutoConstants{
 

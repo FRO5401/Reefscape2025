@@ -71,8 +71,7 @@ public class RobotContainer {
         // reset the field-centric heading on left bumper press
         joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-        Operator.a().onTrue(Commands.runOnce(()->elevator.setPosition(Constants.ElevatorConstants.testPosition), elevator));
-
+        Operator.b().onTrue(drivetrain.runOnce(()->elevator.setPosition(Constants.ElevatorConstants.testPosition)));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }

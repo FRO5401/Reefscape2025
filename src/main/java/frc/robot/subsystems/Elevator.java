@@ -38,8 +38,8 @@ public class Elevator extends SubsystemBase {
 
 
     slot0Configs = new Slot0Configs();
-    slot0Configs.kS = kS;
-    slot0Configs.kV = kV;
+    //slot0Configs.kS = kS;
+    //slot0Configs.kV = kV;
     slot0Configs.kP = kP;
     slot0Configs.kI = kI;
     slot0Configs.kD = kD;
@@ -59,14 +59,14 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
-    double s = SmartDashboard.getNumber("S Gain", 0);
-    double v = SmartDashboard.getNumber("V Gain", 0);
+    //double s = SmartDashboard.getNumber("S Gain", 0);
+    //double v = SmartDashboard.getNumber("V Gain", 0);
     double p = SmartDashboard.getNumber("P Gain", 0);
     double i = SmartDashboard.getNumber("I Gain", 0);
     double d = SmartDashboard.getNumber("D Gain", 0);
     
-    if((s != kS)) { slot0Configs.kS = s; }
-    if((v != kV)) { slot0Configs.kV = v; }
+    //if((s != kS)) { slot0Configs.kS = s; }
+    //if((v != kV)) { slot0Configs.kV = v; }
     if((p != kP)) { slot0Configs.kP = p; }
     if((i != kI)) { slot0Configs.kI = i; }
     if((d != kD)) { slot0Configs.kD = d; }
@@ -76,5 +76,6 @@ public class Elevator extends SubsystemBase {
   }
   public void setPosition(double Position){
     elevator.setPosition(Position);
+    
   }
 }

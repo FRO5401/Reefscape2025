@@ -25,23 +25,27 @@ public class Constants {
         public static final int elevatorID = 14;
         public static final double EXTENDED_POSITION = 31;
         public static final double HALF_EXTENDED_POSITION = 15.5;
+        public static final double NO_EXTENSION = 1;
+
         public static final double KP = 3; // An error of 1 rotation results in 2.4 V output
         public static final double KI = 3; // no output for integrated error
-        public static final double KD = .42; // A velocity of 1 rps results in 0.1 V output
+        public static final double KD = .4; // A velocity of 1 rps results in 0.1 V output
         public static final double KA=.1;
         public static final double KV=.1;
         public static final double KG=2.4;
     }
     public class AutoConstants{
 
-        public static final double kMaxSpeedMetersPerSecond = 3;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+        public static final double kMaxSpeedMetersPerSecond = 3.5;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 2.5;
         public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
         public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
     
-        public static final double kPXController = .175;
-        public static final double kPYController = 2.5;
-        public static final double kPThetaController = .25;
+        public static final double kPXController = 1.687;
+        public static final double kPYController = 1.687;
+    
+        public static final double kPThetaController = 1.687;
+        public static final double kDThetaController = kPThetaController/2;
     
         /* Constraint for kpx motion profilied robot angle controller */
         public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
@@ -51,7 +55,7 @@ public class Constants {
 
         public static final ProfiledPIDController thetaController =
             new ProfiledPIDController(
-                Constants.AutoConstants.kPThetaController, 0, 0, Constants.AutoConstants.kThetaControllerConstraints);
+                Constants.AutoConstants.kPThetaController, 0, kDThetaController, Constants.AutoConstants.kThetaControllerConstraints);
 
             
         
@@ -76,8 +80,19 @@ public class Constants {
         public static final  TrajectoryConfig config = new TrajectoryConfig(
                     TunerConstants.kSpeedAt12Volts.baseUnitMagnitude(),
                     //TODO: Fix this to be the actual constant. 
-                    3.23)
+                    2.5)
                 .setKinematics(Constants.Swerve.swerveKinematics);
+
+        public final static Trajectory onePiece =
+                TrajectoryGenerator.generateTrajectory(
+                    // Start at the origin facing the +X direction
+                    new Pose2d(0,0, new Rotation2d(Units.degreesToRadians(0))),
+                    // Pass through these two interior waypoints, making an 's' curve path
+                    List.of(new Translation2d(5.199627471542494-2,0)),
+                    // End 3 meters straight ahead of where we started, facing forward
+                    new Pose2d(5.066962339845643, -1.996766117991512, new Rotation2d(Units.degreesToRadians(-25.66))),
+                    config);
+        
 
 
         public final static Trajectory sCurveTrajectory =
@@ -93,12 +108,13 @@ public class Constants {
         public final static Trajectory rSCurveTrajectory =
             TrajectoryGenerator.generateTrajectory(
                 // Start at the origin facing the +X direction
-                new Pose2d(0,5, new Rotation2d(Units.degreesToRadians(90))),
+                new Pose2d(0,5, new Rotation2d(Units.degreesToRadians(180))),
                 // Pass through these two interior waypoints, making an 's' curve path
                 List.of(new Translation2d(-1,3), new Translation2d(1, 1)),
                 // End 3 meters straight ahead of where we started, facing forward
                 new Pose2d(0, 0, new Rotation2d(0)),
                 config);
     };
+    
 
 }

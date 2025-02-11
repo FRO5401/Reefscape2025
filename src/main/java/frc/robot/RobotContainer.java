@@ -21,11 +21,11 @@ import frc.robot.subsystems.Elevator;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+    private double MaxAngularRate = RotationsPerSecond.of(1).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
     Elevator elevator = new Elevator();
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+            .withDeadband(MaxSpeed * 0.01).withRotationalDeadband(MaxAngularRate * 0.01) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
@@ -71,15 +71,15 @@ public class RobotContainer {
         // reset the field-centric heading on left bumper press
         joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-        Operator.b().onTrue(elevator.setPosition(Constants.ElevatorConstants.EXTENDED_POSITION));
-        Operator.x().onTrue(elevator.setPosition(Constants.ElevatorConstants.HALF_EXTENDED_POSITION));
-        Operator.a().onTrue(elevator.setPosition(1));
+        Operator.y().onTrue(elevator.setPosition(Constants.ElevatorConstants.EXTENDED_POSITION));
+        Operator.b().onTrue(elevator.setPosition(Constants.ElevatorConstants.HALF_EXTENDED_POSITION));
+        Operator.a().onTrue(elevator.setPosition(Constants.ElevatorConstants.NO_EXTENSION));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
     public Command getAutonomousCommand() {
-        return drivetrain.getAutoCommand(Constants.Trajectorys.sCurveTrajectory);
+        return drivetrain.getAutoCommand(Constants.Trajectorys.onePiece);
     }
 
     

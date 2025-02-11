@@ -34,6 +34,27 @@ public class Constants {
         public static final double KV=.1;
         public static final double KG=2.4;
     }
+    public class InfeedConstants{
+        public static final int HOLDING_MOTOR_LEFT_ID = 0;
+        public static final int HOLDING_MOTOR_RIGHT_ID = 0;
+        public static final int ARM_MOTOR_LEFT_ID = 0;
+        public static final int ARM_MOTOR_RIGHT_ID = 0;
+
+        public static final double CORAL_POSITION = 0;
+        public static final double ALGAE_POSITION = 0;
+        public static final double STOPPED_POSITION = 0;
+
+        public static final double INTAKE_VELOCITY = 0.5;
+        public static final double EXPEL_VELOCITY = -0.5;
+        public static final double STOPPED_VELOCITY = -0.5;
+
+        public static final double ARM_kP = 0;
+        public static final double ARM_kI = 0;
+        public static final double ARM_kD = 0;
+        public static final double ARM_kA = 0;
+        public static final double ARM_kV = 0;
+        public static final double ARM_kG = 0;
+    }
     public class AutoConstants{
 
         public static final double kMaxSpeedMetersPerSecond = 3.5;

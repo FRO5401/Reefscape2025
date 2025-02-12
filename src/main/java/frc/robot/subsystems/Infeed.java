@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -99,20 +100,7 @@ public class Infeed extends SubsystemBase {
   }
 
   public void setInfeed(int position, double velocity){
-    if (position == InfeedConstants.CORAL_POSITION){
-      rotateEncoder.setPosition(InfeedConstants.CORAL_POSITION);
-      rotateMotorLeft.set(velocity);
-      holdingMotorLeft.set(velocity);
-    }
-    else if (position == InfeedConstants.ALGAE_POSITION){
-      rotateEncoder.setPosition(InfeedConstants.ALGAE_POSITION);
-      rotateMotorLeft.set(velocity);
-      holdingMotorLeft.set(velocity);
-    }
-    else {
-      rotateEncoder.setPosition(InfeedConstants.STOPPED_POSITION);
-      rotateMotorLeft.set(InfeedConstants.STOPPED_VELOCITY);
-      holdingMotorLeft.set(InfeedConstants.STOPPED_VELOCITY);
-    }
+    rotatePID.setReference(position, ControlType.kPosition);
+    holdingMotorLeft.set(velocity);
   }
 }

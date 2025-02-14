@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.Swerve;
@@ -81,8 +82,8 @@ public class SimElevator extends SubsystemBase {
       ElevatorSimConstants.kMinElevatorHeightMeters, 
       ElevatorSimConstants.kMaxElevatorHeightMeters, 
       true, 
-      ElevatorSimConstants.kMinElevatorHeightMeters,  
-      null
+      ElevatorSimConstants.kMinElevatorHeightMeters  
+      
       );
     
     mech2d = new Mechanism2d(Swerve.robotWidth, Swerve.robotLength);
@@ -100,6 +101,7 @@ public class SimElevator extends SubsystemBase {
 
       SmartDashboard.putData("Elevator Sim", mech2d);
   }
+  @Override
   public void simulationPeriodic(){
     elevatorSim.setInput(simKraken.getMotorVoltage() * RobotController.getBatteryVoltage());
     elevatorSim.update(0.020);
@@ -110,17 +112,23 @@ public class SimElevator extends SubsystemBase {
   
   }
 
-  public void reachGoal(double goal){
-    elevatorPID.setGoal(goal);
+  public Command reachGoal(double goal){
+    
 
-    double pidOutput = elevatorPID.calculate(encoder.getDistance());
-    double feedForwardOutput = elevatorControl.calculate(elevatorPID.getSetpoint().velocity);
-    simKraken.setSupplyVoltage(pidOutput + feedForwardOutput);
+    return runOnce(() -> {
+      elevatorPID.setGoal(goal);
+
+      double pidOutput = elevatorPID.calculate(encoder.getDistance());
+      double feedForwardOutput = elevatorControl.calculate(elevatorPID.getSetpoint().velocity);
+      simKraken.setSupplyVoltage(pidOutput + feedForwardOutput);
+  });
   }
 
-  public void stop(){
+  public Command stop(){
+    return runOnce(() -> {
     elevatorPID.setGoal(0.0);
     simKraken.setSupplyVoltage(0);
+    });
   }
 
   public void updateTelemetry(){
@@ -130,13 +138,16 @@ public class SimElevator extends SubsystemBase {
   }
 
   public void close(){
+
     encoder.close();
     kraken.close();
     mech2d.close();
+
   }
 
   @Override
   public void periodic() {
+    updateTelemetry();
     // This method will be called once per scheduler run
   }
 }

@@ -4,23 +4,33 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.sim.TalonFXSimState;
+
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.Swerve;
 import frc.robot.Constants.ElevatorConstants.ElevatorSimConstants;
 
 public class SimElevator extends SubsystemBase {
   //Gearbox for elevator
   DCMotor elevatorKraken;
+  TalonFX kraken;
+  TalonFXSimState simKraken;
   //PID controller for sim
   ProfiledPIDController elevatorPID;
 
@@ -37,10 +47,13 @@ public class SimElevator extends SubsystemBase {
   MechanismLigament2d elevatorstage2;
   MechanismLigament2d elevatorstage3;
 
+
   /** Creates a new SimElevator. */
   public SimElevator() {
     elevatorKraken = DCMotor.getKrakenX60(ElevatorConstants.elevatorID);
-
+    kraken = new TalonFX(ElevatorConstants.elevatorID);
+    simKraken = kraken.getSimState();
+    
     elevatorPID = new ProfiledPIDController(
       ElevatorConstants.KP, 
       ElevatorConstants.KI, 
@@ -55,8 +68,9 @@ public class SimElevator extends SubsystemBase {
 
     encoder = new Encoder(
       ElevatorSimConstants.kEncoderAChannel, 
-      ElevatorSimConstants.kEncoderBChannel);
-    encoder.setDistancePerPulse(0);
+      ElevatorSimConstants.kEncoderBChannel
+    );
+    encoder.setDistancePerPulse(ElevatorSimConstants.kElevatorEncoderDistPerPulse);
     encoderSim = new EncoderSim(encoder);
     
     elevatorSim = new ElevatorSim(
@@ -71,13 +85,55 @@ public class SimElevator extends SubsystemBase {
       null
       );
     
-    mech2d = new Mechanism2d(25, ElevatorSimConstants.kMinElevatorHeightMeters);
+    mech2d = new Mechanism2d(Swerve.robotWidth, Swerve.robotLength);
     elevatorbase = mech2d.getRoot(
-      "Elevator Root", 
-      ElevatorSimConstants.kMinElevatorHeightMeters, 
-      0);
+      "Elevator Root", 10, 0
+      );
+
+      elevatorstage1 =
+      elevatorbase.append(
+          new MechanismLigament2d("Stage1", elevatorSim.getPositionMeters(), 90));
+      elevatorstage2 = elevatorstage1.append(
+        new MechanismLigament2d("Stage2", elevatorSim.getPositionMeters(), 0));
+      elevatorstage3 = elevatorstage2.append(
+        new MechanismLigament2d("Stage3", elevatorSim.getPositionMeters(), 0));
+
+      SmartDashboard.putData("Elevator Sim", mech2d);
   }
+  public void simulationPeriodic(){
+    elevatorSim.setInput(simKraken.getMotorVoltage() * RobotController.getBatteryVoltage());
+    elevatorSim.update(0.020);
+    encoderSim.setDistance(elevatorSim.getPositionMeters());
+    RoboRioSim.setVInVoltage(
+      BatterySim.calculateDefaultBatteryLoadedVoltage(elevatorSim.getCurrentDrawAmps())
+    );
   
+  }
+
+  public void reachGoal(double goal){
+    elevatorPID.setGoal(goal);
+
+    double pidOutput = elevatorPID.calculate(encoder.getDistance());
+    double feedForwardOutput = elevatorControl.calculate(elevatorPID.getSetpoint().velocity);
+    simKraken.setSupplyVoltage(pidOutput + feedForwardOutput);
+  }
+
+  public void stop(){
+    elevatorPID.setGoal(0.0);
+    simKraken.setSupplyVoltage(0);
+  }
+
+  public void updateTelemetry(){
+    elevatorstage1.setLength(encoder.getDistance());
+    elevatorstage2.setLength(encoder.getDistance());
+    elevatorstage3.setLength(encoder.getDistance());
+  }
+
+  public void close(){
+    encoder.close();
+    kraken.close();
+    mech2d.close();
+  }
 
   @Override
   public void periodic() {

@@ -15,6 +15,9 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.generated.TunerConstants;
 
 public class Constants {
+    public class ControlsConstants{
+
+    }
 
     public class ElevatorConstants{
 
@@ -51,7 +54,7 @@ public class Constants {
             public static final double kElevatorEncoderDistPerPulse = 2.0 * Math.PI * kElevatorDrumRadius / 4096;
         }
     }
-    
+
     public class AutoConstants{
 
         public static final double kMaxSpeedMetersPerSecond = 3;
@@ -78,6 +81,9 @@ public class Constants {
     };
 
     public static final class Swerve{
+        public static final double robotWidth = 28;
+        public static final double robotLength = 32;
+        
         public static final double trackWidth = Units.inchesToMeters(22.75); //TODO: This must be tuned to specific robot
         public static final double wheelBase = Units.inchesToMeters(26.75); //TODO: This must be tuned to specific robot
         public static final double wheelCircumference = 4 *Math.PI;

@@ -29,10 +29,29 @@ public class Constants {
         public static final double KG=2.4;
 
         /*  Constants for the Simulation Elevator */
-        public class ElevatorSim{
-
+        public class ElevatorSimConstants{
+            public static final int kEncoderAChannel = 0;
+            public static final int kEncoderBChannel = 1;          
+          
+            public static final double kElevatorkS = 0.0; // volts (V)
+            public static final double kElevatorkG = 0.762; // volts (V)
+            public static final double kElevatorkV = 0.762; // volt per velocity (V/(m/s))
+          
+            public static final double ElevatorGearing = 5.0;
+            public static final double kElevatorDrumRadius = Units.inchesToMeters(1.125);
+            public static final double kCarriageMass = 4.0; // kg
+          
+            public static final double kSetpointMeters = 0.75;
+            // Encoder is reset to measure 0 at the bottom, so minimum height is 0.
+            public static final double kMinElevatorHeightMeters = Units.inchesToMeters(41.19);
+            public static final double kMaxElevatorHeightMeters = Units.inchesToMeters(97.85);
+            
+          
+            // distance per pulse = (distance per revolution) / (pulses per revolution) = (Pi * D) / ppr
+            public static final double kElevatorEncoderDistPerPulse = 2.0 * Math.PI * kElevatorDrumRadius / 4096;
         }
     }
+    
     public class AutoConstants{
 
         public static final double kMaxSpeedMetersPerSecond = 3;

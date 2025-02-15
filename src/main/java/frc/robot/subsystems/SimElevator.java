@@ -21,6 +21,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
@@ -93,11 +95,11 @@ public class SimElevator extends SubsystemBase {
 
       elevatorstage1 =
       elevatorbase.append(
-          new MechanismLigament2d("Stage1", elevatorSim.getPositionMeters(), 90));
+          new MechanismLigament2d("Stage1", elevatorSim.getPositionMeters(), 90, 6, new Color8Bit(Color.kAntiqueWhite)));
       elevatorstage2 = elevatorstage1.append(
-        new MechanismLigament2d("Stage2", elevatorSim.getPositionMeters(), 0));
+        new MechanismLigament2d("Stage2", elevatorSim.getPositionMeters(), 0, 6, new Color8Bit(Color.kBeige)));
       elevatorstage3 = elevatorstage2.append(
-        new MechanismLigament2d("Stage3", elevatorSim.getPositionMeters(), 0));
+        new MechanismLigament2d("Stage3", elevatorSim.getPositionMeters(), 0, 6, new Color8Bit(Color.kGreen)));
 
       SmartDashboard.putData("Elevator Sim", mech2d);
   }

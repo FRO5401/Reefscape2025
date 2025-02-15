@@ -73,6 +73,7 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         operator.a().whileTrue(simElevator.reachGoal(ElevatorSimConstants.kSetpointMeters));
+        operator.x().whileTrue(simElevator.reachGoal(ElevatorSimConstants.kMaxElevatorHeightMeters));
         operator.b().whileTrue(simElevator.stop());
     }
 

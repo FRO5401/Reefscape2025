@@ -1,0 +1,52 @@
+The robot needs the main model stored in a Robot_{name} folder in a glb type file
+The main robot model should be stored in the model.glb file
+The subsystems you want to control, should be stored in model{index}
+    These should start with 0 and move up from there
+In the Robot_{name}
+    Create a json file called config.json;
+    this will be where the configuration of the parts should be stored
+The main robot configuration will be set up first:
+    {
+        "name": "strng",
+        "rotations": [
+            {
+            "axis": "x",
+            "degrees": #
+            },
+            {
+            "axis": "z",
+            "degrees": #
+            }
+        ],
+        "position": [
+            number, 
+            number, 
+            number
+        ],
+    }
+    The rotations is the direction of the robot, most of the time axis x is 90, and z is also 90
+    The position is the position of the robot, this has to be moved to the origin, 
+    so a properly centered cad model will be al 0's, 
+    but if its not, you will have to manually change this
+    
+    Next is Components, so the subsytems you want to control
+    "components": [
+    {
+      "zeroedRotations": [
+        {
+          "axis": "x",
+          "degrees": #
+        },
+        {
+          "axis": "z",
+          "degrees": #
+        }
+      ],
+      "zeroedPosition": [
+        number, 
+        number, 
+        number
+      ] 
+    }
+    ]
+    This is the same as above, but the zeroed Position is the spot it belongs in the model

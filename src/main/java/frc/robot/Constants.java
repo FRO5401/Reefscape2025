@@ -45,7 +45,7 @@ public class Constants {
           
             public static final double ElevatorGearing = 5.0;
             public static final double kElevatorDrumRadius = Units.inchesToMeters(1.125);
-            public static final double kCarriageMass = 4.0; // kg
+            public static final double kCarriageMass = Units.lbsToKilograms(12.5);
           
             public static final double kSetpointMeters = 0.75;
             // Encoder is reset to measure 0 at the bottom, so minimum height is 0.

@@ -1,13 +1,13 @@
 The robot needs the main model stored in a Robot_{name} folder in a glb type file
 The main robot model should be stored in the model.glb file
-The subsystems you want to control, should be stored in model{index}
-    These should start with 0 and move up from there
+The subsystems you want to control, should be stored in model_{index}
+    These should start with 0 and increase from there
 In the Robot_{name}
     Create a json file called config.json;
     this will be where the configuration of the parts should be stored
 The main robot configuration will be set up first:
     {
-        "name": "strng",
+        "name": "string",
         "rotations": [
             {
             "axis": "x",

@@ -39,10 +39,17 @@ public class Constants {
         public static final int HOLDING_MOTOR_RIGHT_ID = 0;
         public static final int ARM_MOTOR_LEFT_ID = 0;
         public static final int ARM_MOTOR_RIGHT_ID = 0;
+        public static final int PIVOT_MOTOR_ID = 0;
 
-        public static final double CORAL_POSITION = 0;
-        public static final double ALGAE_POSITION = 0;
-        public static final double STOPPED_POSITION = 0;
+        public static final double ROTATE_CORAL_POSITION = 0;
+        public static final double ROTATE_ALGAE_POSITION = 0;
+        public static final double ROTATE_STOPPED_POSITION = 0;
+
+        public static final double PIVOT_POSITION_REEF = 0;
+        public static final double PIVOT_POSITION_BARGE = 0;
+        public static final double PIVOT_POSITION_SOURCE = 0;
+        public static final double PIVOT_STOPPED_POSITION = 0;
+
 
         public static final double INTAKE_VELOCITY = 0.5;
         public static final double EXPEL_VELOCITY = -0.5;

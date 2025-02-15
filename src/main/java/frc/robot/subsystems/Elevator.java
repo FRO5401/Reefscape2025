@@ -16,6 +16,7 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -67,6 +68,8 @@ public class Elevator extends SubsystemBase {
   public void periodic() {
 
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Elevator Position", PositionPID.Position);
+
   }
   public Command setPosition(double pose) {
     // Inline construction of command goes here.

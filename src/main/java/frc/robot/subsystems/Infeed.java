@@ -12,6 +12,8 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.InfeedConstants;
 
@@ -41,8 +43,8 @@ public class Infeed extends SubsystemBase {
     //Initializes motors
     holdingMotorLeft = new SparkMax(InfeedConstants.HOLDING_MOTOR_LEFT_ID, MotorType.kBrushless);
     holdingMotorRight = new SparkMax(InfeedConstants.HOLDING_MOTOR_RIGHT_ID, MotorType.kBrushless);
-    rotateMotorLeft = new SparkMax(InfeedConstants.ARM_MOTOR_LEFT_ID, MotorType.kBrushless);
-    rotateMotorRight = new SparkMax(InfeedConstants.ARM_MOTOR_RIGHT_ID, MotorType.kBrushless);
+    rotateMotorLeft = new SparkMax(InfeedConstants.ROTATE_MOTOR_LEFT_ID, MotorType.kBrushless);
+    rotateMotorRight = new SparkMax(InfeedConstants.ROTATE_MOTOR_RIGHT_ID, MotorType.kBrushless);
     pivotMotor = new SparkMax(InfeedConstants.PIVOT_MOTOR_ID, MotorType.kBrushless);
 
     //Initializes configs
@@ -51,6 +53,7 @@ public class Infeed extends SubsystemBase {
     SparkMaxConfig holdingRightConfig = new SparkMaxConfig();
     SparkMaxConfig rotateLeftConfig = new SparkMaxConfig();
     SparkMaxConfig rotateRightConfig = new SparkMaxConfig();
+    SparkMaxConfig pivotConfig = new SparkMaxConfig();
 
     //Initializes PID controller
     rotatePID = rotateMotorLeft.getClosedLoopController();
@@ -82,12 +85,21 @@ public class Infeed extends SubsystemBase {
       .inverted(true)
       .follow(rotateMotorLeft);
 
-    // Set the PID config
+    pivotConfig
+      .apply(globalConfig);
+
+
+    // Set the PID configs
     rotateLeftConfig.closedLoop
-      .p(InfeedConstants.ARM_kP)
-      .i(InfeedConstants.ARM_kI)
-      .d(InfeedConstants.ARM_kD);
-    
+      .p(InfeedConstants.ROTATE_kP)
+      .i(InfeedConstants.ROTATE_kI)
+      .d(InfeedConstants.ROTATE_kD);
+
+    pivotConfig.closedLoop
+      .p(InfeedConstants.PIVOT_kP)
+      .i(InfeedConstants.PIVOT_kI)
+      .d(InfeedConstants.PIVOT_kD);
+
     //Start position of Rotate Motor
     rotateEncoder.setPosition(InfeedConstants.ROTATE_STOPPED_POSITION);
     pivotEncoder.setPosition(InfeedConstants.PIVOT_STOPPED_POSITION);
@@ -96,6 +108,10 @@ public class Infeed extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Pivot Position", pivotEncoder.getPosition());
+    SmartDashboard.putNumber("Rotate Position", rotateEncoder.getPosition());
+
+
   }
 
   public double getRotatePosition(){
@@ -114,9 +130,11 @@ public class Infeed extends SubsystemBase {
     holdingMotorLeft.set(velocity);
   }
 
-  public void setInfeed(double rotatePosition, double pivotPosition){
+  public Command setPosition(double rotatePosition, double pivotPosition){
+    return runOnce(()->{
     rotatePID.setReference(rotatePosition, ControlType.kPosition);
     pivotPID.setReference(pivotPosition, ControlType.kPosition);
+    });
   }
 
 }

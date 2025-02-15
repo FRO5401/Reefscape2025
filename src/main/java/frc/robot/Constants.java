@@ -35,15 +35,15 @@ public class Constants {
         public static final double KG=2.4;
     }
     public class InfeedConstants{
-        public static final int HOLDING_MOTOR_LEFT_ID = 0;
-        public static final int HOLDING_MOTOR_RIGHT_ID = 0;
-        public static final int ARM_MOTOR_LEFT_ID = 0;
-        public static final int ARM_MOTOR_RIGHT_ID = 0;
+        public static final int HOLDING_MOTOR_LEFT_ID = 2;
+        public static final int HOLDING_MOTOR_RIGHT_ID = 3;
+        public static final int ROTATE_MOTOR_LEFT_ID = 6;
+        public static final int ROTATE_MOTOR_RIGHT_ID = 0;
         public static final int PIVOT_MOTOR_ID = 0;
 
-        public static final double ROTATE_CORAL_POSITION = 0;
-        public static final double ROTATE_ALGAE_POSITION = 0;
-        public static final double ROTATE_STOPPED_POSITION = 0;
+        public static final double ROTATE_CORAL_POSITION = 0.6;
+        public static final double ROTATE_ALGAE_POSITION = 0.4;
+        public static final double ROTATE_STOPPED_POSITION = 0.2;
 
         public static final double PIVOT_POSITION_REEF = 0;
         public static final double PIVOT_POSITION_BARGE = 0;
@@ -55,12 +55,19 @@ public class Constants {
         public static final double EXPEL_VELOCITY = -0.5;
         public static final double STOPPED_VELOCITY = -0.5;
 
-        public static final double ARM_kP = 0;
-        public static final double ARM_kI = 0;
-        public static final double ARM_kD = 0;
-        public static final double ARM_kA = 0;
-        public static final double ARM_kV = 0;
-        public static final double ARM_kG = 0;
+        public static final double ROTATE_kP = 0;
+        public static final double ROTATE_kI = 0;
+        public static final double ROTATE_kD = 0;
+        public static final double ROTATE_kA = 0;
+        public static final double ROTATE_kV = 0;
+        public static final double ROTATE_kG = 0;
+
+        public static final double PIVOT_kP = 0;
+        public static final double PIVOT_kI = 0;
+        public static final double PIVOT_kD = 0;
+        public static final double PIVOT_kA = 0;
+        public static final double PIVOT_kV = 0;
+        public static final double PIVOT_kG = 0;
     }
     public class AutoConstants{
 

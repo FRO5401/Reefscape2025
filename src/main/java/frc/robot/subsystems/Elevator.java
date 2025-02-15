@@ -68,8 +68,6 @@ public class Elevator extends SubsystemBase {
   public void periodic() {
 
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Elevator Position", PositionPID.Position);
-
   }
   public Command setPosition(double pose) {
     // Inline construction of command goes here.

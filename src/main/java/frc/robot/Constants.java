@@ -12,7 +12,7 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import frc.robot.generated.TunerConstants;
+// import frc.robot.generated.TunerConstants;
 
 public class Constants {
     public static class ControlConstants{
@@ -38,12 +38,12 @@ public class Constants {
         public static final int HOLDING_MOTOR_LEFT_ID = 2;
         public static final int HOLDING_MOTOR_RIGHT_ID = 3;
         public static final int ROTATE_MOTOR_LEFT_ID = 6;
-        public static final int ROTATE_MOTOR_RIGHT_ID = 0;
+        public static final int ROTATE_MOTOR_RIGHT_ID = 1;
         public static final int PIVOT_MOTOR_ID = 0;
 
-        public static final double ROTATE_CORAL_POSITION = 0.6;
-        public static final double ROTATE_ALGAE_POSITION = 0.4;
-        public static final double ROTATE_STOPPED_POSITION = 0.2;
+        public static final double ROTATE_CORAL_POSITION = 0.5;
+        public static final double ROTATE_ALGAE_POSITION = 0;
+        public static final double ROTATE_STOPPED_POSITION = 0;
 
         public static final double PIVOT_POSITION_REEF = 0;
         public static final double PIVOT_POSITION_BARGE = 0;
@@ -55,9 +55,9 @@ public class Constants {
         public static final double EXPEL_VELOCITY = -0.5;
         public static final double STOPPED_VELOCITY = -0.5;
 
-        public static final double ROTATE_kP = 0;
-        public static final double ROTATE_kI = 0;
-        public static final double ROTATE_kD = 0;
+        public static final double ROTATE_kP = 0.01;
+        public static final double ROTATE_kI = 0.01;
+        public static final double ROTATE_kD = 0.01;
         public static final double ROTATE_kA = 0;
         public static final double ROTATE_kV = 0;
         public static final double ROTATE_kG = 0;
@@ -110,46 +110,46 @@ public class Constants {
             new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0));
     }
 
-    public static final class Trajectorys {
-        //config to ensure the robot doesnt try to move through itself
-        public static final  TrajectoryConfig config = new TrajectoryConfig(
-                    TunerConstants.kSpeedAt12Volts.baseUnitMagnitude(),
-                    //TODO: Fix this to be the actual constant. 
-                    2.5)
-                .setKinematics(Constants.Swerve.swerveKinematics);
+    // public static final class Trajectorys {
+    //     //config to ensure the robot doesnt try to move through itself
+    //     public static final  TrajectoryConfig config = new TrajectoryConfig(
+    //                 TunerConstants.kSpeedAt12Volts.baseUnitMagnitude(),
+    //                 //TODO: Fix this to be the actual constant. 
+    //                 2.5)
+    //             .setKinematics(Constants.Swerve.swerveKinematics);
 
-        public final static Trajectory onePiece =
-                TrajectoryGenerator.generateTrajectory(
-                    // Start at the origin facing the +X direction
-                    new Pose2d(0,0, new Rotation2d(Units.degreesToRadians(0))),
-                    // Pass through these two interior waypoints, making an 's' curve path
-                    List.of(new Translation2d(5.199627471542494-2,0)),
-                    // End 3 meters straight ahead of where we started, facing forward
-                    new Pose2d(5.066962339845643, -1.996766117991512, new Rotation2d(Units.degreesToRadians(-25.66))),
-                    config);
+    //     public final static Trajectory onePiece =
+    //             TrajectoryGenerator.generateTrajectory(
+    //                 // Start at the origin facing the +X direction
+    //                 new Pose2d(0,0, new Rotation2d(Units.degreesToRadians(0))),
+    //                 // Pass through these two interior waypoints, making an 's' curve path
+    //                 List.of(new Translation2d(5.199627471542494-2,0)),
+    //                 // End 3 meters straight ahead of where we started, facing forward
+    //                 new Pose2d(5.066962339845643, -1.996766117991512, new Rotation2d(Units.degreesToRadians(-25.66))),
+    //                 config);
         
 
 
-        public final static Trajectory sCurveTrajectory =
-            TrajectoryGenerator.generateTrajectory(
-                // Start at the origin facing the +X direction
-                new Pose2d(0,0, new Rotation2d(0)),
-                // Pass through these two interior waypoints, making an 's' curve path
-                List.of(new Translation2d(1,1), new Translation2d(-1, 3)),
-                // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(0, 5, new Rotation2d(Units.degreesToRadians(90))),
-                config);
+    //     public final static Trajectory sCurveTrajectory =
+    //         TrajectoryGenerator.generateTrajectory(
+    //             // Start at the origin facing the +X direction
+    //             new Pose2d(0,0, new Rotation2d(0)),
+    //             // Pass through these two interior waypoints, making an 's' curve path
+    //             List.of(new Translation2d(1,1), new Translation2d(-1, 3)),
+    //             // End 3 meters straight ahead of where we started, facing forward
+    //             new Pose2d(0, 5, new Rotation2d(Units.degreesToRadians(90))),
+    //             config);
 
-        public final static Trajectory rSCurveTrajectory =
-            TrajectoryGenerator.generateTrajectory(
-                // Start at the origin facing the +X direction
-                new Pose2d(0,5, new Rotation2d(Units.degreesToRadians(180))),
-                // Pass through these two interior waypoints, making an 's' curve path
-                List.of(new Translation2d(-1,3), new Translation2d(1, 1)),
-                // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(0, 0, new Rotation2d(0)),
-                config);
-    };
+    //     public final static Trajectory rSCurveTrajectory =
+    //         TrajectoryGenerator.generateTrajectory(
+    //             // Start at the origin facing the +X direction
+    //             new Pose2d(0,5, new Rotation2d(Units.degreesToRadians(180))),
+    //             // Pass through these two interior waypoints, making an 's' curve path
+    //             List.of(new Translation2d(-1,3), new Translation2d(1, 1)),
+    //             // End 3 meters straight ahead of where we started, facing forward
+    //             new Pose2d(0, 0, new Rotation2d(0)),
+    //             config);
+    // };
     
 
 }

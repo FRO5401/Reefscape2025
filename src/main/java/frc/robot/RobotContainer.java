@@ -15,10 +15,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.InfeedConstants;
-import frc.robot.generated.MoveElevator;
-import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.Elevator;
+// import frc.robot.generated.MoveElevator;
+// import frc.robot.generated.TunerConstants;
+// import frc.robot.subsystems.CommandSwerveDrivetrain;
+// import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Infeed;
 
 public class RobotContainer {
@@ -86,10 +86,9 @@ public class RobotContainer {
         // drivetrain.registerTelemetry(logger::telemeterize);
 
         //Infeed
-        Operator.povLeft().onTrue(infeed.setPosition(InfeedConstants.ROTATE_CORAL_POSITION, InfeedConstants.PIVOT_STOPPED_POSITION));
-        Operator.povRight().onTrue(infeed.setPosition(InfeedConstants.ROTATE_ALGAE_POSITION, InfeedConstants.PIVOT_STOPPED_POSITION));
-        Operator.povDown().onTrue(infeed.setPosition(InfeedConstants.ROTATE_STOPPED_POSITION, InfeedConstants.PIVOT_STOPPED_POSITION));
-
+        Operator.x().onTrue(infeed.setPosition(InfeedConstants.ROTATE_CORAL_POSITION, InfeedConstants.PIVOT_STOPPED_POSITION));
+        Operator.b().onTrue(infeed.setPosition(InfeedConstants.ROTATE_ALGAE_POSITION, InfeedConstants.PIVOT_STOPPED_POSITION));
+        Operator.a().onTrue(infeed.setPosition(InfeedConstants.ROTATE_STOPPED_POSITION, InfeedConstants.PIVOT_STOPPED_POSITION));
     }
 
     // TODO: Uncomment code

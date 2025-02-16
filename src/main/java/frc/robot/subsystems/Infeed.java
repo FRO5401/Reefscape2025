@@ -28,7 +28,7 @@ public class Infeed extends SubsystemBase {
   SparkMax rotateMotorRight;
 
   //Creates pivot motor
-  SparkMax pivotMotor;
+  // SparkMax pivotMotor;
 
   //Creates Encoders
   private RelativeEncoder rotateEncoder;
@@ -37,6 +37,14 @@ public class Infeed extends SubsystemBase {
   //Creates PIDControllers
   private SparkClosedLoopController rotatePID;
   private SparkClosedLoopController pivotPID;
+
+  SparkMaxConfig rotateLeftConfig;
+  
+  double kP = 0.5;
+  double kI = 0.25;
+  double kD = 0.0;
+  double sped = 0.0;
+
   
   /** Creates a new Infeed. */
   public Infeed() {
@@ -45,19 +53,19 @@ public class Infeed extends SubsystemBase {
     holdingMotorRight = new SparkMax(InfeedConstants.HOLDING_MOTOR_RIGHT_ID, MotorType.kBrushless);
     rotateMotorLeft = new SparkMax(InfeedConstants.ROTATE_MOTOR_LEFT_ID, MotorType.kBrushless);
     rotateMotorRight = new SparkMax(InfeedConstants.ROTATE_MOTOR_RIGHT_ID, MotorType.kBrushless);
-    pivotMotor = new SparkMax(InfeedConstants.PIVOT_MOTOR_ID, MotorType.kBrushless);
+    // pivotMotor = new SparkMax(InfeedConstants.PIVOT_MOTOR_ID, MotorType.kBrushless);
 
     //Initializes configs
     SparkMaxConfig globalConfig = new SparkMaxConfig();
     SparkMaxConfig holdingLeftConfig = new SparkMaxConfig();
     SparkMaxConfig holdingRightConfig = new SparkMaxConfig();
-    SparkMaxConfig rotateLeftConfig = new SparkMaxConfig();
+    rotateLeftConfig = new SparkMaxConfig();
     SparkMaxConfig rotateRightConfig = new SparkMaxConfig();
     SparkMaxConfig pivotConfig = new SparkMaxConfig();
 
     //Initializes PID controller
     rotatePID = rotateMotorLeft.getClosedLoopController();
-    pivotPID = pivotMotor.getClosedLoopController();
+    // pivotPID = pivotMotor.getClosedLoopController();
 
     //Gets Encoder for Rotate Motor
     rotateEncoder = rotateMotorLeft.getEncoder();
@@ -85,42 +93,52 @@ public class Infeed extends SubsystemBase {
       .inverted(true)
       .follow(rotateMotorLeft);
 
-    pivotConfig
-      .apply(globalConfig);
+    // pivotConfig
+    //   .apply(globalConfig);
 
 
     // Set the PID configs
     rotateLeftConfig.closedLoop
-      .p(InfeedConstants.ROTATE_kP)
-      .i(InfeedConstants.ROTATE_kI)
-      .d(InfeedConstants.ROTATE_kD);
+      .p(kP)
+      .i(kI)
+      .d(kD);
 
-    pivotConfig.closedLoop
-      .p(InfeedConstants.PIVOT_kP)
-      .i(InfeedConstants.PIVOT_kI)
-      .d(InfeedConstants.PIVOT_kD);
+
+    // pivotConfig.closedLoop
+    //   .p(InfeedConstants.PIVOT_kP)
+    //   .i(InfeedConstants.PIVOT_kI)
+    //   .d(InfeedConstants.PIVOT_kD);
 
     //Start position of Rotate Motor
     rotateEncoder.setPosition(InfeedConstants.ROTATE_STOPPED_POSITION);
-    pivotEncoder.setPosition(InfeedConstants.PIVOT_STOPPED_POSITION);
+    // pivotEncoder.setPosition(InfeedConstants.PIVOT_STOPPED_POSITION);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Pivot Position", pivotEncoder.getPosition());
+    // SmartDashboard.putNumber("Pivot Position", pivotEncoder.getPosition());
     SmartDashboard.putNumber("Rotate Position", rotateEncoder.getPosition());
+    SmartDashboard.putNumber("Rotate PID P", kP);
+    SmartDashboard.putNumber("Rotate PID I", kI);
+    SmartDashboard.putNumber("Rotate PID D", kD);
 
-
+    // to set the position using smart dashboard
+    double p = SmartDashboard.getNumber("Rotate PID P", 0);
+    double i = SmartDashboard.getNumber("Rotate PID I", 0);
+    double d = SmartDashboard.getNumber("Rotate PID D", 0);
+    if((p != kP)) { rotateLeftConfig.closedLoop.p(p); kP = p; }
+    if((i != kI)) { rotateLeftConfig.closedLoop.i(i); kI = i; }
+    if((d != kD)) { rotateLeftConfig.closedLoop.d(d); kD = d; }
   }
 
   public double getRotatePosition(){
     return rotateEncoder.getPosition();
   }
 
-  public double getPivotPosition(){
-    return pivotEncoder.getPosition();
-  }
+  // public double getPivotPosition(){
+  //   return pivotEncoder.getPosition();
+  // }
 
   public double getVelocity(){
     return rotateEncoder.getVelocity();
@@ -132,8 +150,8 @@ public class Infeed extends SubsystemBase {
 
   public Command setPosition(double rotatePosition, double pivotPosition){
     return runOnce(()->{
-    rotatePID.setReference(rotatePosition, ControlType.kPosition);
-    pivotPID.setReference(pivotPosition, ControlType.kPosition);
+      rotatePID.setReference(5, ControlType.kPosition);
+      // pivotPID.setReference(pivotPosition, ControlType.kPosition);
     });
   }
 

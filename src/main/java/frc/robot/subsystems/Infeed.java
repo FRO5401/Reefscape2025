@@ -6,6 +6,8 @@ package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -42,7 +44,7 @@ public class Infeed extends SubsystemBase {
   
   double kP = 0.5;
   double kI = 0.25;
-  double kD = 0.0;
+  double kD = 0.5;
   double sped = 0.0;
 
   
@@ -103,11 +105,18 @@ public class Infeed extends SubsystemBase {
       .i(kI)
       .d(kD);
 
-
     // pivotConfig.closedLoop
     //   .p(InfeedConstants.PIVOT_kP)
     //   .i(InfeedConstants.PIVOT_kI)
     //   .d(InfeedConstants.PIVOT_kD);
+
+
+    holdingMotorLeft.configure(holdingLeftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    holdingMotorRight.configure(holdingRightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    rotateMotorLeft.configure(rotateLeftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    rotateMotorRight.configure(rotateRightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    // pivotMotor.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
 
     //Start position of Rotate Motor
     rotateEncoder.setPosition(InfeedConstants.ROTATE_STOPPED_POSITION);
@@ -130,6 +139,8 @@ public class Infeed extends SubsystemBase {
     if((p != kP)) { rotateLeftConfig.closedLoop.p(p); kP = p; }
     if((i != kI)) { rotateLeftConfig.closedLoop.i(i); kI = i; }
     if((d != kD)) { rotateLeftConfig.closedLoop.d(d); kD = d; }
+    rotateMotorLeft.configure(rotateLeftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
   }
 
   public double getRotatePosition(){
@@ -150,7 +161,8 @@ public class Infeed extends SubsystemBase {
 
   public Command setPosition(double rotatePosition, double pivotPosition){
     return runOnce(()->{
-      rotatePID.setReference(5, ControlType.kPosition);
+      rotatePID.setReference(0.1, ControlType.kPosition);
+
       // pivotPID.setReference(pivotPosition, ControlType.kPosition);
     });
   }

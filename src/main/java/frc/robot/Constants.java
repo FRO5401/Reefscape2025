@@ -56,12 +56,19 @@ public class Constants {
         public static final double EXPEL_VELOCITY = -0.5;
         public static final double STOPPED_VELOCITY = -0.5;
 
-        public static final double ROTATE_kP = 0.01;
-        public static final double ROTATE_kI = 0.01;
-        public static final double ROTATE_kD = 0.01;
-        public static final double ROTATE_kA = 0;
-        public static final double ROTATE_kV = 0;
-        public static final double ROTATE_kG = 0;
+        public static final double ROTATE_LEFT_kP = 0.01;
+        public static final double ROTATE_LEFT_kI = 0.01;
+        public static final double ROTATE_LEFT_kD = 0.01;
+        public static final double ROTATE_LEFT_kA = 0;
+        public static final double ROTATE_LEFT_kV = 0;
+        public static final double ROTATE_LEFT_kG = 0;
+
+        public static final double ROTATE_RIGHT_kP = 0.01;
+        public static final double ROTATE_RIGHT_kI = 0.01;
+        public static final double ROTATE_RIGHT_kD = 0.01;
+        public static final double ROTATE_RIGHT_kA = 0;
+        public static final double ROTATE_RIGHT_kV = 0;
+        public static final double ROTATE_RIGHT_kG = 0;
 
         public static final double PIVOT_kP = 0;
         public static final double PIVOT_kI = 0;

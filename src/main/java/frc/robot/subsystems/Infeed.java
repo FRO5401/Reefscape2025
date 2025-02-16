@@ -27,25 +27,32 @@ public class Infeed extends SubsystemBase {
 
   // Creates arm motors
   SparkMax rotateMotorLeft;
-  SparkMax rotateMotorRight;
+  //SparkMax rotateMotorRight;
 
   //Creates pivot motor
   // SparkMax pivotMotor;
 
   //Creates Encoders
-  private RelativeEncoder rotateEncoder;
+  private RelativeEncoder rotateLeftEncoder;
+  private RelativeEncoder rotateRightEncoder;
   private RelativeEncoder pivotEncoder;
 
   //Creates PIDControllers
-  private SparkClosedLoopController rotatePID;
+  private SparkClosedLoopController rotateLeftPID;
+  private SparkClosedLoopController rotateRightPID;
   private SparkClosedLoopController pivotPID;
 
+  //Creates configs
+  SparkMaxConfig globalConfig;
+  SparkMaxConfig holdingLeftConfig;
+  SparkMaxConfig holdingRightConfig;
   SparkMaxConfig rotateLeftConfig;
-  
-  double kP = 0.5;
-  double kI = 0.25;
-  double kD = 0.5;
-  double sped = 0.0;
+  SparkMaxConfig rotateRightConfig;
+  SparkMaxConfig pivotConfig;
+
+  double kP = 0.005;
+  double kI = 0.0005;
+  double kD = 0.0;
 
   
   /** Creates a new Infeed. */
@@ -54,27 +61,29 @@ public class Infeed extends SubsystemBase {
     holdingMotorLeft = new SparkMax(InfeedConstants.HOLDING_MOTOR_LEFT_ID, MotorType.kBrushless);
     holdingMotorRight = new SparkMax(InfeedConstants.HOLDING_MOTOR_RIGHT_ID, MotorType.kBrushless);
     rotateMotorLeft = new SparkMax(InfeedConstants.ROTATE_MOTOR_LEFT_ID, MotorType.kBrushless);
-    rotateMotorRight = new SparkMax(InfeedConstants.ROTATE_MOTOR_RIGHT_ID, MotorType.kBrushless);
+    //rotateMotorRight = new SparkMax(InfeedConstants.ROTATE_MOTOR_RIGHT_ID, MotorType.kBrushless);
     // pivotMotor = new SparkMax(InfeedConstants.PIVOT_MOTOR_ID, MotorType.kBrushless);
 
     //Initializes configs
-    SparkMaxConfig globalConfig = new SparkMaxConfig();
-    SparkMaxConfig holdingLeftConfig = new SparkMaxConfig();
-    SparkMaxConfig holdingRightConfig = new SparkMaxConfig();
+    globalConfig = new SparkMaxConfig();
+    holdingLeftConfig = new SparkMaxConfig();
+    holdingRightConfig = new SparkMaxConfig();
     rotateLeftConfig = new SparkMaxConfig();
-    SparkMaxConfig rotateRightConfig = new SparkMaxConfig();
-    SparkMaxConfig pivotConfig = new SparkMaxConfig();
+    rotateRightConfig = new SparkMaxConfig();
+    pivotConfig = new SparkMaxConfig();
 
-    //Initializes PID controller
-    rotatePID = rotateMotorLeft.getClosedLoopController();
+    //Initializes PID controllers
+    rotateLeftPID = rotateMotorLeft.getClosedLoopController();
+    //rotateRightPID = rotateMotorRight.getClosedLoopController();
     // pivotPID = pivotMotor.getClosedLoopController();
 
-    //Gets Encoder for Rotate Motor
-    rotateEncoder = rotateMotorLeft.getEncoder();
+    //Gets Encoder for Rotate Motors
+    rotateLeftEncoder = rotateMotorLeft.getEncoder();
+    //rotateRightEncoder = rotateMotorRight.getEncoder();
 
     // Sets motor configs
     globalConfig
-      .smartCurrentLimit(50)
+      .smartCurrentLimit(40)
       .idleMode(IdleMode.kBrake);
 
     holdingLeftConfig
@@ -83,17 +92,15 @@ public class Infeed extends SubsystemBase {
     
     holdingRightConfig
       .apply(globalConfig)
-      .inverted(true)
-      .follow(holdingMotorLeft);
+      .inverted(true);
 
     rotateLeftConfig
       .apply(globalConfig)
       .inverted(false);
     
-    rotateRightConfig
-      .apply(globalConfig)
-      .inverted(true)
-      .follow(rotateMotorLeft);
+    // rotateRightConfig
+    //   .apply(globalConfig)
+    //   .invered(false);
 
     // pivotConfig
     //   .apply(globalConfig);
@@ -105,6 +112,11 @@ public class Infeed extends SubsystemBase {
       .i(kI)
       .d(kD);
 
+    // rotateRightConfig.closedLoop
+    //   .p(InfeedConstants.RIGHT_ROTATE_kP)
+    //   .i(InfeedConstants.RIGHT_ROTATE_kI)
+    //   .d(InfeedConstants.RIGHT_ROTATE_kD);
+
     // pivotConfig.closedLoop
     //   .p(InfeedConstants.PIVOT_kP)
     //   .i(InfeedConstants.PIVOT_kI)
@@ -114,12 +126,13 @@ public class Infeed extends SubsystemBase {
     holdingMotorLeft.configure(holdingLeftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     holdingMotorRight.configure(holdingRightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     rotateMotorLeft.configure(rotateLeftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    rotateMotorRight.configure(rotateRightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    // rotateMotorRight.configure(rotateRightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     // pivotMotor.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
 
     //Start position of Rotate Motor
-    rotateEncoder.setPosition(InfeedConstants.ROTATE_STOPPED_POSITION);
+    rotateLeftEncoder.setPosition(InfeedConstants.ROTATE_STOPPED_POSITION);
+    // rotateRightEncoder.setPosition(InfeedConstants.ROTATE_STOPPED_POSITION);
     // pivotEncoder.setPosition(InfeedConstants.PIVOT_STOPPED_POSITION);
   }
 
@@ -127,44 +140,53 @@ public class Infeed extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     // SmartDashboard.putNumber("Pivot Position", pivotEncoder.getPosition());
-    SmartDashboard.putNumber("Rotate Position", rotateEncoder.getPosition());
+    SmartDashboard.putNumber("Rotate Left Position", rotateLeftEncoder.getPosition());
+    // SmartDashboard.putNumber("Rotate Right Position", rotateRightEncoder.getPosition());
     SmartDashboard.putNumber("Rotate PID P", kP);
     SmartDashboard.putNumber("Rotate PID I", kI);
     SmartDashboard.putNumber("Rotate PID D", kD);
 
-    // to set the position using smart dashboard
-    double p = SmartDashboard.getNumber("Rotate PID P", 0);
-    double i = SmartDashboard.getNumber("Rotate PID I", 0);
-    double d = SmartDashboard.getNumber("Rotate PID D", 0);
-    if((p != kP)) { rotateLeftConfig.closedLoop.p(p); kP = p; }
-    if((i != kI)) { rotateLeftConfig.closedLoop.i(i); kI = i; }
-    if((d != kD)) { rotateLeftConfig.closedLoop.d(d); kD = d; }
-    rotateMotorLeft.configure(rotateLeftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    // // to set the position using smart dashboard
+    // double p = SmartDashboard.getNumber("Rotate PID P", 0);
+    // double i = SmartDashboard.getNumber("Rotate PID I", 0);
+    // double d = SmartDashboard.getNumber("Rotate PID D", 0);
+    // if((p != kP)) { rotateLeftConfig.closedLoop.p(p); kP = p; }
+    // if((i != kI)) { rotateLeftConfig.closedLoop.i(i); kI = i; }
+    // if((d != kD)) { rotateLeftConfig.closedLoop.d(d); kD = d; }
+    // rotateMotorLeft.configure(rotateLeftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
   }
 
-  public double getRotatePosition(){
-    return rotateEncoder.getPosition();
+  public double getRotateLeftPosition(){
+    return rotateLeftEncoder.getPosition();
+  }
+
+  public double getRotateRightPosition(){
+    return rotateRightEncoder.getPosition();
   }
 
   // public double getPivotPosition(){
   //   return pivotEncoder.getPosition();
   // }
 
-  public double getVelocity(){
-    return rotateEncoder.getVelocity();
+  public double getLeftVelocity(){
+    return rotateLeftEncoder.getVelocity();
+  }
+
+  public double getRightVelocity(){
+    return rotateRightEncoder.getVelocity();
   }
 
   public void setVelocity(double velocity){
     holdingMotorLeft.set(velocity);
+    holdingMotorRight.set(velocity);
   }
 
   public Command setPosition(double rotatePosition, double pivotPosition){
     return runOnce(()->{
-      rotatePID.setReference(0.1, ControlType.kPosition);
-
+      rotateLeftPID.setReference(0.1, ControlType.kPosition);
+      //rotateRightPID.setReference(0.1, ControlType.kPosition);
       // pivotPID.setReference(pivotPosition, ControlType.kPosition);
     });
   }
-
 }

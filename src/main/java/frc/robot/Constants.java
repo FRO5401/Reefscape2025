@@ -23,11 +23,14 @@ public class Constants {
     }
     public class ElevatorConstants{
         public static final int elevatorID = 14;
-        public static final double EXTENDED_POSITION = 31;
-        public static final double HALF_EXTENDED_POSITION = 15.5;
-        public static final double NO_EXTENSION = 1;
+        public static final double BARGE = 31;
+        public static final double L4 = 20;
+        public static final double L3 = 15.5;
+        public static final double L2 = 10;
+        public static final double STATION = 5;
+        public static final double PROCESSOR = 1;
 
-        public static final double KP = 3; // An error of 1 rotation results in 2.4 V output
+        public static final double KP = 4; // An error of 1 rotation results in 2.4 V output
         public static final double KI = 3; // no output for integrated error
         public static final double KD = .4; // A velocity of 1 rps results in 0.1 V output
         public static final double KA=.1;

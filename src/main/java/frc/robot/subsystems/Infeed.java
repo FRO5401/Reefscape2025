@@ -14,9 +14,12 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.InfeedConstants;
 
 public class Infeed extends SubsystemBase {
@@ -46,14 +49,9 @@ public class Infeed extends SubsystemBase {
   SparkMaxConfig rotateRightConfig;
   SparkMaxConfig pivotConfig;
 
-  //temporary pid values
-  double left_kP = 0.005;
-  double left_kI = 0.0005;
-  double left_kD = 0.0;
+  //Create Beam Break
+  DigitalInput beamBreak;
 
-  double right_kP = 0.005;
-  double right_kI = 0.0005;
-  double right_kD = 0.0;
   
   /** Creates a new Infeed. */
   public Infeed() {
@@ -63,6 +61,8 @@ public class Infeed extends SubsystemBase {
     rotateMotorLeft = new SparkMax(InfeedConstants.ROTATE_MOTOR_LEFT_ID, MotorType.kBrushless);
     rotateMotorRight = new SparkMax(InfeedConstants.ROTATE_MOTOR_RIGHT_ID, MotorType.kBrushless);
     // pivotMotor = new SparkMax(InfeedConstants.PIVOT_MOTOR_ID, MotorType.kBrushless);
+
+    
 
     //Initializes configs
     globalConfig = new SparkMaxConfig();
@@ -76,6 +76,9 @@ public class Infeed extends SubsystemBase {
     rotateLeftPID = rotateMotorLeft.getClosedLoopController();
     rotateRightPID = rotateMotorRight.getClosedLoopController();
     // pivotPID = pivotMotor.getClosedLoopController();
+
+    //Initalize BeamBreak
+    beamBreak = new DigitalInput(2);
 
     //Gets Encoder for Rotate Motors
     rotateLeftEncoder = rotateMotorLeft.getEncoder();
@@ -108,14 +111,14 @@ public class Infeed extends SubsystemBase {
 
     // Set the PID configs
     rotateLeftConfig.closedLoop
-      .p(left_kP)
-      .i(left_kI)
-      .d(left_kD);
+      .p(Constants.InfeedConstants.ROTATE_KP)
+      .i(Constants.InfeedConstants.ROTATE_kI)
+      .d(Constants.InfeedConstants.ROTATE_kD);
 
     rotateRightConfig.closedLoop
-      .p(right_kP)
-      .i(right_kI)
-      .d(right_kD);
+    .p(Constants.InfeedConstants.ROTATE_KP)
+    .i(Constants.InfeedConstants.ROTATE_kI)
+    .d(Constants.InfeedConstants.ROTATE_kD);
 
     // pivotConfig.closedLoop
     //   .p(InfeedConstants.PIVOT_kP)
@@ -142,18 +145,7 @@ public class Infeed extends SubsystemBase {
     // SmartDashboard.putNumber("Pivot Position", pivotEncoder.getPosition());
     SmartDashboard.putNumber("Rotate Left Position", rotateLeftEncoder.getPosition());
     SmartDashboard.putNumber("Rotate Right Position", rotateRightEncoder.getPosition());
-    SmartDashboard.putNumber("Rotate Left PID P", left_kP);
-    SmartDashboard.putNumber("Rotate Left PID I", left_kI);
-    SmartDashboard.putNumber("Rotate Left PID D", left_kD);
-
-    // To set the position using smart dashboard
-    // double p = SmartDashboard.getNumber("Rotate PID P", 0);
-    // double i = SmartDashboard.getNumber("Rotate PID I", 0);
-    // double d = SmartDashboard.getNumber("Rotate PID D", 0);
-    // if((p != kP)) { rotateLeftConfig.closedLoop.p(p); kP = p; }
-    // if((i != kI)) { rotateLeftConfig.closedLoop.i(i); kI = i; }
-    // if((d != kD)) { rotateLeftConfig.closedLoop.d(d); kD = d; }
-    // rotateMotorLeft.configure(rotateLeftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    SmartDashboard.putBoolean("BeamBreak", getBeamBreak());
 
   }
 
@@ -163,6 +155,10 @@ public class Infeed extends SubsystemBase {
 
   public double getRotateRightPosition(){
     return rotateRightEncoder.getPosition();
+  }
+
+  public boolean getBeamBreak(){
+    return beamBreak.get();
   }
 
   // public double getPivotPosition(){
@@ -177,16 +173,27 @@ public class Infeed extends SubsystemBase {
     return rotateRightEncoder.getVelocity();
   }
 
-  public void setVelocity(double velocity){
-    holdingMotorLeft.set(velocity);
-    holdingMotorRight.set(velocity);
+  public Command setVelocity(double velocity){
+    return runOnce(()->{
+      holdingMotorLeft.set(velocity);
+      holdingMotorRight.set(velocity);
+    });
   }
 
   public Command setPosition(double rotatePosition, double pivotPosition){
     return runOnce(()->{
-      rotateLeftPID.setReference(0.1, ControlType.kPosition);
-      rotateRightPID.setReference(0.1, ControlType.kPosition);
+      rotateLeftPID.setReference(0.5, ControlType.kPosition);
+      rotateRightPID.setReference(0.5, ControlType.kPosition);
       // pivotPID.setReference(pivotPosition, ControlType.kPosition);
+    });
+  }
+
+  public Command setState(double rotatePosition, double pivotPosition, double velocity){
+    return runOnce(()->{
+      new ParallelCommandGroup(
+        setPosition(rotatePosition, pivotPosition),
+        setVelocity(velocity)
+      );
     });
   }
 }

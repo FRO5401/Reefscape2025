@@ -42,7 +42,7 @@ public class Elevator extends SubsystemBase implements AutoCloseable
 
 
   // Tell Glass to create a visualization of the elevator
-  private static final double VISUAL_HEIGHT = 10;
+  private static final double VISUAL_HEIGHT = ElevatorSimConstants.kMaxElevatorHeightMeters;
   private final Mechanism2d m_elevatorDisplay = new Mechanism2d(20, ElevatorSimConstants.kMaxElevatorHeightMeters);
   private final MechanismRoot2d m_elevatorStickStart = m_elevatorDisplay.getRoot("Elevator Root", 10, 0);
   private final MechanismLigament2d m_elevatorStickDrawing =

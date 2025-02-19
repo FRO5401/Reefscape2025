@@ -15,14 +15,22 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.ElevatorConstants.ElevatorSimConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.SimElevator;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -39,10 +47,16 @@ import frc.robot.subsystems.drive.ModuleIOTalonFX;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final SimElevator simElevator = new SimElevator();
   // Controller
-  private final CommandXboxController driver = new CommandXboxController(0);
+  private final CommandXboxController driver = Controls.driver;
+  private final CommandXboxController operator = Controls.operator;
+  
+  private final Encoder elevatorEncoder = new Encoder(Constants.kEncoderAChannel, Constants.kEncoderBChannel);
+    private final PWMSparkMax elevatorMotor = new PWMSparkMax(Constants.kMotorPort);
 
+    private final Elevator m_elevator = new Elevator(elevatorEncoder, elevatorMotor);
+
+    private ElevatorSimulation m_elevatorSimulation;
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -67,6 +81,8 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
+        
+        m_elevatorSimulation = new ElevatorSimulation(elevatorEncoder, elevatorMotor);
         break;
 
       default:
@@ -80,6 +96,7 @@ public class RobotContainer {
                 new ModuleIO() {});
         break;
     }
+    CommandScheduler.getInstance().setDefaultCommand(m_elevator, m_elevator.depower());
 
     // Configure the button bindings
     configureButtonBindings();
@@ -123,8 +140,29 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
-  }
+    
+    new Trigger(()->{return RobotState.isEnabled() && RobotState.isTeleop();}).onTrue(m_elevator.initConstants());
 
+    operator.a().onTrue(m_elevator.goToHeight(0.25));
+    operator.b().onTrue(m_elevator.goToHeight(0.50));
+    operator.y().onTrue(m_elevator.goToHeight(0.75));
+    operator.x().onTrue(m_elevator.goToHeight(1.00));
+    operator.povDown().onTrue(m_elevator.goToHeight(0.00));
+        
+    operator.start().whileTrue(m_elevator.manualControl(()->-0.2*operator.getLeftY()));
+    operator.back().whileTrue(m_elevator.closedLoopManualSetpoint(()->-1.25*operator.getLeftY()));
+
+  }
+  public void simulationPeriodic()
+  {
+      m_elevatorSimulation.elevatorSimulationPeriodic();
+  }
+  public void close() 
+    {
+        elevatorEncoder.close();
+        elevatorMotor.close();
+        m_elevator.close();
+    }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -133,4 +171,5 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return null;
   }
+
 }

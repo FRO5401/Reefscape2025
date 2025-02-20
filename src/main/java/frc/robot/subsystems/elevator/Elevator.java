@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.elevator;
 
 import java.util.function.DoubleSupplier;
 
@@ -43,11 +43,11 @@ public class Elevator extends SubsystemBase implements AutoCloseable
 
   // Tell Glass to create a visualization of the elevator
   private static final double VISUAL_HEIGHT = ElevatorSimConstants.kMaxElevatorHeightMeters;
-  private final Mechanism2d m_elevatorDisplay = new Mechanism2d(20, ElevatorSimConstants.kMaxElevatorHeightMeters);
+  private final Mechanism2d m_elevatorDisplay = new Mechanism2d(20, 10);
   private final MechanismRoot2d m_elevatorStickStart = m_elevatorDisplay.getRoot("Elevator Root", 10, 0);
   private final MechanismLigament2d m_elevatorStickDrawing =
       m_elevatorStickStart.append(
-          new MechanismLigament2d("Elevator", 0, 90));
+          new MechanismLigament2d("Elevator", 10, 90));
   
   
   public Elevator(Encoder encoder, PWMSparkMax motor)
@@ -55,7 +55,7 @@ public class Elevator extends SubsystemBase implements AutoCloseable
     m_encoder = encoder;
     m_motor = motor;
 
-    m_encoder.setDistancePerPulse(Constants.kElevatorEncoderDistPerPulse);
+    m_encoder.setDistancePerPulse(ElevatorSimConstants.kElevatorEncoderDistPerPulse);
 
     // I don't like that this is currently in two sections, but I haven't figured out
     // what a better way would be -- it probably should use Preferences

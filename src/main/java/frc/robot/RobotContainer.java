@@ -16,10 +16,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -27,16 +24,18 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.ModeConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorSimConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorSimulation;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -51,8 +50,8 @@ public class RobotContainer {
   private final CommandXboxController driver = Controls.driver;
   private final CommandXboxController operator = Controls.operator;
   
-  private final Encoder elevatorEncoder = new Encoder(Constants.kEncoderAChannel, Constants.kEncoderBChannel);
-    private final PWMSparkMax elevatorMotor = new PWMSparkMax(Constants.kMotorPort);
+  private final Encoder elevatorEncoder = new Encoder(ElevatorSimConstants.kEncoderAChannel, ElevatorSimConstants.kEncoderBChannel);
+    private final PWMSparkMax elevatorMotor = new PWMSparkMax(ElevatorConstants.elevatorID);
 
     private final Elevator m_elevator = new Elevator(elevatorEncoder, elevatorMotor);
 
@@ -60,7 +59,7 @@ public class RobotContainer {
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    switch (Constants.currentMode) {
+    switch (ModeConstants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
         drive =
@@ -102,20 +101,14 @@ public class RobotContainer {
     configureButtonBindings();
   }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
   private void configureButtonBindings() {
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -driver.getLeftY(),
-            () -> -driver.getLeftX(),
-            () -> -driver.getRawAxis(5)));
+            () -> -driver.getLeftY() * ModeConstants.flipped(),
+            () -> -driver.getLeftX() * ModeConstants.flipped(),
+            () -> -driver.getRawAxis(5) * ModeConstants.flipped()));
 
     // Lock to 0° when A button is held
     driver
@@ -123,8 +116,8 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> -driver.getLeftY(),
-                () -> -driver.getLeftX(),
+                () -> -driver.getLeftY() * ModeConstants.flipped(),
+                () -> -driver.getLeftX() * ModeConstants.flipped(),
                 () -> new Rotation2d()));
 
     // Switch to X pattern when X button is pressed
@@ -157,17 +150,14 @@ public class RobotContainer {
   {
       m_elevatorSimulation.elevatorSimulationPeriodic();
   }
+
   public void close() 
     {
         elevatorEncoder.close();
         elevatorMotor.close();
         m_elevator.close();
     }
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
+
   public Command getAutonomousCommand() {
     return null;
   }

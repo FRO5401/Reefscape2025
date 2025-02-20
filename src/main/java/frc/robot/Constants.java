@@ -12,14 +12,33 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+
 import frc.robot.generated.TunerConstants;
 
 public class Constants {
-    public static final int kMotorPort = 0;
-    public static final int kEncoderAChannel = 0;
-    public static final int kEncoderBChannel = 1;
-    public static final int kJoystickPort = 0;
+    public static class ModeConstants{
+        public static final Mode simMode = Mode.SIM;
+        public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
+    
+        public static enum Mode {
+        /** Running on a real robot. */
+            REAL,
+        /** Running a physics simulator. */
+            SIM,
+        /** Replaying from a log file. */
+            REPLAY
+        }
+        public static final int flipped() {
+            if(DriverStation.getAlliance().get() == Alliance.Blue){
+                return -1;
+              } else {
+                return 1;
+              }
+        }
+    }
   
     public static final double kElevatorKp = 5;
     public static final double kElevatorKi = 0;
@@ -39,24 +58,6 @@ public class Constants {
     public static final double kMinElevatorHeightMeters = 0.0;
     public static final double kMaxElevatorHeightMeters = 1.25;
   
-    // distance per pulse = (distance per revolution) / (pulses per revolution)
-    //  = (Pi * D) / ppr
-    public static final double kElevatorEncoderDistPerPulse =
-        2.0 * Math.PI * kElevatorDrumRadius / 4096;
-        
-    public static final Mode simMode = Mode.SIM;
-    public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
-
-    public static enum Mode {
-    /** Running on a real robot. */
-        REAL,
-
-    /** Running a physics simulator. */
-        SIM,
-
-    /** Replaying from a log file. */
-        REPLAY
-    }
     
     public static class ControlConstants{
         //  Controller Specifications
@@ -79,8 +80,8 @@ public class Constants {
 
         /*  Constants for the Simulation Elevator */
         public class ElevatorSimConstants{
-            public static final int kEncoderAChannel = 9;
-            public static final int kEncoderBChannel = 10;          
+            public static final int kEncoderAChannel = 0;
+            public static final int kEncoderBChannel = 1;          
           
             public static final double kElevatorkS = 0.0; // volts (V)
             public static final double kElevatorkG = 0.762; // volts (V)
@@ -116,15 +117,16 @@ public class Constants {
         /* Constraint for kpx motion profilied robot angle controller */
         public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
             new TrapezoidProfile.Constraints(
-                kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
-
+                kMaxAngularSpeedRadiansPerSecond, 
+                kMaxAngularSpeedRadiansPerSecondSquared);
 
         public static final ProfiledPIDController thetaController =
             new ProfiledPIDController(
-                Constants.AutoConstants.kPThetaController, 0, 0, Constants.AutoConstants.kThetaControllerConstraints);
-
-            
-        
+                Constants.AutoConstants.kPThetaController, 
+                0, 
+                0, 
+                Constants.AutoConstants.kThetaControllerConstraints);
+ 
     };
 
     public static final class Swerve{

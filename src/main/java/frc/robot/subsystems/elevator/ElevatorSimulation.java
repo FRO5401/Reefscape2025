@@ -1,6 +1,5 @@
-package frc.robot;
+package frc.robot.subsystems.elevator;
 
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
@@ -12,6 +11,7 @@ import edu.wpi.first.wpilibj.simulation.PWMSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants.ElevatorSimConstants;
+
 public class ElevatorSimulation
 {
     // Our link to the elevator control code, including sim classes that
@@ -23,7 +23,7 @@ public class ElevatorSimulation
     private final PWMSim m_motorSim;
 
     // Simulation of the plant
-    private final DCMotor m_elevatorGearbox = DCMotor.getVex775Pro(4);
+    private final DCMotor m_elevatorGearbox = DCMotor.getKrakenX60(1);
     private final ElevatorSim m_elevatorSim =
     new ElevatorSim(
         m_elevatorGearbox, 

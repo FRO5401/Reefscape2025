@@ -22,7 +22,7 @@ public class Constants {
         public static final double CONTROLLER_SENSITIVITY = 0.05;
     }
     public class ElevatorConstants{
-        public static final int elevatorID = 14;
+        public static final int elevatorID = 13;
         public static final double BARGE = 31;
         public static final double L4 = 20;
         public static final double L3 = 15.5;
@@ -36,6 +36,27 @@ public class Constants {
         public static final double KA=.1;
         public static final double KV=.1;
         public static final double KG=2.4;
+    }
+
+    public class InfeedConstants{
+        public static final int INTAKE_MOTOR_LEFT = 15;
+        public static final int INTAKE_MOTOR_RIGHT=18;
+
+        public static final int ROTATE_MOTOR_LEFT=17; //flip these
+        public static final int ROTATE_MOTOR_RIGHT=20;
+
+        public static final int PIVOT_ID=14;
+
+
+        public static final double PIVOT_KP=1;
+        public static final double PIVOT_KI=0;
+        public static final double PIVOT_KD=.7;
+        
+        public static final double ROTATE_KP = 1;
+        public static final double ROTATE_kI = 0;
+        public static final double ROTATE_kD = 0;
+        public static final double ROTATE_KF = 10;
+
     }
     public class AutoConstants{
 

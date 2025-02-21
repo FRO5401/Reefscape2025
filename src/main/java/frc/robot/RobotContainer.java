@@ -11,23 +11,24 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.Constants.InfeedConstants;
-import frc.robot.generated.MoveElevator;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Maniuplator;
+import frc.robot.subsystems.Manipulator;
+import frc.robot.subsystems.CANdleSystem.AnimationTypes;
+import frc.robot.subsystems.CANdleSystem;
+
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(1).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     Elevator elevator = new Elevator();
-    Maniuplator maniuplator = new Maniuplator();
-    
+    Manipulator maniuplator = new Manipulator();
+    CANdleSystem candle = new CANdleSystem();
     
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -46,7 +47,6 @@ public class RobotContainer {
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     public RobotContainer() {
-        //elevator.setDefaultCommand(new MoveElevator(elevator));
         configureBindings();
     }
 
@@ -70,30 +70,43 @@ public class RobotContainer {
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-        joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+       // joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+       // joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+       // joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+       // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // reset the field-centric heading on left bumper press
         joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+
+        joystick.povDown().onTrue(candle.runOnce(()->{ 
+            candle.changeAnimation(AnimationTypes.Rainbow);
+        }));
+
+        joystick.povUp().onTrue(candle.runOnce(()->{ 
+            candle.changeAnimation(AnimationTypes.Empty);
+        }));
+
+        joystick.povUp().onTrue(candle.runOnce(()->{ 
+            candle.changeAnimation(AnimationTypes.RgbFade);
+        }));
+        
 
         Operator.y().onTrue(elevator.setPosition(Constants.ElevatorConstants.L4));
         Operator.b().onTrue(elevator.setPosition(Constants.ElevatorConstants.L3));
         Operator.a().onTrue(elevator.setPosition(Constants.ElevatorConstants.L2));
         Operator.x().onTrue(elevator.setPosition(Constants.ElevatorConstants.STATION));
         Operator.povUp().onTrue(elevator.setPosition(Constants.ElevatorConstants.BARGE));
-        Operator.povDown().onTrue(elevator.setPosition(Constants.ElevatorConstants.PROCESSOR));
+        Operator.povDown().onTrue(new ParallelCommandGroup(elevator.setPosition(Constants.ElevatorConstants.PROCESSOR), maniuplator.setPosition(0, 50)));
 
-        Operator.povLeft().onTrue(maniuplator.setPosition(0, 37));
-        Operator.povRight().onTrue(maniuplator.setPosition(-25, 37));
+        Operator.povLeft().onTrue(maniuplator.setPosition(0,35));
+        Operator.povRight().onTrue(maniuplator.setPosition(0,30));
 
         Operator.leftTrigger(.01).whileTrue(maniuplator.setVelocity(()->Operator.getLeftTriggerAxis()));
         Operator.rightTrigger(.01).whileTrue(maniuplator.setVelocity(()->-Operator.getRightTriggerAxis()));
 
 
 
-       // drivetrain.registerTelemetry(logger::telemeterize);
+        drivetrain.registerTelemetry(logger::telemeterize);
     }
 
     public Command getAutonomousCommand() {

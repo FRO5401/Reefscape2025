@@ -27,7 +27,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.InfeedConstants;
 
-public class Maniuplator extends SubsystemBase {
+
+public class Manipulator extends SubsystemBase {
   SparkMax intakeLeft = new SparkMax(Constants.InfeedConstants.INTAKE_MOTOR_LEFT, MotorType.kBrushless);
   SparkMax intakeRight = new SparkMax(Constants.InfeedConstants.INTAKE_MOTOR_RIGHT, MotorType.kBrushless);
 
@@ -40,7 +41,9 @@ public class Maniuplator extends SubsystemBase {
 
   RelativeEncoder pivotEncoeer = pivot.getEncoder();
 
-  SparkClosedLoopController rotatePID = rotateLeft.getClosedLoopController();
+  SparkClosedLoopController rotateLeftPID = rotateLeft.getClosedLoopController();
+  SparkClosedLoopController rotateRightPID = rotateRight.getClosedLoopController();
+
 
   SparkClosedLoopController PivotPID = pivot.getClosedLoopController();
   
@@ -55,7 +58,7 @@ public class Maniuplator extends SubsystemBase {
   DigitalInput beamBreak;
 
   /** Creates a new Maniuplator. */
-  public Maniuplator() {
+  public Manipulator() {
 
     globalConfig = new SparkMaxConfig();
     intakeLeftConfig = new SparkMaxConfig();
@@ -74,7 +77,7 @@ public class Maniuplator extends SubsystemBase {
     
     intakeRightConfig
       .apply(globalConfig)
-      .follow(intakeLeft, true);
+      .follow(intakeLeft,true);
 
     rotateLeftConfig
       .apply(globalConfig)
@@ -84,28 +87,34 @@ public class Maniuplator extends SubsystemBase {
       
     
     rotateRightConfig
-      .apply(globalConfig);
-      //.follow(rotateLeft, true);
+    .apply(globalConfig)
+    .inverted(true)
+    .encoder
+      .positionConversionFactor(50);
       
 
     pivotConfig
       .apply(globalConfig)
       .inverted(true)
+      
       .encoder
         .positionConversionFactor(15);
       
     rotateLeftConfig.closedLoop
       .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
       .pid(InfeedConstants.ROTATE_KP,InfeedConstants.ROTATE_kI,InfeedConstants.ROTATE_kD);
-      //.pidf(InfeedConstants.ROTATE_KP,InfeedConstants.ROTATE_kI,InfeedConstants.ROTATE_kD,InfeedConstants.ROTATE_KF);
+
+      rotateRightConfig.closedLoop
+      .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+      .pid(InfeedConstants.ROTATE_KP,InfeedConstants.ROTATE_kI,InfeedConstants.ROTATE_kD);
       
       
 
     pivotConfig.closedLoop
       .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+      .iZone(.1)
       .p(Constants.InfeedConstants.PIVOT_KP)
       .i(Constants.InfeedConstants.PIVOT_KI)
-  
       .d(Constants.InfeedConstants.PIVOT_KD);
 
 
@@ -124,7 +133,8 @@ public class Maniuplator extends SubsystemBase {
 
  public Command setPosition(double rotatePosition, double pivotPosition){
   return runOnce(()->{
-    rotatePID.setReference(rotatePosition, ControlType.kPosition);
+   // rotateLeftPID.setReference(rotatePosition, ControlType.kPosition);
+    //rotateRightPID.setReference(rotatePosition, ControlType.kPosition);
     PivotPID.setReference(pivotPosition, ControlType.kPosition);
   });
 
@@ -140,8 +150,7 @@ public class Maniuplator extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("rotate Value", rotateLeft.getAppliedOutput());    
-    SmartDashboard.putNumber("rotate Position", rotateEncoder.getPosition());
+    SmartDashboard.putNumber("Pivot Value", pivot.getAppliedOutput());    
     SmartDashboard.putNumber("pivot Position", pivotEncoeer.getPosition());
 
   }

@@ -24,11 +24,11 @@ public class Constants {
     public class ElevatorConstants{
         public static final int elevatorID = 13;
         public static final double BARGE = 31;
-        public static final double L4 = 20;
-        public static final double L3 = 15.5;
-        public static final double L2 = 10;
-        public static final double STATION = 5;
-        public static final double PROCESSOR = 1;
+        public static final double L4 = 20*3;
+        public static final double L3 = 15.5*3;
+        public static final double L2 = 10*3;
+        public static final double STATION = 5*3;
+        public static final double PROCESSOR = 3*3;
 
         public static final double KP = 4; // An error of 1 rotation results in 2.4 V output
         public static final double KI = 3; // no output for integrated error
@@ -42,15 +42,15 @@ public class Constants {
         public static final int INTAKE_MOTOR_LEFT = 15;
         public static final int INTAKE_MOTOR_RIGHT=18;
 
-        public static final int ROTATE_MOTOR_LEFT=17; //flip these
-        public static final int ROTATE_MOTOR_RIGHT=20;
+        public static final int ROTATE_MOTOR_LEFT=20; //flip these
+        public static final int ROTATE_MOTOR_RIGHT=17;
 
         public static final int PIVOT_ID=14;
 
 
-        public static final double PIVOT_KP=1;
+        public static final double PIVOT_KP=.1;
         public static final double PIVOT_KI=0;
-        public static final double PIVOT_KD=.7;
+        public static final double PIVOT_KD=0;
         
         public static final double ROTATE_KP = 1;
         public static final double ROTATE_kI = 0;
@@ -138,7 +138,9 @@ public class Constants {
                 // End 3 meters straight ahead of where we started, facing forward
                 new Pose2d(0, 0, new Rotation2d(0)),
                 config);
-    };
+    }
+
+    public static final int CANdleID = 19;
     
 
 }

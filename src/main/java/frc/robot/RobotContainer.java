@@ -79,7 +79,7 @@ public class RobotContainer {
         joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         joystick.povDown().onTrue(candle.runOnce(()->{ 
-            candle.changeAnimation(AnimationTypes.Rainbow);
+            candle.setColors();
         }));
 
         joystick.povUp().onTrue(candle.runOnce(()->{ 
@@ -91,15 +91,16 @@ public class RobotContainer {
         }));
         
 
-        Operator.y().onTrue(elevator.setPosition(Constants.ElevatorConstants.L4));
+        Operator.y().onTrue(elevator.setPosition(Constants.ElevatorConstants.L4
+        ));
         Operator.b().onTrue(elevator.setPosition(Constants.ElevatorConstants.L3));
         Operator.a().onTrue(elevator.setPosition(Constants.ElevatorConstants.L2));
         Operator.x().onTrue(elevator.setPosition(Constants.ElevatorConstants.STATION));
         Operator.povUp().onTrue(elevator.setPosition(Constants.ElevatorConstants.BARGE));
         Operator.povDown().onTrue(new ParallelCommandGroup(elevator.setPosition(Constants.ElevatorConstants.PROCESSOR), maniuplator.setPosition(0, 50)));
 
-        Operator.povLeft().onTrue(maniuplator.setPosition(0,35));
-        Operator.povRight().onTrue(maniuplator.setPosition(0,30));
+        Operator.povLeft().onTrue(maniuplator.setPosition(5,53));
+        Operator.povRight().onTrue(maniuplator.setPosition(0, 53));
 
         Operator.leftTrigger(.01).whileTrue(maniuplator.setVelocity(()->Operator.getLeftTriggerAxis()));
         Operator.rightTrigger(.01).whileTrue(maniuplator.setVelocity(()->-Operator.getRightTriggerAxis()));

@@ -68,8 +68,8 @@ public class Manipulator extends SubsystemBase {
     pivotConfig = new SparkMaxConfig();
 
       globalConfig
-      .smartCurrentLimit(60)
-      .idleMode(IdleMode.kCoast);
+      .smartCurrentLimit(20)
+      .idleMode(IdleMode.kBrake);
 
     intakeLeftConfig
       .apply(globalConfig)
@@ -77,7 +77,7 @@ public class Manipulator extends SubsystemBase {
     
     intakeRightConfig
       .apply(globalConfig)
-      .follow(intakeLeft,true);
+      .follow(intakeLeft, true);
 
     rotateLeftConfig
       .apply(globalConfig)
@@ -96,6 +96,8 @@ public class Manipulator extends SubsystemBase {
     pivotConfig
       .apply(globalConfig)
       .inverted(true)
+      .smartCurrentLimit(60)
+
       
       .encoder
         .positionConversionFactor(15);
@@ -133,7 +135,7 @@ public class Manipulator extends SubsystemBase {
 
  public Command setPosition(double rotatePosition, double pivotPosition){
   return runOnce(()->{
-   // rotateLeftPID.setReference(rotatePosition, ControlType.kPosition);
+    rotateLeftPID.setReference(rotatePosition, ControlType.kPosition);
     //rotateRightPID.setReference(rotatePosition, ControlType.kPosition);
     PivotPID.setReference(pivotPosition, ControlType.kPosition);
   });
@@ -150,8 +152,9 @@ public class Manipulator extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Pivot Value", pivot.getAppliedOutput());    
-    SmartDashboard.putNumber("pivot Position", pivotEncoeer.getPosition());
+    SmartDashboard.putNumber("Rotate", rotateLeft.getOutputCurrent());
+    SmartDashboard.putNumber("Rotate Value", rotateLeft.getAppliedOutput());    
+    SmartDashboard.putNumber("Rotate Position", rotateEncoder.getPosition());
 
   }
 }

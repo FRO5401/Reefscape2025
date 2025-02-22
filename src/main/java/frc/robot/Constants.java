@@ -23,12 +23,12 @@ public class Constants {
     }
     public class ElevatorConstants{
         public static final int elevatorID = 13;
-        public static final double BARGE = 31;
-        public static final double L4 = 20*3;
-        public static final double L3 = 15.5*3;
-        public static final double L2 = 10*3;
-        public static final double STATION = 5*3;
-        public static final double PROCESSOR = 3*3;
+        public static final double BARGE = 160 ;
+        public static final double L4 = 77;
+        public static final double L3 = 66;
+        public static final double L2 = 55;
+        public static final double STATION = 50;
+        public static final double PROCESSOR = 10;
 
         public static final double KP = 4; // An error of 1 rotation results in 2.4 V output
         public static final double KI = 3; // no output for integrated error
@@ -48,11 +48,11 @@ public class Constants {
         public static final int PIVOT_ID=14;
 
 
-        public static final double PIVOT_KP=.1;
+        public static final double PIVOT_KP=.5;
         public static final double PIVOT_KI=0;
         public static final double PIVOT_KD=0;
         
-        public static final double ROTATE_KP = 1;
+        public static final double ROTATE_KP = 5;
         public static final double ROTATE_kI = 0;
         public static final double ROTATE_kD = 0;
         public static final double ROTATE_KF = 10;

@@ -231,7 +231,7 @@ public class Constants {
                 config);
     }
     public class ClimberConstants {
-        public static final int sparkID = 20;
+        public static final int sparkID = 21;
     }
 
     public static final int CANdleID = 19;

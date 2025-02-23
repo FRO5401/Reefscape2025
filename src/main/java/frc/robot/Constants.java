@@ -230,6 +230,9 @@ public class Constants {
                 new Pose2d(0, 0, new Rotation2d(0)),
                 config);
     }
+    public class ClimberConstants {
+        public static final int sparkID = 20;
+    }
 
     public static final int CANdleID = 19;
     

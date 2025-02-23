@@ -29,11 +29,14 @@ import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.InfeedConstants.IntakeConstants;
 import frc.robot.Constants.InfeedConstants.PivotConstants;
 import frc.robot.Constants.VisionConstants;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Commands.Climb;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.CANdleSystem.AnimationTypes;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CANdleSystem;
 import frc.robot.Commands.AlignToTag;
 
@@ -48,6 +51,10 @@ public class RobotContainer {
 
     private final SendableChooser<Command> chooser = new SendableChooser<>();
 
+    Climber climber = new Climber();
+    
+
+    
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(Constants.Swerve.MaxSpeed * 0.01)

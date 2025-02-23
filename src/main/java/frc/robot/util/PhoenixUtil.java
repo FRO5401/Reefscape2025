@@ -13,8 +13,12 @@
 
 package frc.robot.util;
 
+import static edu.wpi.first.units.Units.Seconds;
+
 import com.ctre.phoenix6.StatusCode;
+import edu.wpi.first.wpilibj.Timer;
 import java.util.function.Supplier;
+import org.ironmaple.simulation.SimulatedArena;
 
 public class PhoenixUtil {
   /** Attempts to run the command until no error is produced. */
@@ -24,4 +28,9 @@ public class PhoenixUtil {
       if (error.isOK()) break;
     }
   }
+  inputs.odometryTimestamps = PhoenixUtil.getSimulationOdometryTimeStamps();
+        inputs.odometryDrivePositionsRad = Arrays.stream(moduleSimulation.getCachedDriveWheelFinalPositions())
+                .mapToDouble(angle -> angle.in(Radians))
+                .toArray();
+        inputs.odometryTurnPositions = moduleSimulation.getCachedSteerAbsolutePositions();
 }

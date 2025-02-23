@@ -14,7 +14,9 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
@@ -36,6 +38,15 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorSimulation;
+import frc.robot.subsystems.drive.*;
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.GyroSimulation;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
+import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
+import org.littletonrobotics.junction.Logger;
+import frc.robot.subsystems.drive.*;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -44,6 +55,7 @@ import frc.robot.subsystems.elevator.ElevatorSimulation;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  private SwerveDriveSimulation driveSimulation = null;
   // Subsystems
   private final Drive drive;
   // Controller
@@ -72,17 +84,27 @@ public class RobotContainer {
         break;
 
       case SIM:
-        // Sim robot, instantiate physics sim IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(TunerConstants.FrontLeft),
-                new ModuleIOSim(TunerConstants.FrontRight),
-                new ModuleIOSim(TunerConstants.BackLeft),
-                new ModuleIOSim(TunerConstants.BackRight));
-        
-        m_elevatorSimulation = new ElevatorSimulation(elevatorEncoder, elevatorMotor);
-        break;
+        final DriveTrainSimulationConfig config = DriveTrainSimulationConfig.Default()
+                        .withGyro(GyroSimulation.getPigeon2())
+                        .withSwerveModule(() -> new SwerveModuleSimulation(
+                                DCMotor.getKrakenX60(1),
+                                DCMotor.getFalcon500(1),
+                                TunerConstants.FrontLeft.DriveMotorGearRatio,
+                                TunerConstants.FrontLeft.SteerMotorGearRatio,
+                                Volts.of(TunerConstants.FrontLeft.DriveFrictionVoltage),
+                                Volts.of(TunerConstants.FrontLeft.SteerFrictionVoltage),
+                                Inches.of(2),
+                                KilogramSquareMeters.of(TunerConstants.FrontLeft.SteerInertia),
+                                1.2));
+                driveSimulation = new SwerveDriveSimulation(config, new Pose2d(3, 3, new Rotation2d()));
+                SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+                drive = new Drive(
+                        new GyroIOSim(driveSimulation.getGyroSimulation()),
+                        new ModuleIOSim(driveSimulation.getModules()[0]),
+                        new ModuleIOSim(driveSimulation.getModules()[1]),
+                        new ModuleIOSim(driveSimulation.getModules()[2]),
+                        new ModuleIOSim(driveSimulation.getModules()[3]));
+                break;
 
       default:
         // Replayed robot, disable IO implementations
@@ -161,5 +183,19 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return null;
   }
+  public void resetSimulation() {
+        if (ModeConstants.currentMode != ModeConstants.Mode.SIM) return;
 
+        driveSimulation.setSimulationWorldPose(new Pose2d(3, 3, new Rotation2d()));
+        SimulatedArena.getInstance().resetFieldForAuto();
+    }
+
+    public void displaySimFieldToAdvantageScope() {
+        if (ModeConstants.currentMode != ModeConstants.Mode.SIM) return;
+
+        Logger.recordOutput("FieldSimulation/RobotPosition", driveSimulation.getSimulatedDriveTrainPose());
+        Logger.recordOutput(
+                "FieldSimulation/Notes",
+                SimulatedArena.getInstance().getGamePiecesByType("Note").toArray(new Pose3d[0]));
+    }
 }

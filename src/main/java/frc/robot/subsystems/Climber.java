@@ -56,6 +56,10 @@ public class Climber extends SubsystemBase {
     sparkMax.set(0);
   }
 
+  public double getEncoderValue() {
+    return climberEncoder.getPosition();
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

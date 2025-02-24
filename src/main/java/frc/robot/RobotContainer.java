@@ -91,20 +91,19 @@ public class RobotContainer {
         }));
         
 
-        Operator.y().onTrue(elevator.setPosition(Constants.ElevatorConstants.L4
-        ));
+        Operator.y().onTrue(elevator.setPosition(Constants.ElevatorConstants.L4));
         Operator.b().onTrue(elevator.setPosition(Constants.ElevatorConstants.L3));
         Operator.a().onTrue(elevator.setPosition(Constants.ElevatorConstants.L2));
         Operator.x().onTrue(elevator.setPosition(Constants.ElevatorConstants.STATION));
         Operator.povUp().onTrue(elevator.setPosition(Constants.ElevatorConstants.BARGE));
         Operator.povDown().onTrue(new ParallelCommandGroup(elevator.setPosition(Constants.ElevatorConstants.PROCESSOR), maniuplator.setPosition(0, 50)));
 
-        Operator.povLeft().onTrue(maniuplator.setPosition(5,53));
+        Operator.povLeft().onTrue(maniuplator.setPosition(35,53));
         Operator.povRight().onTrue(maniuplator.setPosition(0, 53));
 
         Operator.leftTrigger(.01).whileTrue(maniuplator.setVelocity(()->Operator.getLeftTriggerAxis()));
         Operator.rightTrigger(.01).whileTrue(maniuplator.setVelocity(()->-Operator.getRightTriggerAxis()));
-
+        Operator.axisGreaterThan(1, -0.06).whileTrue(maniuplator.setRotation(()->Operator.getLeftY()*0.5));
 
 
         drivetrain.registerTelemetry(logger::telemeterize);

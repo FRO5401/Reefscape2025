@@ -50,11 +50,11 @@ public class Constants {
 
         public static final double PIVOT_KP=.5;
         public static final double PIVOT_KI=0;
-        public static final double PIVOT_KD=0;
+        public static final double PIVOT_KD=0.1;
         
-        public static final double ROTATE_KP = 5;
+        public static final double ROTATE_KP = .5;
         public static final double ROTATE_kI = 0;
-        public static final double ROTATE_kD = 0;
+        public static final double ROTATE_kD = .1;
         public static final double ROTATE_KF = 10;
 
     }

@@ -57,6 +57,14 @@ public class Constants {
         public static final double ROTATE_kD = .1;
         public static final double ROTATE_KF = 10;
 
+        public static final double STRAIGHTOUT = 53;
+        public static final double BARGE = 68;
+        public static final double PivotL4 = 0;
+        public static final double CLEARALGEA = 47;
+        public static final double PivotL2 = 0;
+        public static final double STATION = 0;
+        public static final double PROCESSOR = 0;
+
     }
     public class AutoConstants{
 

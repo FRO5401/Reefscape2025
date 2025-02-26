@@ -112,7 +112,7 @@ public class RobotContainer {
         operator.povLeft().onTrue(
             maniuplator.setPosition(
                 IntakeConstants.HOLD_CORAL,
-                PivotConstants.STRAIGHTOUT)
+                PivotConstants.CLEAR_ALGEA)
             );
         //  Straightens out intake
         operator.povRight().onTrue(

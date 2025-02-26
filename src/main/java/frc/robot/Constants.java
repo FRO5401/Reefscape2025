@@ -26,7 +26,7 @@ public class Constants {
         public static final double BARGE = 150;
         public static final double L4 = 77;
         public static final double L3 = 66;
-        public static final double L2 = 55;
+        public static final double L2 = 51.91748046875;
         public static final double STATION = 50;
         public static final double PROCESSOR = 10;
 
@@ -45,8 +45,8 @@ public class Constants {
             public static final int INTAKE_MOTOR_LEFT = 20;
             public static final int INTAKE_MOTOR_RIGHT=18;
             //Rotation Motors
-            public static final int ROTATE_MOTOR_LEFT=17; 
-            public static final int ROTATE_MOTOR_RIGHT=15;
+            public static final int ROTATE_MOTOR_LEFT=15; 
+            public static final int ROTATE_MOTOR_RIGHT=17;
 
             /*  PIDF Values */
             public static final double ROTATE_KP = .5;
@@ -56,9 +56,10 @@ public class Constants {
 
             /*  Position for each game piece */
             //Closes in to suck in coral
-            public static final double HOLD_CORAL = 35;
+            public static final double HOLD_CORAL = -30.85714340209961;
             //Sides parallel to hold algea
             public static final double HOLD_ALGEA = 0;
+            //Place coral 62.49993896484375
         }
 
         public class PivotConstants{
@@ -79,7 +80,8 @@ public class Constants {
             //Scoring on top of barge
             public static final double L4 = 0;
             //takes algea out and possibly place on L2 and L3
-            public static final double CLEAR_ALGEA = 47;
+            public static final double CLEAR_ALGEA = -62.49993896484375;
+
             //public static final double PLACE_CORAL = 50;
             //Gets Coral from station
             public static final double STATION = 0;

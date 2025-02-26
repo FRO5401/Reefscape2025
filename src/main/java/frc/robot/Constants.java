@@ -39,10 +39,10 @@ public class Constants {
     }
 
     public class InfeedConstants{
-        public static final int INTAKE_MOTOR_LEFT = 15;
+        public static final int INTAKE_MOTOR_LEFT = 20;
         public static final int INTAKE_MOTOR_RIGHT=18;
 
-        public static final int ROTATE_MOTOR_LEFT=20; //flip these
+        public static final int ROTATE_MOTOR_LEFT=15; //flip these
         public static final int ROTATE_MOTOR_RIGHT=17;
 
         public static final int PIVOT_ID=14;

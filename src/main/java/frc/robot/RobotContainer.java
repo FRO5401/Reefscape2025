@@ -29,6 +29,7 @@ public class RobotContainer {
     Elevator elevator = new Elevator();
     Manipulator maniuplator = new Manipulator();
     CANdleSystem candle = new CANdleSystem();
+
     
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -91,8 +92,7 @@ public class RobotContainer {
         }));
         
 
-        Operator.y().onTrue(elevator.setPosition(Constants.ElevatorConstants.L4
-        ));
+        Operator.y().onTrue(elevator.setPosition(Constants.ElevatorConstants.L4));
         Operator.b().onTrue(elevator.setPosition(Constants.ElevatorConstants.L3));
         Operator.a().onTrue(elevator.setPosition(Constants.ElevatorConstants.L2));
         Operator.x().onTrue(elevator.setPosition(Constants.ElevatorConstants.STATION));
@@ -104,8 +104,6 @@ public class RobotContainer {
 
         Operator.leftTrigger(.01).whileTrue(maniuplator.setVelocity(()->Operator.getLeftTriggerAxis()));
         Operator.rightTrigger(.01).whileTrue(maniuplator.setVelocity(()->-Operator.getRightTriggerAxis()));
-
-
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }

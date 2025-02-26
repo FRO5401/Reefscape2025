@@ -47,7 +47,7 @@ public class RobotContainer {
 
     private final CommandXboxController driver = Controls.driver;
 
-    private final CommandXboxController Operator = Controls.operator;
+    private final CommandXboxController operator = Controls.operator;
 
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
@@ -96,24 +96,24 @@ public class RobotContainer {
         }));
         
 
-        Operator.y().onTrue(elevator.setPosition(ElevatorConstants.L4));
-        Operator.b().onTrue(elevator.setPosition(ElevatorConstants.L3));
-        Operator.a().onTrue(elevator.setPosition(ElevatorConstants.L2));
-        Operator.x().onTrue(elevator.setPosition(ElevatorConstants.STATION));
+        operator.y().onTrue(elevator.setPosition(ElevatorConstants.L4));
+        operator.b().onTrue(elevator.setPosition(ElevatorConstants.L3));
+        operator.a().onTrue(elevator.setPosition(ElevatorConstants.L2));
+        operator.x().onTrue(elevator.setPosition(ElevatorConstants.STATION));
 
-        Operator.povUp().onTrue(new ParallelCommandGroup(
+        operator.povUp().onTrue(new ParallelCommandGroup(
             elevator.setPosition(ElevatorConstants.BARGE), 
             maniuplator.setPosition(0, PivotConstants.BARGE))
         );
-        Operator.povDown().onTrue(new ParallelCommandGroup(
+        operator.povDown().onTrue(new ParallelCommandGroup(
             elevator.setPosition(ElevatorConstants.PROCESSOR), 
             maniuplator.setPosition(0, 50)));
 
-        Operator.povLeft().onTrue(maniuplator.setPosition(IntakeConstants.HOLD_CORAL,PivotConstants.STRAIGHTOUT));
-        Operator.povRight().onTrue(maniuplator.setPosition(IntakeConstants.HOLD_ALGEA, PivotConstants.CLEAR_ALGEA));
+        operator.povLeft().onTrue(maniuplator.setPosition(IntakeConstants.HOLD_CORAL,PivotConstants.STRAIGHTOUT));
+        operator.povRight().onTrue(maniuplator.setPosition(IntakeConstants.HOLD_ALGEA, PivotConstants.CLEAR_ALGEA));
 
-        Operator.leftTrigger(.01).whileTrue(maniuplator.setVelocity(()->Operator.getLeftTriggerAxis()));
-        Operator.rightTrigger(.01).whileTrue(maniuplator.setVelocity(()->-Operator.getRightTriggerAxis()));
+        operator.leftTrigger(.01).whileTrue(maniuplator.setVelocity(()->operator.getLeftTriggerAxis()));
+        operator.rightTrigger(.01).whileTrue(maniuplator.setVelocity(()->-operator.getRightTriggerAxis()));
 
 
 

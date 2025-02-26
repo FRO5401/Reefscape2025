@@ -154,7 +154,7 @@ public class Manipulator extends SubsystemBase {
     intakeLeft.set(velocity.getAsDouble());
   }).finallyDo(()->intakeLeft.set(0));
  }
- 
+
  public Command setRotation(DoubleSupplier position){
   return run(()->{
     rotateLeft.set(-position.getAsDouble());
@@ -166,9 +166,9 @@ public class Manipulator extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Rotate", rotateLeft.getOutputCurrent());
-    SmartDashboard.putNumber("Rotate Value", rotateLeft.getAppliedOutput());    
+    SmartDashboard.putNumber("Pivot Position", pivotEncoeer.getPosition());
     SmartDashboard.putNumber("Rotate Position", rotateLeftEncoder.getPosition());
+
 
   }
 }

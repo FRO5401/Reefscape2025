@@ -96,26 +96,52 @@ public class RobotContainer {
         }));
         
 
-        operator.y().onTrue(elevator.setPosition(ElevatorConstants.L4));
-        operator.b().onTrue(elevator.setPosition(ElevatorConstants.L3));
-        operator.a().onTrue(elevator.setPosition(ElevatorConstants.L2));
-        operator.x().onTrue(elevator.setPosition(ElevatorConstants.STATION));
-
+        operator.y().onTrue(
+            elevator.setPosition(ElevatorConstants.L4)
+            );
+        operator.b().onTrue(
+            elevator.setPosition(ElevatorConstants.L3)
+            );
+        operator.a().onTrue(
+            elevator.setPosition(ElevatorConstants.L2)
+            );
+        operator.x().onTrue(
+            elevator.setPosition(ElevatorConstants.STATION)
+            );
+        // Straightens out intake and position to hold coral
+        operator.povLeft().onTrue(
+            maniuplator.setPosition(
+                IntakeConstants.HOLD_CORAL,
+                PivotConstants.STRAIGHTOUT)
+            );
+        //  Straightens out intake
+        operator.povRight().onTrue(
+            maniuplator.setPosition(
+                IntakeConstants.HOLD_ALGEA, 
+                PivotConstants.CLEAR_ALGEA)
+            );
+        //  Sucks in piece
+        operator.leftTrigger(.01).whileTrue(
+            maniuplator.setVelocity(()->operator.getLeftTriggerAxis())
+            );
+        //  Repels piece in intake
+        operator.rightTrigger(.01).whileTrue(
+            maniuplator.setVelocity(()->-operator.getRightTriggerAxis())
+            );
+        // Moves Elevator Up to score in barge
         operator.povUp().onTrue(new ParallelCommandGroup(
             elevator.setPosition(ElevatorConstants.BARGE), 
-            maniuplator.setPosition(0, PivotConstants.BARGE))
-        );
+            maniuplator.setPosition(
+                IntakeConstants.HOLD_CORAL, 
+                PivotConstants.BARGE)
+            ));
+        // Moves Elevator Down
         operator.povDown().onTrue(new ParallelCommandGroup(
             elevator.setPosition(ElevatorConstants.PROCESSOR), 
-            maniuplator.setPosition(0, 50)));
-
-        operator.povLeft().onTrue(maniuplator.setPosition(IntakeConstants.HOLD_CORAL,PivotConstants.STRAIGHTOUT));
-        operator.povRight().onTrue(maniuplator.setPosition(IntakeConstants.HOLD_ALGEA, PivotConstants.CLEAR_ALGEA));
-
-        operator.leftTrigger(.01).whileTrue(maniuplator.setVelocity(()->operator.getLeftTriggerAxis()));
-        operator.rightTrigger(.01).whileTrue(maniuplator.setVelocity(()->-operator.getRightTriggerAxis()));
-
-
+            maniuplator.setPosition(
+                IntakeConstants.HOLD_CORAL, 
+                PivotConstants.CLEAR_ALGEA)
+            ));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }

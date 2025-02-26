@@ -71,7 +71,8 @@ public class Manipulator extends SubsystemBase {
 
       globalConfig
       .smartCurrentLimit(20)
-      .idleMode(IdleMode.kBrake);
+      .idleMode(IdleMode.kBrake)
+      .disableFollowerMode();
 
     intakeLeftConfig
       .apply(globalConfig)

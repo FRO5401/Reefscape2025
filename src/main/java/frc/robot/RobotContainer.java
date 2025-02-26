@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Constants.InfeedConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
@@ -79,16 +80,15 @@ public class RobotContainer {
         // reset the field-centric heading on left bumper press
         joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-        joystick.povDown().onTrue(candle.runOnce(()->{ 
-            candle.setColors();
+        joystick.povDown().onTrue(candle.runOnce(()->{
+            candle.clearAllAnims(); 
+            candle.incrementAnimation();
         }));
 
-        joystick.povUp().onTrue(candle.runOnce(()->{ 
-            candle.changeAnimation(AnimationTypes.Empty);
-        }));
 
         joystick.povUp().onTrue(candle.runOnce(()->{ 
-            candle.changeAnimation(AnimationTypes.RgbFade);
+            candle.clearAllAnims();
+            candle.changeAnimation(AnimationTypes.Strobe);
         }));
         
 
@@ -96,14 +96,16 @@ public class RobotContainer {
         Operator.b().onTrue(elevator.setPosition(Constants.ElevatorConstants.L3));
         Operator.a().onTrue(elevator.setPosition(Constants.ElevatorConstants.L2));
         Operator.x().onTrue(elevator.setPosition(Constants.ElevatorConstants.STATION));
-        Operator.povUp().onTrue(elevator.setPosition(Constants.ElevatorConstants.BARGE));
+        Operator.povUp().onTrue(new ParallelCommandGroup(elevator.setPosition(Constants.ElevatorConstants.BARGE), maniuplator.setPosition(0, InfeedConstants.BARGE)));
         Operator.povDown().onTrue(new ParallelCommandGroup(elevator.setPosition(Constants.ElevatorConstants.PROCESSOR), maniuplator.setPosition(0, 50)));
 
-        Operator.povLeft().onTrue(maniuplator.setPosition(5,53));
-        Operator.povRight().onTrue(maniuplator.setPosition(0, 53));
+        Operator.povLeft().onTrue(maniuplator.setPosition(35,53));
+        Operator.povRight().onTrue(maniuplator.setPosition(0, InfeedConstants.CLEARALGEA));
 
         Operator.leftTrigger(.01).whileTrue(maniuplator.setVelocity(()->Operator.getLeftTriggerAxis()));
         Operator.rightTrigger(.01).whileTrue(maniuplator.setVelocity(()->-Operator.getRightTriggerAxis()));
+
+
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }

@@ -37,7 +37,9 @@ public class Manipulator extends SubsystemBase {
 
   SparkMax pivot = new SparkMax(Constants.InfeedConstants.PIVOT_ID, MotorType.kBrushless);
 
-  RelativeEncoder rotateEncoder = rotateLeft.getEncoder();
+  RelativeEncoder rotateLeftEncoder = rotateLeft.getEncoder();
+  RelativeEncoder rotateRightEncoder = rotateRight.getEncoder();
+
 
   RelativeEncoder pivotEncoeer = pivot.getEncoder();
 
@@ -83,22 +85,20 @@ public class Manipulator extends SubsystemBase {
       .apply(globalConfig)
       .inverted(false)
       .encoder
-        .positionConversionFactor(50);
+        .positionConversionFactor(16);
       
     
     rotateRightConfig
     .apply(globalConfig)
-    .inverted(true)
+    .inverted(false)
     .encoder
-      .positionConversionFactor(50);
+      .positionConversionFactor(16);
       
 
     pivotConfig
       .apply(globalConfig)
       .inverted(true)
-      .smartCurrentLimit(60)
-
-      
+      .smartCurrentLimit(70)
       .encoder
         .positionConversionFactor(15);
       
@@ -114,7 +114,7 @@ public class Manipulator extends SubsystemBase {
 
     pivotConfig.closedLoop
       .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-      .iZone(.1)
+      .iZone(.2)
       .p(Constants.InfeedConstants.PIVOT_KP)
       .i(Constants.InfeedConstants.PIVOT_KI)
       .d(Constants.InfeedConstants.PIVOT_KD);
@@ -129,14 +129,16 @@ public class Manipulator extends SubsystemBase {
 
 
     //Start position of encoders
-    rotateEncoder.setPosition(0);
+    rotateLeftEncoder.setPosition(0);
+    rotateRightEncoder.setPosition(0);
+
     pivotEncoeer.setPosition(0);
   }
 
  public Command setPosition(double rotatePosition, double pivotPosition){
   return runOnce(()->{
     rotateLeftPID.setReference(rotatePosition, ControlType.kPosition);
-    //rotateRightPID.setReference(rotatePosition, ControlType.kPosition);
+    rotateRightPID.setReference(-rotatePosition, ControlType.kPosition);
     PivotPID.setReference(pivotPosition, ControlType.kPosition);
   });
 
@@ -149,12 +151,20 @@ public class Manipulator extends SubsystemBase {
   }).finallyDo(()->intakeLeft.set(0));
  }
 
+ public Command setRotation(DoubleSupplier position){
+  return run(()->{
+    rotateLeft.set(-position.getAsDouble());
+    rotateRight.set(position.getAsDouble());
+  });
+ }
+
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Rotate", rotateLeft.getOutputCurrent());
     SmartDashboard.putNumber("Rotate Value", rotateLeft.getAppliedOutput());    
-    SmartDashboard.putNumber("Rotate Position", rotateEncoder.getPosition());
+    SmartDashboard.putNumber("Rotate Position", rotateLeftEncoder.getPosition());
 
   }
 }

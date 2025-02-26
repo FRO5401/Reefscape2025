@@ -29,13 +29,13 @@ import frc.robot.Constants.InfeedConstants;
 
 
 public class Manipulator extends SubsystemBase {
-  SparkMax intakeLeft = new SparkMax(Constants.InfeedConstants.INTAKE_MOTOR_LEFT, MotorType.kBrushless);
-  SparkMax intakeRight = new SparkMax(Constants.InfeedConstants.INTAKE_MOTOR_RIGHT, MotorType.kBrushless);
+  SparkMax intakeLeft = new SparkMax(InfeedConstants.IntakeConstants.INTAKE_MOTOR_LEFT, MotorType.kBrushless);
+  SparkMax intakeRight = new SparkMax(InfeedConstants.IntakeConstants.INTAKE_MOTOR_RIGHT, MotorType.kBrushless);
 
-  SparkMax rotateLeft = new SparkMax(Constants.InfeedConstants.ROTATE_MOTOR_LEFT, MotorType.kBrushless);
-  SparkMax rotateRight = new SparkMax(Constants.InfeedConstants.ROTATE_MOTOR_RIGHT, MotorType.kBrushless);
+  SparkMax rotateLeft = new SparkMax(InfeedConstants.IntakeConstants.ROTATE_MOTOR_LEFT, MotorType.kBrushless);
+  SparkMax rotateRight = new SparkMax(InfeedConstants.IntakeConstants.ROTATE_MOTOR_RIGHT, MotorType.kBrushless);
 
-  SparkMax pivot = new SparkMax(Constants.InfeedConstants.PIVOT_ID, MotorType.kBrushless);
+  SparkMax pivot = new SparkMax(InfeedConstants.PivotConstants.PIVOT_ID, MotorType.kBrushless);
 
   RelativeEncoder rotateLeftEncoder = rotateLeft.getEncoder();
   RelativeEncoder rotateRightEncoder = rotateRight.getEncoder();
@@ -104,20 +104,24 @@ public class Manipulator extends SubsystemBase {
       
     rotateLeftConfig.closedLoop
       .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-      .pid(InfeedConstants.ROTATE_KP,InfeedConstants.ROTATE_kI,InfeedConstants.ROTATE_kD);
+      .pid(InfeedConstants.IntakeConstants.ROTATE_KP,
+        InfeedConstants.IntakeConstants.ROTATE_kI,
+        InfeedConstants.IntakeConstants.ROTATE_kD);
 
       rotateRightConfig.closedLoop
       .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-      .pid(InfeedConstants.ROTATE_KP,InfeedConstants.ROTATE_kI,InfeedConstants.ROTATE_kD);
+      .pid(InfeedConstants.IntakeConstants.ROTATE_KP,
+      InfeedConstants.IntakeConstants.ROTATE_kI,
+        InfeedConstants.IntakeConstants.ROTATE_kD);
       
       
 
     pivotConfig.closedLoop
       .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
       .iZone(.2)
-      .p(Constants.InfeedConstants.PIVOT_KP)
-      .i(Constants.InfeedConstants.PIVOT_KI)
-      .d(Constants.InfeedConstants.PIVOT_KD);
+      .p(InfeedConstants.PivotConstants.PIVOT_KP)
+      .i(InfeedConstants.PivotConstants.PIVOT_KI)
+      .d(InfeedConstants.PivotConstants.PIVOT_KD);
 
 
       
@@ -150,7 +154,7 @@ public class Manipulator extends SubsystemBase {
     intakeLeft.set(velocity.getAsDouble());
   }).finallyDo(()->intakeLeft.set(0));
  }
-
+ 
  public Command setRotation(DoubleSupplier position){
   return run(()->{
     rotateLeft.set(-position.getAsDouble());

@@ -23,7 +23,7 @@ public class Constants {
     }
     public class ElevatorConstants{
         public static final int elevatorID = 13;
-        public static final double BARGE = 160 ;
+        public static final double BARGE = 150;
         public static final double L4 = 77;
         public static final double L3 = 66;
         public static final double L2 = 55;
@@ -39,31 +39,52 @@ public class Constants {
     }
 
     public class InfeedConstants{
-        public static final int INTAKE_MOTOR_LEFT = 20;
-        public static final int INTAKE_MOTOR_RIGHT=18;
+        public class IntakeConstants{
+            /*  ID of Spark Maxs */
+            //Intake wheel motors
+            public static final int INTAKE_MOTOR_LEFT = 20;
+            public static final int INTAKE_MOTOR_RIGHT=18;
+            //Rotation Motors
+            public static final int ROTATE_MOTOR_LEFT=17; 
+            public static final int ROTATE_MOTOR_RIGHT=15;
 
-        public static final int ROTATE_MOTOR_LEFT=15; //flip these
-        public static final int ROTATE_MOTOR_RIGHT=17;
+            /*  PIDF Values */
+            public static final double ROTATE_KP = .5;
+            public static final double ROTATE_kI = 0;
+            public static final double ROTATE_kD = .1;
+            public static final double ROTATE_KF = 10;
 
-        public static final int PIVOT_ID=14;
+            /*  Position for each game piece */
+            //Closes in to suck in coral
+            public static final double HOLD_CORAL = 35;
+            //Sides parallel to hold algea
+            public static final double HOLD_ALGEA = 0;
+        }
 
+        public class PivotConstants{
+            // ID of Neo 1650
+            public static final int PIVOT_ID=14;
 
-        public static final double PIVOT_KP=.5;
-        public static final double PIVOT_KI=0;
-        public static final double PIVOT_KD=0.1;
-        
-        public static final double ROTATE_KP = .5;
-        public static final double ROTATE_kI = 0;
-        public static final double ROTATE_kD = .1;
-        public static final double ROTATE_KF = 10;
+            /*  PID values */
+            public static final double PIVOT_KP=.5;
+            public static final double PIVOT_KI=0;
+            public static final double PIVOT_KD=0.1;
 
-        public static final double STRAIGHTOUT = 53;
-        public static final double BARGE = 68;
-        public static final double PivotL4 = 0;
-        public static final double CLEARALGEA = 47;
-        public static final double PivotL2 = 0;
-        public static final double STATION = 0;
-        public static final double PROCESSOR = 0;
+            /*  Positon Values */
+            //90 degree angle on the intake
+            public static final double STRAIGHTOUT = 53;
+            //public static final double PROCESSOR = 53; //Will replace straight out most likely
+            //aimed up to shoot into the barge
+            public static final double BARGE = 68;
+            //Scoring on top of barge
+            public static final double L4 = 0;
+            //takes algea out and possibly place on L2 and L3
+            public static final double CLEAR_ALGEA = 47;
+            //public static final double PLACE_CORAL = 50;
+            //Gets Coral from station
+            public static final double STATION = 0;
+        }
+
 
     }
     public class AutoConstants{

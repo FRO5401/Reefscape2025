@@ -14,7 +14,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.InfeedConstants;
+import frc.robot.Constants.InfeedConstants.IntakeConstants;
+import frc.robot.Constants.InfeedConstants.PivotConstants;
+import frc.robot.Constants.Trajectorys;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
@@ -92,15 +96,21 @@ public class RobotContainer {
         }));
         
 
-        Operator.y().onTrue(elevator.setPosition(Constants.ElevatorConstants.L4));
-        Operator.b().onTrue(elevator.setPosition(Constants.ElevatorConstants.L3));
-        Operator.a().onTrue(elevator.setPosition(Constants.ElevatorConstants.L2));
-        Operator.x().onTrue(elevator.setPosition(Constants.ElevatorConstants.STATION));
-        Operator.povUp().onTrue(new ParallelCommandGroup(elevator.setPosition(Constants.ElevatorConstants.BARGE), maniuplator.setPosition(0, InfeedConstants.BARGE)));
-        Operator.povDown().onTrue(new ParallelCommandGroup(elevator.setPosition(Constants.ElevatorConstants.PROCESSOR), maniuplator.setPosition(0, 50)));
+        Operator.y().onTrue(elevator.setPosition(ElevatorConstants.L4));
+        Operator.b().onTrue(elevator.setPosition(ElevatorConstants.L3));
+        Operator.a().onTrue(elevator.setPosition(ElevatorConstants.L2));
+        Operator.x().onTrue(elevator.setPosition(ElevatorConstants.STATION));
 
-        Operator.povLeft().onTrue(maniuplator.setPosition(35,53));
-        Operator.povRight().onTrue(maniuplator.setPosition(0, InfeedConstants.CLEARALGEA));
+        Operator.povUp().onTrue(new ParallelCommandGroup(
+            elevator.setPosition(ElevatorConstants.BARGE), 
+            maniuplator.setPosition(0, PivotConstants.BARGE))
+        );
+        Operator.povDown().onTrue(new ParallelCommandGroup(
+            elevator.setPosition(ElevatorConstants.PROCESSOR), 
+            maniuplator.setPosition(0, 50)));
+
+        Operator.povLeft().onTrue(maniuplator.setPosition(IntakeConstants.HOLD_CORAL,PivotConstants.STRAIGHTOUT));
+        Operator.povRight().onTrue(maniuplator.setPosition(IntakeConstants.HOLD_ALGEA, PivotConstants.CLEAR_ALGEA));
 
         Operator.leftTrigger(.01).whileTrue(maniuplator.setVelocity(()->Operator.getLeftTriggerAxis()));
         Operator.rightTrigger(.01).whileTrue(maniuplator.setVelocity(()->-Operator.getRightTriggerAxis()));
@@ -111,7 +121,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return drivetrain.getAutoCommand(Constants.Trajectorys.onePiece);
+        return drivetrain.getAutoCommand(Trajectorys.onePiece);
     }
 
     

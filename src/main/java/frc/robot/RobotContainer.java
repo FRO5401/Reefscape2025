@@ -99,7 +99,7 @@ public class RobotContainer {
         Operator.povUp().onTrue(new ParallelCommandGroup(elevator.setPosition(Constants.ElevatorConstants.BARGE), maniuplator.setPosition(0, InfeedConstants.BARGE)));
         Operator.povDown().onTrue(new ParallelCommandGroup(elevator.setPosition(Constants.ElevatorConstants.PROCESSOR), maniuplator.setPosition(0, 50)));
 
-        Operator.povLeft().onTrue(maniuplator.setPosition(35,53));
+        Operator.povLeft().onTrue(maniuplator.setPosition(35,68));
         Operator.povRight().onTrue(maniuplator.setPosition(0, InfeedConstants.CLEARALGEA));
 
         Operator.leftTrigger(.01).whileTrue(maniuplator.setVelocity(()->Operator.getLeftTriggerAxis()));

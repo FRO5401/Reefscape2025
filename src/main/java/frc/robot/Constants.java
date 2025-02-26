@@ -23,11 +23,11 @@ public class Constants {
     }
     public class ElevatorConstants{
         public static final int elevatorID = 13;
-        public static final double BARGE = 160 ;
+        public static final double BARGE = 150 ;
         public static final double L4 = 77;
         public static final double L3 = 66;
         public static final double L2 = 55;
-        public static final double STATION = 50;
+        public static final double STATION = 45;
         public static final double PROCESSOR = 10;
 
         public static final double KP = 4; // An error of 1 rotation results in 2.4 V output

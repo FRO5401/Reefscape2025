@@ -45,8 +45,8 @@ public class Constants {
             public static final int INTAKE_MOTOR_LEFT = 20;
             public static final int INTAKE_MOTOR_RIGHT=18;
             //Rotation Motors
-            public static final int ROTATE_MOTOR_LEFT=15; 
-            public static final int ROTATE_MOTOR_RIGHT=17;
+            public static final int ROTATE_MOTOR_LEFT=17; 
+            public static final int ROTATE_MOTOR_RIGHT=15;
 
             /*  PIDF Values */
             public static final double ROTATE_KP = .5;

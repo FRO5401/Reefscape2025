@@ -96,18 +96,34 @@ public class RobotContainer {
         }));
         
 
-        operator.y().onTrue(
-            elevator.setPosition(ElevatorConstants.L4)
-            );
-        operator.b().onTrue(
-            elevator.setPosition(ElevatorConstants.L3)
-            );
-        operator.a().onTrue(
-            elevator.setPosition(ElevatorConstants.L2)
-            );
-        operator.x().onTrue(
-            elevator.setPosition(ElevatorConstants.STATION)
-            );
+        operator.y().onTrue(new ParallelCommandGroup(
+            elevator.setPosition(
+                ElevatorConstants.L4),
+            maniuplator.setPosition(
+                IntakeConstants.HOLD_CORAL,
+                PivotConstants.L4)
+            ));
+        operator.b().onTrue(new ParallelCommandGroup(
+            elevator.setPosition(
+                ElevatorConstants.L3),
+            maniuplator.setPosition(
+                IntakeConstants.HOLD_CORAL,
+                PivotConstants.CLEAR_ALGEA)
+            ));
+        operator.a().onTrue(new ParallelCommandGroup(
+            elevator.setPosition(
+                ElevatorConstants.L2),
+            maniuplator.setPosition(
+                IntakeConstants.HOLD_CORAL,
+                PivotConstants.CLEAR_ALGEA)
+            ));
+        operator.x().onTrue(new ParallelCommandGroup(
+            elevator.setPosition(
+                ElevatorConstants.STATION),
+            maniuplator.setPosition(
+                IntakeConstants.HOLD_CORAL,
+                PivotConstants.STATION)
+            ));
         // Straightens out intake and position to hold coral
         operator.povLeft().onTrue(
             maniuplator.setPosition(
@@ -121,18 +137,18 @@ public class RobotContainer {
                 PivotConstants.CLEAR_ALGEA)
             );
         //  Sucks in piece
-        operator.leftTrigger(.01).whileTrue(
+        operator.leftTrigger(.00).whileTrue(
             maniuplator.setVelocity(()->operator.getLeftTriggerAxis())
             );
         //  Repels piece in intake
-        operator.rightTrigger(.01).whileTrue(
+        operator.rightTrigger(.00).whileTrue(
             maniuplator.setVelocity(()->-operator.getRightTriggerAxis())
             );
         // Moves Elevator Up to score in barge
         operator.povUp().onTrue(new ParallelCommandGroup(
             elevator.setPosition(ElevatorConstants.BARGE), 
             maniuplator.setPosition(
-                IntakeConstants.HOLD_CORAL, 
+                IntakeConstants.HOLD_ALGEA, 
                 PivotConstants.BARGE)
             ));
         // Moves Elevator Down

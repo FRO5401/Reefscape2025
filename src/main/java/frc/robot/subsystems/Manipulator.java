@@ -85,6 +85,7 @@ public class Manipulator extends SubsystemBase {
     rotateLeftConfig
       .apply(globalConfig)
       .inverted(false)
+      .disableFollowerMode()
       .encoder
         .positionConversionFactor(16);
       
@@ -92,6 +93,8 @@ public class Manipulator extends SubsystemBase {
     rotateRightConfig
     .apply(globalConfig)
     .inverted(false)
+    .disableFollowerMode()
+
     .encoder
       .positionConversionFactor(16);
       
@@ -153,13 +156,13 @@ public class Manipulator extends SubsystemBase {
  public Command setVelocity(DoubleSupplier velocity){
   return run(()->{
     intakeLeft.set(velocity.getAsDouble());
-  }).finallyDo(()->intakeLeft.set(0));
+  });
  }
 
  public Command setRotation(DoubleSupplier position){
   return run(()->{
-    rotateLeft.set(-position.getAsDouble());
-    rotateRight.set(position.getAsDouble());
+    rotateLeft.set(position.getAsDouble());
+    rotateRight.set(-position.getAsDouble());
   });
  }
 

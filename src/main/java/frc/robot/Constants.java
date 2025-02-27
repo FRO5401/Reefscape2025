@@ -24,10 +24,10 @@ public class Constants {
     public class ElevatorConstants{
         public static final int elevatorID = 13;
         public static final double BARGE = 150 ;
-        public static final double L4 = 77;
-        public static final double L3 = 66;
+        public static final double L4 = 135;
+        public static final double L3 = 77;
         public static final double L2 = 51.91748046875;
-        public static final double STATION = 45;
+        public static final double STATION = 50;
         public static final double PROCESSOR = 10;
 
         public static final double KP = 4; // An error of 1 rotation results in 2.4 V output
@@ -56,7 +56,7 @@ public class Constants {
 
             /*  Position for each game piece */
             //Closes in to suck in coral
-            public static final double HOLD_CORAL = -30.85714340209961;
+            public static final double HOLD_CORAL = 44;
             //Sides parallel to hold algea
             public static final double HOLD_ALGEA = 0;
             //Place coral 62.49993896484375
@@ -73,18 +73,18 @@ public class Constants {
 
             /*  Positon Values */
             //90 degree angle on the intake
-            public static final double STRAIGHTOUT = 53;
+            public static final double STRAIGHTOUT = -31;
             //public static final double PROCESSOR = 53; //Will replace straight out most likely
             //aimed up to shoot into the barge
-            public static final double BARGE = 68;
+            public static final double BARGE = -20;
             //Scoring on top of barge
-            public static final double L4 = 0;
+            public static final double L4 = -82;
             //takes algea out and possibly place on L2 and L3
             public static final double CLEAR_ALGEA = -62.49993896484375;
 
             //public static final double PLACE_CORAL = 50;
             //Gets Coral from station
-            public static final double STATION = 0;
+            public static final double STATION = -29;
         }
 
 

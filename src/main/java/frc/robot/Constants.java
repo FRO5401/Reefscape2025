@@ -29,6 +29,7 @@ public class Constants {
         public static final double L2 = 51.91748046875;
         public static final double STATION = 50;
         public static final double PROCESSOR = 10;
+        public static final double FLOOR = 1;
 
         public static final double KP = 4; // An error of 1 rotation results in 2.4 V output
         public static final double KI = 3; // no output for integrated error
@@ -76,13 +77,14 @@ public class Constants {
             public static final double STRAIGHTOUT = -31;
             //public static final double PROCESSOR = 53; //Will replace straight out most likely
             //aimed up to shoot into the barge
-            public static final double BARGE = -20;
+            public static final double BARGE = -15;
             //Scoring on top of barge
             public static final double L4 = -82;
             //takes algea out and possibly place on L2 and L3
-            public static final double CLEAR_ALGEA = -62.49993896484375;
+            public static final double PLACE_CORAL = -62.49993896484375;
+            public static final double CLEAR_ALGEA =-40.49993896484375;
+            public static final double FLOOR_PICKUP =-85;
 
-            //public static final double PLACE_CORAL = 50;
             //Gets Coral from station
             public static final double STATION = -29;
         }

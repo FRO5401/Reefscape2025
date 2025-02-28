@@ -129,15 +129,16 @@ public class RobotContainer {
                 ElevatorConstants.L3),
             maniuplator.setPosition(
                 IntakeConstants.HOLD_CORAL,
-                PivotConstants.CLEAR_ALGEA)
+                PivotConstants.PLACE_CORAL)
             ));
         operator.a().onTrue(new ParallelCommandGroup(
             elevator.setPosition(
                 ElevatorConstants.L2),
             maniuplator.setPosition(
                 IntakeConstants.HOLD_CORAL,
-                PivotConstants.CLEAR_ALGEA)
+                PivotConstants.PLACE_CORAL)
             ));
+
         operator.x().onTrue(new ParallelCommandGroup(
             elevator.setPosition(
                 ElevatorConstants.STATION),
@@ -145,12 +146,14 @@ public class RobotContainer {
                 IntakeConstants.HOLD_CORAL,
                 PivotConstants.STATION)
             ));
+        
         // Straightens out intake and position to hold coral
         operator.povLeft().onTrue(
             maniuplator.setPosition(
                 IntakeConstants.HOLD_CORAL,
-                PivotConstants.CLEAR_ALGEA)
+                PivotConstants.PLACE_CORAL)
             );
+        
         //  Straightens out intake
         operator.povRight().onTrue(
             maniuplator.setPosition(
@@ -179,7 +182,14 @@ public class RobotContainer {
                 IntakeConstants.HOLD_CORAL, 
                 PivotConstants.CLEAR_ALGEA)
             ));
-
+             
+        operator.start().onTrue(new ParallelCommandGroup(
+            elevator.setPosition(ElevatorConstants.FLOOR), 
+            maniuplator.setPosition(
+                IntakeConstants.HOLD_CORAL, 
+                PivotConstants.FLOOR_PICKUP)
+            ));
+        operator.leftBumper().onTrue(maniuplator.stopIntake());
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 

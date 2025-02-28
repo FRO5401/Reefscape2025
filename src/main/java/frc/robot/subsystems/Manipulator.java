@@ -142,6 +142,12 @@ public class Manipulator extends SubsystemBase {
 
     pivotEncoeer.setPosition(0);
   }
+ public Command zeroPinch(){
+  return runOnce(()->{
+    rotateLeftEncoder.setPosition(0);
+    pivotEncoeer.setPosition(0);
+  });
+ }
 
  public Command setPosition(double rotatePosition, double pivotPosition){
   return runOnce(()->{
@@ -158,6 +164,11 @@ public class Manipulator extends SubsystemBase {
     intakeLeft.set(velocity.getAsDouble());
   });
  }
+ public Command stopIntake(){
+  return run(()->{
+    intakeLeft.set(0);
+  });
+ }
 
  public Command setRotation(DoubleSupplier position){
   return run(()->{
@@ -172,7 +183,7 @@ public class Manipulator extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Pivot Position", pivotEncoeer.getPosition());
     SmartDashboard.putNumber("Rotate Position", rotateLeftEncoder.getPosition());
-
+    SmartDashboard.putNumber("Pivot Heat", pivot.getMotorTemperature());
 
   }
 }

@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Commands.AlignToTag;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.InfeedConstants;
 import frc.robot.Constants.InfeedConstants.IntakeConstants;
@@ -44,16 +45,15 @@ public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(1).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
+    private PhotonCamera frontLeftCam = new PhotonCamera("FrontLeft");
+    private PhotonCamera frontRightCam = new PhotonCamera("FrontRight");
+
+
     Elevator elevator = new Elevator();
     Manipulator maniuplator = new Manipulator();
     CANdleSystem candle = new CANdleSystem();
 
-    AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-    PhotonCamera cam = new PhotonCamera("testCamera");
-    Transform3d robotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
-
 // Construct PhotonPoseEstimator
-    PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.LOWEST_AMBIGUITY, robotToCam);
     
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -102,6 +102,8 @@ public class RobotContainer {
 
         // reset the field-centric heading on left bumper press
         driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+
+        driver.a().whileTrue(new AlignToTag(drivetrain, frontRightCam, frontLeftCam, ()->driver.getLeftX()));
 
         driver.povDown().onTrue(candle.runOnce(()->{
             candle.clearAllAnims(); 
@@ -181,10 +183,7 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
-    public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
-        photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
-        return photonPoseEstimator.update(cam.getAllUnreadResults().get(0));
-    }
+
 
     public Command getAutonomousCommand() {
         return drivetrain.getAutoCommand(Trajectorys.onePiece);

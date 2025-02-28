@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Commands.AlignToTag;
+import frc.robot.Commands.Autos.OnePiece;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.InfeedConstants;
 import frc.robot.Constants.InfeedConstants.IntakeConstants;
@@ -196,7 +197,7 @@ public class RobotContainer {
 
 
     public Command getAutonomousCommand() {
-        return drivetrain.getAutoCommand(Trajectorys.onePiece);
+        return new OnePiece(drivetrain, elevator, maniuplator);
     }
 
     

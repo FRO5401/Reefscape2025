@@ -41,6 +41,9 @@ public class Constants {
     }
 
     public class InfeedConstants{
+
+        public static final int BEAM_BREAK_ID = 8;
+
         public class IntakeConstants{
             /*  ID of Spark Maxs */
             //Intake wheel motors
@@ -62,6 +65,8 @@ public class Constants {
             //Sides parallel to hold algea
             public static final double HOLD_ALGEA = 0;
             //Place coral 62.49993896484375
+
+            
         }
 
         public class PivotConstants{
@@ -146,10 +151,20 @@ public class Constants {
                     // Start at the origin facing the +X direction
                     new Pose2d(0,0, new Rotation2d(Units.degreesToRadians(0))),
                     // Pass through these two interior waypoints, making an 's' curve path
-                    List.of(new Translation2d(5.199627471542494-2,0)),
+                    List.of(new Translation2d(1,-0.427849023593116)),
                     // End 3 meters straight ahead of where we started, facing forward
-                    new Pose2d(5.066962339845643, -1.996766117991512, new Rotation2d(Units.degreesToRadians(-25.66))),
+                    new Pose2d(2, -0.344663146466124, new Rotation2d(Units.degreesToRadians(0))),
                     config);
+                
+                    public final static Trajectory onePieceReef = TrajectoryGenerator.generateTrajectory(
+                        // Start at the origin facing the +X direction
+                    new Pose2d(2, -0.344663146466124, new Rotation2d(Units.degreesToRadians(0))),
+                    // Pass through these two interior waypoints, making an 's' curve path
+                    List.of(new Translation2d(2.489185116263105,-0.344)),
+                    // End 3 meters straight ahead of where we started, facing forward
+                    new Pose2d(3.25, -0.344663146466124, new Rotation2d(Units.degreesToRadians(0))),
+                    config);
+                    
         
 
 

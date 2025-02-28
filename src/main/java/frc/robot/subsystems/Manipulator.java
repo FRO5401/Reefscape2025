@@ -69,6 +69,8 @@ public class Manipulator extends SubsystemBase {
     rotateRightConfig = new SparkMaxConfig();
     pivotConfig = new SparkMaxConfig();
 
+    beamBreak = new DigitalInput(InfeedConstants.BEAM_BREAK_ID);
+
       globalConfig
       .smartCurrentLimit(20)
       .idleMode(IdleMode.kBrake)
@@ -164,6 +166,7 @@ public class Manipulator extends SubsystemBase {
     intakeLeft.set(velocity.getAsDouble());
   });
  }
+
  public Command stopIntake(){
   return run(()->{
     intakeLeft.set(0);
@@ -177,12 +180,17 @@ public class Manipulator extends SubsystemBase {
   });
  }
 
+ public boolean getBeamBreak(){
+  return beamBreak.get();
+ }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Pivot Position", pivotEncoeer.getPosition());
     SmartDashboard.putNumber("Pinch Position", rotateLeftEncoder.getPosition());
+    
+    SmartDashboard.putBoolean("Limit Switch", getBeamBreak());
     
     SmartDashboard.putNumber("Pivot Temp", pivot.getMotorTemperature());
     SmartDashboard.putNumber("Pinch Left Temp", rotateLeft.getMotorTemperature());

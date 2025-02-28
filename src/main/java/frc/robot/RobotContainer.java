@@ -45,8 +45,8 @@ public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(1).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
-    private PhotonCamera frontLeftCam = new PhotonCamera("FrontLeft");
-    private PhotonCamera frontRightCam = new PhotonCamera("FrontRight");
+    //private PhotonCamera frontLeftCam = new PhotonCamera("FrontLeft");
+   // private PhotonCamera frontRightCam = new PhotonCamera("FrontRight");
 
 
     Elevator elevator = new Elevator();
@@ -81,9 +81,9 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-driver.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+                drive.withVelocityX(-driver.getLeftY() * MaxSpeed * elevator.getSpeedModifier()) // Drive forward with negative Y (forward)
+                    .withVelocityY(-driver.getLeftX() * MaxSpeed * elevator.getSpeedModifier()) // Drive left with negative X (left)
+                    .withRotationalRate(-driver.getRightX() * MaxAngularRate * elevator.getSpeedModifier()) // Drive counterclockwise with negative X (left)
             )
         );
 
@@ -103,7 +103,7 @@ public class RobotContainer {
         // reset the field-centric heading on left bumper press
         driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-        driver.a().whileTrue(new AlignToTag(drivetrain, frontRightCam, frontLeftCam, ()->driver.getLeftX()));
+        //driver.a().whileTrue(new AlignToTag(drivetrain, frontRightCam, frontLeftCam, ()->driver.getLeftX()));
 
         driver.povDown().onTrue(candle.runOnce(()->{
             candle.clearAllAnims(); 

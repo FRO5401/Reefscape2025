@@ -64,12 +64,20 @@ public class Elevator extends SubsystemBase {
     elevator.set(speed);
   }
 
+      /**
+     * returns the inverse of the elevator position as a percent to slow down the robot
+     */
+  public double getSpeedModifier(){
+    return 1-(elevator.getPosition().getValueAsDouble()/ElevatorConstants.BARGE);
+  }
+
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Elevator Position", elevator.getPosition().getValueAsDouble());
 
     // This method will be called once per scheduler run
   }
+
   public Command setPosition(double pose) {
     // Inline construction of command goes here.
     // Subsystem::RunOnce implicitly requires `this` subsystem.

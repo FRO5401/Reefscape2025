@@ -186,8 +186,8 @@ public class RobotContainer {
         operator.start().onTrue(new ParallelCommandGroup(
             elevator.setPosition(ElevatorConstants.FLOOR), 
             maniuplator.setPosition(
-                IntakeConstants.HOLD_CORAL, 
-                PivotConstants.FLOOR_PICKUP)
+                IntakeConstants.HOLD_ALGEA, 
+                PivotConstants.PLACE_CORAL)
             ));
         operator.leftBumper().onTrue(maniuplator.stopIntake());
         drivetrain.registerTelemetry(logger::telemeterize);

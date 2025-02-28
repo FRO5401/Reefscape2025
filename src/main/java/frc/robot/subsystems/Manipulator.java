@@ -182,8 +182,13 @@ public class Manipulator extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Pivot Position", pivotEncoeer.getPosition());
-    SmartDashboard.putNumber("Rotate Position", rotateLeftEncoder.getPosition());
-    SmartDashboard.putNumber("Pivot Heat", pivot.getMotorTemperature());
+    SmartDashboard.putNumber("Pinch Position", rotateLeftEncoder.getPosition());
+    
+    SmartDashboard.putNumber("Pivot Temp", pivot.getMotorTemperature());
+    SmartDashboard.putNumber("Pinch Left Temp", rotateLeft.getMotorTemperature());
+    SmartDashboard.putNumber("Pinch Right Temp", rotateRight.getMotorTemperature());
+    SmartDashboard.putNumber("Intake Left Temp", intakeLeft.getMotorTemperature());
+    SmartDashboard.putNumber("Intake Right Temp", intakeRight.getMotorTemperature());
 
   }
 }

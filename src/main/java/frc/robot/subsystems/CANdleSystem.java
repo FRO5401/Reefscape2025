@@ -50,7 +50,9 @@
  package frc.robot.subsystems;
 
  import edu.wpi.first.wpilibj.XboxController;
- import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
  import frc.robot.Constants;
  
  import com.ctre.phoenix.led.*;
@@ -62,7 +64,7 @@
  import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
  
  public class CANdleSystem extends SubsystemBase {
-     private final int LEDS_PER_ANIMATION = 308;
+     private final int LEDS_PER_ANIMATION = 308-118;
      private final CANdle m_candle = new CANdle(Constants.CANdleID);
     // private XboxController joystick;
      private int m_candleChannel = 8;
@@ -164,34 +166,34 @@
              default:
              case ColorFlow:
                  m_candleChannel = 8;
-                    m_toAnimate = new ColorFlowAnimation(128, 20, 70, 0, 0.7, LEDS_PER_ANIMATION, Direction.Forward,  0);
+                    m_toAnimate = new ColorFlowAnimation(128, 20, 70, 0, 0.7, LEDS_PER_ANIMATION, Direction.Forward,  8);
                  break;
              case Fire:
-                 m_toAnimate = new FireAnimation(0.5, 0.7, LEDS_PER_ANIMATION, 0.8, 0.5, m_animDirection, 0);
+                 m_toAnimate = new FireAnimation(0.5, 0.7, LEDS_PER_ANIMATION, 0.8, 0.5, m_animDirection, 8);
                  break;
              case Larson:
-                 m_toAnimate = new LarsonAnimation(0, 255, 46, 0, 0.5, LEDS_PER_ANIMATION, BounceMode.Front, 3, 0  );
+                 m_toAnimate = new LarsonAnimation(0, 0, 255, 0, 0.5, LEDS_PER_ANIMATION, BounceMode.Front, 10, 8  );
                  break;
              case Rainbow:
-                 m_toAnimate = new RainbowAnimation(1, 0.1, LEDS_PER_ANIMATION, m_animDirection,0);
+                 m_toAnimate = new RainbowAnimation(1, 0.1, LEDS_PER_ANIMATION, m_animDirection,8);
                  break;
              case RgbFade:
-                 m_toAnimate = new RgbFadeAnimation(0.7, 0.4, LEDS_PER_ANIMATION,  0 );
+                 m_toAnimate = new RgbFadeAnimation(0.7, 0.4, LEDS_PER_ANIMATION,  8 );
                  break;
              case SingleFade:
-                 m_toAnimate = new SingleFadeAnimation(50, 2, 200, 0, 0.5, LEDS_PER_ANIMATION,  0 );
+                 m_toAnimate = new SingleFadeAnimation(0, 0, 255, 0, 0.5, LEDS_PER_ANIMATION,  8);
                  break;
              case Strobe:
-                 m_toAnimate = new StrobeAnimation(240, 10, 180, 0, 0.01, LEDS_PER_ANIMATION,  0 );
+                 m_toAnimate = new StrobeAnimation(240, 10, 180, 0, 0.01, LEDS_PER_ANIMATION,  8);
                  break;
              case Twinkle:
-                 m_toAnimate = new TwinkleAnimation(30, 70, 60, 0, 0.4, LEDS_PER_ANIMATION, TwinklePercent.Percent42, 0  );
+                 m_toAnimate = new TwinkleAnimation(30, 70, 60, 0, 0.4, LEDS_PER_ANIMATION, TwinklePercent.Percent42, 8  );
                  break;
              case TwinkleOff:
-                 m_toAnimate = new TwinkleOffAnimation(70, 90, 175, 0, 0.2, LEDS_PER_ANIMATION, TwinkleOffPercent.Percent76, 0 );
+                 m_toAnimate = new TwinkleOffAnimation(70, 90, 175, 0, 0.2, LEDS_PER_ANIMATION, TwinkleOffPercent.Percent76, 8 );
                  break;
              case Empty:
-                 m_toAnimate = new RainbowAnimation(1, 0.7, LEDS_PER_ANIMATION, m_animDirection, 0  );
+                 m_toAnimate = new RainbowAnimation(1, 0.7, LEDS_PER_ANIMATION, m_animDirection, 8 );
                  break;
  
              case SetAll:
@@ -232,6 +234,13 @@
                  m_candle.clearAnimation(i);
              }
          }
+     }
+
+     public Command setLights(AnimationTypes toChange){
+        return runOnce(()->{
+            clearAllAnims();
+            changeAnimation(toChange);
+        });
      }
  
      @Override

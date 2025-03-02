@@ -4,6 +4,7 @@
 
 package frc.robot.Commands.Autos;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -29,6 +30,7 @@ public class OnePiece extends SequentialCommandGroup {
       new ParallelCommandGroup(elevator.setPosition(ElevatorConstants.L4), manipulator.setPosition(IntakeConstants.HOLD_CORAL, PivotConstants.L4)),
       Commands.waitSeconds(1.5),
       drivetrain.getAutoCommand(Trajectorys.onePieceReef),
+      Commands.waitSeconds(2),
       manipulator.setVelocity(()->-1),
       Commands.waitSeconds(1),
       manipulator.setVelocity(()->0)

@@ -23,8 +23,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Commands.AlignToTag;
@@ -54,6 +60,8 @@ public class RobotContainer {
     Manipulator maniuplator = new Manipulator();
     CANdleSystem candle = new CANdleSystem();
 
+    private final SendableChooser<Command> chooser = new SendableChooser<>();
+
 // Construct PhotonPoseEstimator
     
     /* Setting up bindings for necessary control of the swerve drive platform */
@@ -74,6 +82,7 @@ public class RobotContainer {
 
     public RobotContainer() {
         configureBindings();
+        chooseAuto();
     }
 
     private void configureBindings() {
@@ -143,61 +152,82 @@ public class RobotContainer {
         operator.x().onTrue(new ParallelCommandGroup(
             elevator.setPosition(
                 ElevatorConstants.STATION),
+            new SequentialCommandGroup(
             maniuplator.setPosition(
                 IntakeConstants.HOLD_CORAL,
-                PivotConstants.STATION)
+                PivotConstants.STATION),
+            maniuplator.setVelocity(()-> 1))
             ));
-        
+    
         // Straightens out intake and position to hold coral
         operator.povLeft().onTrue(
-            maniuplator.setPosition(
-                IntakeConstants.HOLD_CORAL,
-                PivotConstants.PLACE_CORAL)
-            );
+            new ParallelCommandGroup(
+                maniuplator.setPosition(
+               
+                IntakeConstants.HOLD_ALGEA,
+                    PivotConstants.STRAIGHTOUT),
+                elevator.setPosition(ElevatorConstants.L2-5)
+            ));
         
         //  Straightens out intake
         operator.povRight().onTrue(
-            maniuplator.setPosition(
-                IntakeConstants.HOLD_ALGEA, 
-                PivotConstants.CLEAR_ALGEA)
-            );
+            new ParallelCommandGroup(
+                maniuplator.setPosition(
+                    IntakeConstants.HOLD_ALGEA,
+                    PivotConstants.STRAIGHTOUT),
+                elevator.setPosition(ElevatorConstants.L3-5)
+            ));
         //  Sucks in piece
-        operator.leftTrigger(.00).whileTrue(
+        operator.leftTrigger(.01).whileTrue(
             maniuplator.setVelocity(()->operator.getLeftTriggerAxis())
             );
         //  Repels piece in intake
-        operator.rightTrigger(.00).whileTrue(
-            maniuplator.setVelocity(()->-operator.getRightTriggerAxis())
-            );
+        operator.rightTrigger(.01).whileTrue(
+            new SequentialCommandGroup(maniuplator.setVelocity(()->-operator.getRightTriggerAxis()), maniuplator.setClaw(IntakeConstants.HOLD_ALGEA)));
         // Moves Elevator Up to score in barge
         operator.povUp().onTrue(new ParallelCommandGroup(
             elevator.setPosition(ElevatorConstants.BARGE), 
             maniuplator.setPosition(
                 IntakeConstants.HOLD_ALGEA, 
-                PivotConstants.BARGE)
+                PivotConstants.BARGE),
+            candle.setLights(AnimationTypes.Rainbow)
             ));
         // Moves Elevator Down
         operator.povDown().onTrue(new ParallelCommandGroup(
             elevator.setPosition(ElevatorConstants.PROCESSOR), 
             maniuplator.setPosition(
                 IntakeConstants.HOLD_CORAL, 
-                PivotConstants.CLEAR_ALGEA)
-            ));
+                PivotConstants.CLEAR_ALGEA),
+            candle.setLights(AnimationTypes.SingleFade)
+            )); 
              
         operator.start().onTrue(new ParallelCommandGroup(
             elevator.setPosition(ElevatorConstants.FLOOR), 
             maniuplator.setPosition(
                 IntakeConstants.HOLD_ALGEA, 
-                PivotConstants.PLACE_CORAL)
+                PivotConstants.PLACE_CORAL+2)
             ));
         operator.leftBumper().onTrue(maniuplator.stopIntake());
-        drivetrain.registerTelemetry(logger::telemeterize);
+       // drivetrain.registerTelemetry(logger::telemeterize);
+
+
+        
     }
 
+    public void chooseAuto(){
+        
+    chooser.setDefaultOption("One Piece", new OnePiece(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    chooser.addOption("Move Forward", drivetrain.getAutoCommand(Trajectorys.onePiece));
+    chooser.addOption("Do Nothing", elevator.setPosition(ElevatorConstants.PROCESSOR));
+
+    Shuffleboard.getTab("Autonomous").add(chooser);
+    SmartDashboard.putData(chooser);
+
+  }
 
 
     public Command getAutonomousCommand() {
-        return new OnePiece(drivetrain, elevator, maniuplator);
+        return chooser.getSelected();
     }
 
     

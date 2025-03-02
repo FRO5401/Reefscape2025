@@ -157,14 +157,20 @@ public class Manipulator extends SubsystemBase {
     rotateRightPID.setReference(-rotatePosition, ControlType.kPosition);
     PivotPID.setReference(pivotPosition, ControlType.kPosition);
   });
-
-
  }
 
+ public Command setClaw(double rotatePosition){
+  return runOnce(()->{
+    rotateLeftPID.setReference(rotatePosition, ControlType.kPosition);
+    rotateRightPID.setReference(-rotatePosition, ControlType.kPosition);
+  });
+}
+
  public Command setVelocity(DoubleSupplier velocity){
-  return run(()->{
+  return runOnce(()->{
     intakeLeft.set(velocity.getAsDouble());
   });
+  
  }
 
  public Command stopIntake(){
@@ -174,7 +180,7 @@ public class Manipulator extends SubsystemBase {
  }
 
  public Command setRotation(DoubleSupplier position){
-  return run(()->{
+  return runOnce(()->{
     rotateLeft.set(position.getAsDouble());
     rotateRight.set(-position.getAsDouble());
   });
@@ -189,9 +195,7 @@ public class Manipulator extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Pivot Position", pivotEncoeer.getPosition());
     SmartDashboard.putNumber("Pinch Position", rotateLeftEncoder.getPosition());
-    
-    SmartDashboard.putBoolean("Limit Switch", getBeamBreak());
-    
+        
     SmartDashboard.putNumber("Pivot Temp", pivot.getMotorTemperature());
     SmartDashboard.putNumber("Pinch Left Temp", rotateLeft.getMotorTemperature());
     SmartDashboard.putNumber("Pinch Right Temp", rotateRight.getMotorTemperature());

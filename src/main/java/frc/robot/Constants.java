@@ -26,9 +26,11 @@ public class Constants {
         public static final double SPEED_MODIFIER = 160;
         public static final double BARGE = 150 ;
         public static final double L4 = 135;
-        public static final double L3 = 77;
-        public static final double L2 = 51.91748046875;
-        public static final double STATION = 50;
+        public static final double L3 = 82;
+        
+
+        public static final double L2 = 53.91748046875;
+        public static final double STATION = 52;
         public static final double PROCESSOR = 10;
         public static final double FLOOR = 1;
 
@@ -143,7 +145,7 @@ public class Constants {
         public static final  TrajectoryConfig config = new TrajectoryConfig(
                     TunerConstants.kSpeedAt12Volts.baseUnitMagnitude(),
                     //TODO: Fix this to be the actual constant. 
-                    2.5)
+                    2)
                 .setKinematics(Constants.Swerve.swerveKinematics);
 
         public final static Trajectory onePiece =
@@ -151,18 +153,18 @@ public class Constants {
                     // Start at the origin facing the +X direction
                     new Pose2d(0,0, new Rotation2d(Units.degreesToRadians(0))),
                     // Pass through these two interior waypoints, making an 's' curve path
-                    List.of(new Translation2d(1,-0.427849023593116)),
+                    List.of(new Translation2d(1,0)),
                     // End 3 meters straight ahead of where we started, facing forward
-                    new Pose2d(2, -0.344663146466124, new Rotation2d(Units.degreesToRadians(0))),
+                    new Pose2d(2, 0, new Rotation2d(Units.degreesToRadians(0))),
                     config);
                 
                     public final static Trajectory onePieceReef = TrajectoryGenerator.generateTrajectory(
                         // Start at the origin facing the +X direction
-                    new Pose2d(2, -0.344663146466124, new Rotation2d(Units.degreesToRadians(0))),
+                    new Pose2d(2, 0, new Rotation2d(Units.degreesToRadians(0))),
                     // Pass through these two interior waypoints, making an 's' curve path
                     List.of(new Translation2d(2.489185116263105,-0.344)),
                     // End 3 meters straight ahead of where we started, facing forward
-                    new Pose2d(3.25, -0.344663146466124, new Rotation2d(Units.degreesToRadians(0))),
+                    new Pose2d(3.25, 0, new Rotation2d(Units.degreesToRadians(0))),
                     config);
                     
         

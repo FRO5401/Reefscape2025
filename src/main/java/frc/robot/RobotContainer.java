@@ -21,7 +21,9 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -33,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Commands.AlignAndDriveToReef;
 import frc.robot.Commands.AlignToTag;
 import frc.robot.Commands.Autos.OnePiece;
 import frc.robot.Constants.ElevatorConstants;
@@ -40,6 +43,7 @@ import frc.robot.Constants.InfeedConstants;
 import frc.robot.Constants.InfeedConstants.IntakeConstants;
 import frc.robot.Constants.InfeedConstants.PivotConstants;
 import frc.robot.Constants.Trajectorys;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
@@ -52,8 +56,7 @@ public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(1).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
-    //private PhotonCamera frontLeftCam = new PhotonCamera("FrontLeft");
-   // private PhotonCamera frontRightCam = new PhotonCamera("FrontRight");
+    private PhotonCamera FrontCam = new PhotonCamera("FrontCam");
 
 
     Elevator elevator = new Elevator();
@@ -62,7 +65,6 @@ public class RobotContainer {
 
     private final SendableChooser<Command> chooser = new SendableChooser<>();
 
-// Construct PhotonPoseEstimator
     
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -78,7 +80,7 @@ public class RobotContainer {
     private final CommandXboxController operator = Controls.operator;
 
 
-    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(FrontCam);
 
     public RobotContainer() {
         configureBindings();
@@ -177,13 +179,16 @@ public class RobotContainer {
                     PivotConstants.STRAIGHTOUT),
                 elevator.setPosition(ElevatorConstants.L3-5)
             ));
+            
         //  Sucks in piece
         operator.leftTrigger(.01).whileTrue(
-            maniuplator.setVelocity(()->operator.getLeftTriggerAxis())
+            maniuplator.setVelocity(()->1)
             );
+
         //  Repels piece in intake
         operator.rightTrigger(.01).whileTrue(
-            new SequentialCommandGroup(maniuplator.setVelocity(()->-operator.getRightTriggerAxis()), maniuplator.setClaw(IntakeConstants.HOLD_ALGEA)));
+            new SequentialCommandGroup(maniuplator.setVelocity(()->-1), maniuplator.setClaw(IntakeConstants.HOLD_ALGEA)));
+
         // Moves Elevator Up to score in barge
         operator.povUp().onTrue(new ParallelCommandGroup(
             elevator.setPosition(ElevatorConstants.BARGE), 
@@ -207,12 +212,28 @@ public class RobotContainer {
                 IntakeConstants.HOLD_ALGEA, 
                 PivotConstants.PLACE_CORAL+2)
             ));
+        
+
         operator.leftBumper().onTrue(maniuplator.stopIntake());
        // drivetrain.registerTelemetry(logger::telemeterize);
 
 
         
     }
+
+    public Command alignAndDriveToReef(int tag, double offset) {
+        Pose2d alignmentPose =
+                VisionConstants.aprilTagLayout
+                        .getTagPose(tag)
+                        .get()
+                        .toPose2d()
+                        .plus(
+                                new Transform2d(
+                                        new Translation2d(VisionConstants.REEF_DISTANCE, offset),
+                                        new Rotation2d()));
+        return new AlignAndDriveToReef(drivetrain, 0, alignmentPose, Rotation2d.kPi);
+    }
+
 
     public void chooseAuto(){
         

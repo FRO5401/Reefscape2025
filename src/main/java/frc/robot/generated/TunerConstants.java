@@ -2,6 +2,8 @@ package frc.robot.generated;
 
 import static edu.wpi.first.units.Units.*;
 
+import org.photonvision.PhotonCamera;
+
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.hardware.*;
@@ -203,9 +205,9 @@ public class TunerConstants {
      * Creates a CommandSwerveDrivetrain instance.
      * This should only be called once in your robot program,.
      */
-    public static CommandSwerveDrivetrain createDrivetrain() {
+    public static CommandSwerveDrivetrain createDrivetrain(PhotonCamera camera) {
         return new CommandSwerveDrivetrain(
-            DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight
+            DrivetrainConstants, camera, FrontLeft, FrontRight, BackLeft, BackRight
         );
     }
 

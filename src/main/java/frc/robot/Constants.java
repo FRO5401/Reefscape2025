@@ -2,10 +2,15 @@ package frc.robot;
 
 import java.util.List;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
@@ -21,16 +26,26 @@ public class Constants {
         public static final int XBOX_CONTROLLER_OPERATOR = 1;
         public static final double CONTROLLER_SENSITIVITY = 0.05;
     }
-    public class ElevatorConstants{
+
+    public static final class VisionConstants{
+            public static AprilTagFieldLayout aprilTagLayout =
+            AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+
+            public static final double REEF_DISTANCE = Units.feetToMeters(3) / 2;
+
+            public static final Transform3d ROBOT_TO_CAM = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+    }
+
+    public class ElevatorConstants{ 
         public static final int elevatorID = 13;
         public static final double SPEED_MODIFIER = 160;
-        public static final double BARGE = 150 ;
-        public static final double L4 = 135;
-        public static final double L3 = 82;
+        public static final double BARGE = 150+3 ;
+        public static final double L4 = 140+3;
+        public static final double L3 = 82+3;
         
 
-        public static final double L2 = 53.91748046875;
-        public static final double STATION = 52;
+        public static final double L2 = 53.91748046875+3;
+        public static final double STATION = 52+3;
         public static final double PROCESSOR = 10;
         public static final double FLOOR = 1;
 
@@ -162,9 +177,18 @@ public class Constants {
                         // Start at the origin facing the +X direction
                     new Pose2d(2, 0, new Rotation2d(Units.degreesToRadians(0))),
                     // Pass through these two interior waypoints, making an 's' curve path
-                    List.of(new Translation2d(2.489185116263105,-0.344)),
+                    List.of(new Translation2d(2.489185116263105,0)),
                     // End 3 meters straight ahead of where we started, facing forward
                     new Pose2d(3.25, 0, new Rotation2d(Units.degreesToRadians(0))),
+                    config);
+
+                    public final static Trajectory backup = TrajectoryGenerator.generateTrajectory(
+                        // Start at the origin facing the +X direction
+                    new Pose2d(3.25, 0, new Rotation2d(Units.degreesToRadians(0))),
+                    // Pass through these two interior waypoints, making an 's' curve path
+                    List.of(new Translation2d(2.489185116263105,0)),
+                    // End 3 meters straight ahead of where we started, facing forward
+                    new Pose2d(2, 0, new Rotation2d(Units.degreesToRadians(0))),
                     config);
                     
         
@@ -185,7 +209,7 @@ public class Constants {
                 // Start at the origin facing the +X direction
                 new Pose2d(0,5, new Rotation2d(Units.degreesToRadians(180))),
                 // Pass through these two interior waypoints, making an 's' curve path
-                List.of(new Translation2d(-1,3), new Translation2d(1, 1)),
+                List.of(new Translation2d(-1,3), new Translation2d(1, 0)),
                 // End 3 meters straight ahead of where we started, facing forward
                 new Pose2d(0, 0, new Rotation2d(0)),
                 config);

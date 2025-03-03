@@ -92,7 +92,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  
      public CANdleSystem() {
         // this.joystick = joy;
-         changeAnimation(AnimationTypes.SetAll);
          CANdleConfiguration configAll = new CANdleConfiguration();
          configAll.statusLedOffWhenActive = true;
          configAll.disableWhenLOS = false;
@@ -100,6 +99,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
          configAll.brightnessScalar = 0.8;
          configAll.vBatOutputMode = VBatOutputMode.Modulated;
          m_candle.configAllSettings(configAll, 100);
+         changeAnimation(AnimationTypes.Larson);
      }
  
      public void toggle5VOverride() {
@@ -144,9 +144,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
              case SetAll: changeAnimation(AnimationTypes.ColorFlow); break;
          }
      }
-     public void setColors() {
-         changeAnimation(AnimationTypes.SetAll);
-     }
+
  
      /* Wrappers so we can access the CANdle from the subsystem */
      public double getVbat() { return m_candle.getBusVoltage(); }
@@ -172,7 +170,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
                  m_toAnimate = new FireAnimation(0.5, 0.7, LEDS_PER_ANIMATION, 0.8, 0.5, m_animDirection, 8);
                  break;
              case Larson:
-                 m_toAnimate = new LarsonAnimation(0, 0, 255, 0, 0.5, LEDS_PER_ANIMATION, BounceMode.Front, 10, 8  );
+                 m_toAnimate = new LarsonAnimation(0, 0, 255, 0, 0.5, LEDS_PER_ANIMATION, BounceMode.Front, 5, 8  );
                  break;
              case Rainbow:
                  m_toAnimate = new RainbowAnimation(1, 0.1, LEDS_PER_ANIMATION, m_animDirection,8);

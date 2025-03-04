@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -42,6 +43,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
@@ -78,7 +80,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
     private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
-
+    Field2d feild2d = new Field2d();
+    
         private final SwerveRequest.ApplyFieldSpeeds m_applyFieldSpeeds =
             new SwerveRequest.ApplyFieldSpeeds()
                     .withDriveRequestType(DriveRequestType.Velocity)
@@ -168,7 +171,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
         camera = m_camera;
         poseEstimator = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.AVERAGE_BEST_TARGETS, VisionConstants.ROBOT_TO_CAM);
-
+        feild2d.setRobotPose(getPose());
     }
 
     /**
@@ -308,6 +311,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     @Override
     public void periodic() {
+        feild2d.setRobotPose(getPose());
+        SmartDashboard.putData("field....", feild2d);
         /*
          * Periodically try to apply the operator perspective.
          * If we haven't applied the operator perspective before, then we should apply it regardless of DS state.
@@ -325,14 +330,17 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+        
         SmartDashboard.putNumber("X", getPose().getX());
         SmartDashboard.putNumber("Y", getPose().getY());
         SmartDashboard.putNumber("Rotation", getPose().getRotation().getDegrees());
-        
-        if(getEstimatedGlobalPose().isPresent()){
-            addVisionMeasurement(getEstimatedGlobalPose().get().estimatedPose.toPose2d(), getEstimatedGlobalPose().get().timestampSeconds);
+        SmartDashboard.putNumber("has target", camera.getPipelineIndex());
+
+
+        Optional<EstimatedRobotPose> pose = getEstimatedGlobalPose();
+        if (pose.isPresent()){
+            addVisionMeasurement(pose.get().estimatedPose.toPose2d(), pose.get().timestampSeconds);
         }
-        
         
     }
 
@@ -386,7 +394,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
-        return poseEstimator.update(camera.getAllUnreadResults().get(0));
+        camera.setPipelineIndex(0);
+        List<PhotonPipelineResult> results = camera.getAllUnreadResults();
+        if(!results.isEmpty()){
+            return poseEstimator.update(results.get(0));
+        }
+        return Optional.empty();
+        
 
     }
     public SwerveRequest driveFieldRelative(ChassisSpeeds speeds) {

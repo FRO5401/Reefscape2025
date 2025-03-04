@@ -237,9 +237,9 @@ public class RobotContainer {
 
     public void chooseAuto(){
         
-    chooser.setDefaultOption("One Piece", new OnePiece(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-    chooser.addOption("Move Forward", drivetrain.getAutoCommand(Trajectorys.onePiece));
-    chooser.addOption("Do Nothing", elevator.setPosition(ElevatorConstants.PROCESSOR));
+    //chooser.setDefaultOption("One Piece", new OnePiece(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    //chooser.addOption("Move Forward", drivetrain.getAutoCommand(Trajectorys.onePiece));
+    chooser.setDefaultOption("Do Nothing", elevator.setPosition(ElevatorConstants.PROCESSOR));
 
     Shuffleboard.getTab("Autonomous").add(chooser);
     SmartDashboard.putData(chooser);

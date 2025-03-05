@@ -28,10 +28,13 @@ public class Constants {
     }
 
     public static final class VisionConstants{
+        public static final int[] blueReefTagIDs = {17, 18, 19, 20, 21, 22};
+        public static final int[] redReefTagIDs = {6, 7, 8, 9, 10, 11};
+        
             public static AprilTagFieldLayout aprilTagLayout =
             AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
-            public static final double REEF_DISTANCE = Units.feetToMeters(3) / 2;
+            public static final double REEF_DISTANCE = Units.feetToMeters(4) ;
 
             public static final Transform3d ROBOT_TO_CAM = new Transform3d(new Translation3d(Units.inchesToMeters(13), Units.inchesToMeters(-11.5), Units.inchesToMeters(5)), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
     }

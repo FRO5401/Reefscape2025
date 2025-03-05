@@ -6,30 +6,39 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import java.util.function.DoubleSupplier;
 
-public class AlignAndDriveToReef extends Command {
+public class AlignToReef extends Command {
     private CommandSwerveDrivetrain drivetrain;
 
-    private PIDController thetaController = new PIDController(6, 0, 0);
-    private PIDController yController = new PIDController(8, 0, 0);
-    private PIDController xController = new PIDController(5, 0, 0);
+    private DoubleSupplier xVelocity;
+    private DoubleSupplier yVelocity;
+
+    private PIDController thetaController = new PIDController(4, 0, 0);
+    private PIDController yController = new PIDController(6, 0, 0);
     private Pose2d targetPose;
     private double offset;
     private Rotation2d rotationOffset;
 
-    public AlignAndDriveToReef(
+    private Timer slewerTimer = new Timer();
+
+    public AlignToReef(
             CommandSwerveDrivetrain drivetrain,
+            DoubleSupplier xVelocity,
+            DoubleSupplier yVelocity,
             double alignmentOffset,
             Pose2d alignmentPose,
             Rotation2d rotationOffset) {
         this.drivetrain = drivetrain;
+        this.xVelocity = xVelocity;
+        this.yVelocity = yVelocity;
         this.offset = alignmentOffset;
         this.targetPose = alignmentPose;
         this.rotationOffset = rotationOffset;
     }
-
 
     @Override
     public void initialize() {
@@ -37,14 +46,13 @@ public class AlignAndDriveToReef extends Command {
         // Camera id
         // tagId
         // Rotation to face the tag
-        
+        slewerTimer.restart();
 
         thetaController.setSetpoint(rotationOffset.getRadians());
         yController.setSetpoint(offset);
         thetaController.enableContinuousInput(0, 2 * Math.PI);
-        thetaController.setTolerance(Units.degreesToRadians(1));
-        yController.setTolerance(Units.inchesToMeters(0.4));
-        xController.setTolerance(Units.inchesToMeters(0.4));
+        thetaController.setTolerance(Units.degreesToRadians(0.5));
+        yController.setTolerance(Units.inchesToMeters(0.2));
     }
 
     @Override
@@ -62,18 +70,21 @@ public class AlignAndDriveToReef extends Command {
         if (yController.atSetpoint()) {
             yVelocityController = 0;
         }
-        double xVelocityController = xController.calculate(offset.getX());
-        if (xController.atSetpoint()) {
-            xVelocityController = 0;
-        }
 
         Rotation2d tagRotation = targetPose.getRotation();
 
-        ChassisSpeeds tagRelativeCommandedVelocities = new ChassisSpeeds();
+        ChassisSpeeds driverCommandedVelocities =
+                new ChassisSpeeds(xVelocity.getAsDouble(), yVelocity.getAsDouble(), 0);
+
+        ChassisSpeeds fieldCommandedVelocities =
+                ChassisSpeeds.fromRobotRelativeSpeeds(
+                        driverCommandedVelocities, drivetrain.getOperatorForwardDirection());
+
+        ChassisSpeeds tagRelativeCommandedVelocities =
+                ChassisSpeeds.fromFieldRelativeSpeeds(fieldCommandedVelocities, tagRotation);
 
         tagRelativeCommandedVelocities.vyMetersPerSecond = yVelocityController;
         tagRelativeCommandedVelocities.omegaRadiansPerSecond = thetaVelocity;
-        tagRelativeCommandedVelocities.vxMetersPerSecond = xVelocityController;
 
         ChassisSpeeds fieldRelativeSpeeds =
                 ChassisSpeeds.fromRobotRelativeSpeeds(tagRelativeCommandedVelocities, tagRotation);

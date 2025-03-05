@@ -1,0 +1,35 @@
+"filename", "language", "Groovy", "JSON", "Markdown", "Java Properties", "Java", "Batch", "comment", "blank", "total"
+"c:\Users\ace\Documents\Reefscape2025\.DataLogTool\datalogtool.json", "JSON", 0, 5, 0, 0, 0, 0, 0, 1, 6
+"c:\Users\ace\Documents\Reefscape2025\.SysId\sysid.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 1, 2
+"c:\Users\ace\Documents\Reefscape2025\.github\ISSUE_TEMPLATE\feature_request.md", "Markdown", 0, 0, 15, 0, 0, 0, 0, 6, 21
+"c:\Users\ace\Documents\Reefscape2025\.wpilib\wpilib_preferences.json", "JSON", 0, 6, 0, 0, 0, 0, 0, 0, 6
+"c:\Users\ace\Documents\Reefscape2025\WPILib-License.md", "Markdown", 0, 0, 22, 0, 0, 0, 0, 3, 25
+"c:\Users\ace\Documents\Reefscape2025\build.gradle", "Groovy", 64, 0, 0, 0, 0, 0, 20, 21, 105
+"c:\Users\ace\Documents\Reefscape2025\gradle\wrapper\gradle-wrapper.properties", "Java Properties", 0, 0, 0, 7, 0, 0, 0, 1, 8
+"c:\Users\ace\Documents\Reefscape2025\gradlew.bat", "Batch", 0, 0, 0, 0, 0, 41, 32, 22, 95
+"c:\Users\ace\Documents\Reefscape2025\settings.gradle", "Groovy", 28, 0, 0, 0, 0, 0, 0, 3, 31
+"c:\Users\ace\Documents\Reefscape2025\simgui-ds.json", "JSON", 0, 92, 0, 0, 0, 0, 0, 1, 93
+"c:\Users\ace\Documents\Reefscape2025\src\main\java\frc\robot\Commands\AlignAndDriveToReef.java", "Java", 0, 0, 0, 0, 66, 0, 6, 18, 90
+"c:\Users\ace\Documents\Reefscape2025\src\main\java\frc\robot\Commands\AlignToReef.java", "Java", 0, 0, 0, 0, 75, 0, 6, 20, 101
+"c:\Users\ace\Documents\Reefscape2025\src\main\java\frc\robot\Commands\AlignToTag.java", "Java", 0, 0, 0, 0, 99, 0, 22, 24, 145
+"c:\Users\ace\Documents\Reefscape2025\src\main\java\frc\robot\Commands\Autos\OnePiece.java", "Java", 0, 0, 0, 0, 29, 0, 9, 4, 42
+"c:\Users\ace\Documents\Reefscape2025\src\main\java\frc\robot\Commands\MoveElevator.java", "Java", 0, 0, 0, 0, 29, 0, 10, 8, 47
+"c:\Users\ace\Documents\Reefscape2025\src\main\java\frc\robot\Constants.java", "Java", 0, 0, 0, 0, 139, 0, 38, 48, 225
+"c:\Users\ace\Documents\Reefscape2025\src\main\java\frc\robot\Controls.java", "Java", 0, 0, 0, 0, 9, 0, 11, 3, 23
+"c:\Users\ace\Documents\Reefscape2025\src\main\java\frc\robot\Main.java", "Java", 0, 0, 0, 0, 8, 0, 3, 5, 16
+"c:\Users\ace\Documents\Reefscape2025\src\main\java\frc\robot\Robot.java", "Java", 0, 0, 0, 0, 54, 0, 3, 21, 78
+"c:\Users\ace\Documents\Reefscape2025\src\main\java\frc\robot\RobotContainer.java", "Java", 0, 0, 0, 0, 198, 0, 26, 57, 281
+"c:\Users\ace\Documents\Reefscape2025\src\main\java\frc\robot\Telemetry.java", "Java", 0, 0, 0, 0, 93, 0, 16, 16, 125
+"c:\Users\ace\Documents\Reefscape2025\src\main\java\frc\robot\Utils\VisionHelper.java", "Java", 0, 0, 0, 0, 5, 0, 0, 3, 8
+"c:\Users\ace\Documents\Reefscape2025\src\main\java\frc\robot\generated\TunerConstants.java", "Java", 0, 0, 0, 0, 173, 0, 85, 39, 297
+"c:\Users\ace\Documents\Reefscape2025\src\main\java\frc\robot\subsystems\CANdleSystem.java", "Java", 0, 0, 0, 0, 173, 0, 55, 20, 248
+"c:\Users\ace\Documents\Reefscape2025\src\main\java\frc\robot\subsystems\CommandSwerveDrivetrain.java", "Java", 0, 0, 0, 0, 272, 0, 119, 53, 444
+"c:\Users\ace\Documents\Reefscape2025\src\main\java\frc\robot\subsystems\Elevator.java", "Java", 0, 0, 0, 0, 63, 0, 10, 19, 92
+"c:\Users\ace\Documents\Reefscape2025\src\main\java\frc\robot\subsystems\Manipulator.java", "Java", 0, 0, 0, 0, 144, 0, 6, 52, 202
+"c:\Users\ace\Documents\Reefscape2025\tuner-project.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\ace\Documents\Reefscape2025\vendordeps\Phoenix5-5.35.1.json", "JSON", 0, 171, 0, 0, 0, 0, 0, 0, 171
+"c:\Users\ace\Documents\Reefscape2025\vendordeps\Phoenix6-25.3.0.json", "JSON", 0, 449, 0, 0, 0, 0, 0, 0, 449
+"c:\Users\ace\Documents\Reefscape2025\vendordeps\REVLib-2025.0.2.json", "JSON", 0, 71, 0, 0, 0, 0, 0, 0, 71
+"c:\Users\ace\Documents\Reefscape2025\vendordeps\WPILibNewCommands.json", "JSON", 0, 38, 0, 0, 0, 0, 0, 1, 39
+"c:\Users\ace\Documents\Reefscape2025\vendordeps\photonlib.json", "JSON", 0, 71, 0, 0, 0, 0, 0, 0, 71
+"Total", "-", 92, 905, 37, 7, 1629, 41, 477, 470, 3658

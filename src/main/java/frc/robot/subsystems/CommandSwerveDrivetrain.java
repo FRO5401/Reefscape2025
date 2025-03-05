@@ -80,7 +80,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
     private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
-    Field2d feild2d = new Field2d();
+    public List<PhotonPipelineResult> results;
     
         private final SwerveRequest.ApplyFieldSpeeds m_applyFieldSpeeds =
             new SwerveRequest.ApplyFieldSpeeds()
@@ -171,7 +171,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
         camera = m_camera;
         poseEstimator = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.AVERAGE_BEST_TARGETS, VisionConstants.ROBOT_TO_CAM);
-        feild2d.setRobotPose(getPose());
     }
 
     /**
@@ -311,8 +310,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     @Override
     public void periodic() {
-        feild2d.setRobotPose(getPose());
-        SmartDashboard.putData("field....", feild2d);
+        results = camera.getAllUnreadResults();
         /*
          * Periodically try to apply the operator perspective.
          * If we haven't applied the operator perspective before, then we should apply it regardless of DS state.
@@ -395,7 +393,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
         camera.setPipelineIndex(0);
-        List<PhotonPipelineResult> results = camera.getAllUnreadResults();
         if(!results.isEmpty()){
             return poseEstimator.update(results.get(0));
         }
@@ -406,5 +403,41 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public SwerveRequest driveFieldRelative(ChassisSpeeds speeds) {
         return m_applyFieldSpeeds.withSpeeds(speeds);
     }
+    public Pose2d findNearestAprilTagPose() {
+        // TODO: filter out opposing side tags and non-reef tags
+        Pose2d currentPose = getPose();
+        Pose2d nearestAprilTagPose = null;
+        double nearestDistance = Double.MAX_VALUE;
+
+        Pose2d[] aprilTagPoses = new Pose2d[6];
+
+        if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+            for (int i = 0; i < 6; i++) {
+                aprilTagPoses[i] =
+                        VisionConstants.aprilTagLayout
+                                .getTagPose(VisionConstants.redReefTagIDs[i])
+                                .get()
+                                .toPose2d();
+            }
+        } else {
+            for (int i = 0; i < 6; i++) {
+                aprilTagPoses[i] =
+                        VisionConstants.aprilTagLayout
+                                .getTagPose(VisionConstants.blueReefTagIDs[i])
+                                .get()
+                                .toPose2d();
+            }
+        }
+        for (Pose2d tagPose : aprilTagPoses) {
+            double distance = currentPose.getTranslation().getDistance(tagPose.getTranslation());
+            if (distance < nearestDistance) {
+                nearestDistance = distance;
+                nearestAprilTagPose = tagPose;
+            }
+        }
+
+        return nearestAprilTagPose;
+    }
 }
+
 

@@ -6,43 +6,28 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.util.Optional;
+import java.util.Set;
 
-import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Commands.AlignAndDriveToReef;
-import frc.robot.Commands.AlignToTag;
-import frc.robot.Commands.Autos.OnePiece;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.InfeedConstants;
 import frc.robot.Constants.InfeedConstants.IntakeConstants;
 import frc.robot.Constants.InfeedConstants.PivotConstants;
-import frc.robot.Constants.Trajectorys;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -50,6 +35,7 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.CANdleSystem.AnimationTypes;
 import frc.robot.subsystems.CANdleSystem;
+import frc.robot.Commands.AlignToReef;
 
 
 public class RobotContainer {
@@ -100,7 +86,7 @@ public class RobotContainer {
         );
 
 
-        driver.a().whileTrue(drivetrain.applyRequest(() -> brake));
+        //driver.a().whileTrue(drivetrain.applyRequest(() -> brake));
         driver.b().whileTrue(drivetrain.applyRequest(() ->
             point.withModuleDirection(new Rotation2d(-driver.getLeftY(), -driver.getLeftX()))
         ));
@@ -217,22 +203,43 @@ public class RobotContainer {
         operator.leftBumper().onTrue(maniuplator.stopIntake());
        // drivetrain.registerTelemetry(logger::telemeterize);
 
+       driver.a().whileTrue(alignToReef(0));
 
-        
+}
+
+    // Automatically chooses closest tag
+    public Command alignAndDriveToReef(double offset) {
+        return Commands.defer(
+                () -> {
+                    Pose2d alignmentPose = drivetrain.findNearestAprilTagPose()                      
+                    .plus(
+                        new Transform2d(
+                                new Translation2d(offset, VisionConstants.REEF_DISTANCE),
+                                new Rotation2d()));
+                    return new AlignAndDriveToReef(
+                            drivetrain,
+                            offset,
+                            alignmentPose,
+                            Rotation2d.kPi);
+                },
+                Set.of(drivetrain));
     }
 
-    public Command alignAndDriveToReef(int tag, double offset) {
-        Pose2d alignmentPose =
-                VisionConstants.aprilTagLayout
-                        .getTagPose(tag)
-                        .get()
-                        .toPose2d()
-                        .plus(
-                                new Transform2d(
-                                        new Translation2d(VisionConstants.REEF_DISTANCE, offset),
-                                        new Rotation2d()));
-        return new AlignAndDriveToReef(drivetrain, 0, alignmentPose, Rotation2d.kPi);
+    public Command alignToReef(double offset) {
+        return Commands.defer(
+            () -> {
+                Pose2d alignmentPose = drivetrain.findNearestAprilTagPose();
+                return new AlignToReef(
+                        drivetrain,
+                        ()->driver.getLeftX(),
+                        ()->driver.getLeftY(),
+                        offset,
+                        alignmentPose,
+                        Rotation2d.kPi);
+                },
+                Set.of(drivetrain));
     }
+
 
 
     public void chooseAuto(){

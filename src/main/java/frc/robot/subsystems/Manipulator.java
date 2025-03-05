@@ -196,11 +196,6 @@ public class Manipulator extends SubsystemBase {
     SmartDashboard.putNumber("Pivot Position", pivotEncoeer.getPosition());
     SmartDashboard.putNumber("Pinch Position", rotateLeftEncoder.getPosition());
         
-    SmartDashboard.putNumber("Pivot Temp", pivot.getMotorTemperature());
-    SmartDashboard.putNumber("Pinch Left Temp", rotateLeft.getMotorTemperature());
-    SmartDashboard.putNumber("Pinch Right Temp", rotateRight.getMotorTemperature());
-    SmartDashboard.putNumber("Intake Left Temp", intakeLeft.getMotorTemperature());
-    SmartDashboard.putNumber("Intake Right Temp", intakeRight.getMotorTemperature());
 
   }
 }

@@ -8,7 +8,10 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Elevator;
+
 import java.util.function.DoubleSupplier;
 
 public class AlignToReef extends Command {
@@ -74,7 +77,7 @@ public class AlignToReef extends Command {
         Rotation2d tagRotation = targetPose.getRotation();
 
         ChassisSpeeds driverCommandedVelocities =
-                new ChassisSpeeds(xVelocity.getAsDouble(), yVelocity.getAsDouble(), 0);
+                new ChassisSpeeds(xVelocity.getAsDouble() , yVelocity.getAsDouble(), 0);
 
         ChassisSpeeds fieldCommandedVelocities =
                 ChassisSpeeds.fromRobotRelativeSpeeds(

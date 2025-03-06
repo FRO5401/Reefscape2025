@@ -36,19 +36,21 @@ public class Constants {
 
             public static final double REEF_DISTANCE = Units.feetToMeters(4) ;
 
-            public static final Transform3d ROBOT_TO_CAM = new Transform3d(new Translation3d(Units.inchesToMeters(13), Units.inchesToMeters(-11.5), Units.inchesToMeters(5)), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+            public static final Transform3d ROBOT_TO_FRONT_CAM = new Transform3d(new Translation3d(Units.inchesToMeters(13), Units.inchesToMeters(11.5), Units.inchesToMeters(5)), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+            public static final Transform3d ROBOT_TO_RIGHT_CAM = new Transform3d(new Translation3d(Units.inchesToMeters(13), Units.inchesToMeters(-11.5), Units.inchesToMeters(5)), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+
     }
 
     public class ElevatorConstants{ 
         public static final int elevatorID = 13;
         public static final double SPEED_MODIFIER = 160;
-        public static final double BARGE = 150+3 ;
-        public static final double L4 = 140+3;
-        public static final double L3 = 82+3;
+        public static final double BARGE = 150+6 ;
+        public static final double L4 = 140+6;
+        public static final double L3 = 82+6;
         
 
         public static final double L2 = 53.91748046875+3;
-        public static final double STATION = 52+3;
+        public static final double STATION = 52+6;
         public static final double PROCESSOR = 10;
         public static final double FLOOR = 1;
 
@@ -83,7 +85,7 @@ public class Constants {
             //Closes in to suck in coral
             public static final double HOLD_CORAL = 44;
             //Sides parallel to hold algea
-            public static final double HOLD_ALGEA = 0;
+            public static final double HOLD_ALGEA = 6;
             //Place coral 62.49993896484375
 
             

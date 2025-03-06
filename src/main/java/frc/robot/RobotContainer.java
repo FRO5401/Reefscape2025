@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -43,6 +44,9 @@ public class RobotContainer {
     private double MaxAngularRate = RotationsPerSecond.of(1).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     private PhotonCamera FrontCam = new PhotonCamera("FrontCam");
+    private PhotonCamera FrontRight = new PhotonCamera("FrontRight");
+
+
 
 
     Elevator elevator = new Elevator();
@@ -64,7 +68,9 @@ public class RobotContainer {
     private final CommandXboxController operator = Controls.operator;
 
 
-    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(FrontCam);
+    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(FrontCam, FrontRight);
+
+    public final Telemetry logger = new Telemetry(MaxSpeed);
 
     public RobotContainer() {
         configureBindings();
@@ -152,7 +158,7 @@ public class RobotContainer {
                
                 IntakeConstants.HOLD_ALGEA,
                     PivotConstants.STRAIGHTOUT),
-                elevator.setPosition(ElevatorConstants.L2-5)
+                elevator.setPosition(ElevatorConstants.L2-6)
             ));
         
         //  Straightens out intake
@@ -161,7 +167,7 @@ public class RobotContainer {
                 maniuplator.setPosition(
                     IntakeConstants.HOLD_ALGEA,
                     PivotConstants.STRAIGHTOUT),
-                elevator.setPosition(ElevatorConstants.L3-5)
+                elevator.setPosition(ElevatorConstants.L3-6)
             ));
             
         //  Sucks in piece
@@ -199,9 +205,11 @@ public class RobotContainer {
         
 
         operator.leftBumper().onTrue(maniuplator.stopIntake());
-       // drivetrain.registerTelemetry(logger::telemeterize);
+       drivetrain.registerTelemetry(logger::telemeterize);
 
-       driver.a().whileTrue(alignToReef(0));
+       driver.x().whileTrue(alignToReef(Units.inchesToMeters(-10 )));
+       driver.b().whileTrue(alignToReef(Units.inchesToMeters(10)));
+
 
 }
 
@@ -229,8 +237,8 @@ public class RobotContainer {
                 Pose2d alignmentPose = drivetrain.findNearestAprilTagPose();
                 return new AlignToReef(
                         drivetrain,
-                        ()->driver.getLeftX(),
-                        ()->driver.getLeftY(),
+                        ()->driver.getLeftX()*elevator.getSpeedModifier(),
+                        ()->driver.getLeftY()*elevator.getSpeedModifier(),
                         offset,
                         alignmentPose,
                         Rotation2d.kPi);
@@ -256,6 +264,7 @@ public class RobotContainer {
         return chooser.getSelected();
     }
 
-    
+  
+
 }
 

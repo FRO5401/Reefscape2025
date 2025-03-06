@@ -17,9 +17,7 @@ import frc.robot.generated.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
-import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.ModuleRequest;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
@@ -34,7 +32,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.Kinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
@@ -171,6 +168,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
         camera = m_camera;
         poseEstimator = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.AVERAGE_BEST_TARGETS, VisionConstants.ROBOT_TO_CAM);
+
     }
 
     /**
@@ -280,8 +278,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
 
     //factory for returning swerve auto commands
-    public SwerveControllerCommand getAutoCommand(Trajectory trajectory){
-
+    public SwerveControllerCommand getAutoCommand(Trajectory trajectory, Pose2d pose){
+        pose = getPose();
+        
         //need to allow continues movement so the  module actually works
         ProfiledPIDController thetaController = Constants.AutoConstants.thetaController;
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
@@ -340,6 +339,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             addVisionMeasurement(pose.get().estimatedPose.toPose2d(), pose.get().timestampSeconds);
         }
         
+          
     }
 
     private void startSimThread() {

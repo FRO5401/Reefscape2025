@@ -17,9 +17,54 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+
 import frc.robot.generated.TunerConstants;
 
 public class Constants {
+
+    public static class ModeConstants{
+        public static final Mode simMode = Mode.SIM;
+        public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
+    
+        public static enum Mode {
+        /** Running on a real robot. */
+            REAL,
+        /** Running a physics simulator. */
+            SIM,
+        /** Replaying from a log file. */
+            REPLAY
+        }
+        public static final int flipped() {
+            if(DriverStation.getAlliance().get() == Alliance.Blue){
+                return -1;
+              } else {
+                return 1;
+              }
+        }
+    }
+  
+    public static final double kElevatorKp = 5;
+    public static final double kElevatorKi = 0;
+    public static final double kElevatorKd = 0;
+  
+    public static final double kElevatorkS = 0.0; // volts (V)
+    public static final double kElevatorkG = 0.85; // volts (V)
+    public static final double kElevatorkV = 1.1; // volt per velocity (V/(m/s))
+    public static final double kElevatorkA = 0.100; // volt per acceleration (V/(m/s²))
+  
+    public static final double kElevatorGearing = 10.0;
+    public static final double kElevatorDrumRadius = Units.inchesToMeters(2.0);
+    public static final double kCarriageMass = 4.0; // kg
+  
+    public static final double kSetpointMeters = 0.75;
+    // Encoder is reset to measure 0 at the bottom, so minimum height is 0.
+    public static final double kMinElevatorHeightMeters = 0.0;
+    public static final double kMaxElevatorHeightMeters = 1.25;
+  
+    
     public static class ControlConstants{
         //  Controller Specifications
         public static final int XBOX_CONTROLLER_DRIVER = 0;
@@ -117,6 +162,44 @@ public class Constants {
 
 
     }
+
+    public class ElevatorConstants{
+
+        public static final int elevatorID = 14;
+        public static final double EXTENDED_POSITION = 31;
+        public static final double HALF_EXTENDED_POSITION = 15.5;
+        public static final double KP = 3; // An error of 1 rotation results in 2.4 V output
+        public static final double KI = 3; // no output for integrated error
+        public static final double KD = .42; // A velocity of 1 rps results in 0.1 V output
+        public static final double KA=.1;
+        public static final double KV=.1;
+        public static final double KG=2.4;
+
+        /*  Constants for the Simulation Elevator */
+        public class ElevatorSimConstants{
+            public static final int kEncoderAChannel = 0;
+            public static final int kEncoderBChannel = 1;          
+          
+            public static final double kElevatorkS = 0.0; // volts (V)
+            public static final double kElevatorkG = 0.762; // volts (V)
+            public static final double kElevatorkV = 0.762; // volt per velocity (V/(m/s))
+          
+            public static final double ElevatorGearing = 5.0;
+            public static final double kElevatorDrumRadius = Units.inchesToMeters(1.125);
+            public static final double kCarriageMass = Units.lbsToKilograms(12.5);
+          
+            public static final double kSetpointMeters = 0.75;
+            // Encoder is reset to measure 0 at the bottom, so minimum height is 0.
+            public static final double kMinElevatorHeightMeters = Units.inchesToMeters(41.19);
+            public static final double kMaxElevatorHeightMeters = Units.inchesToMeters(97.85);
+            public static final double setPointMeters = Units.inchesToMeters(85);
+            
+          
+            // distance per pulse = (distance per revolution) / (pulses per revolution) = (Pi * D) / ppr
+            public static final double kElevatorEncoderDistPerPulse = 2.0 * Math.PI * kElevatorDrumRadius / 4096;
+        }
+    }
+
     public class AutoConstants{
 
         public static final double kMaxSpeedMetersPerSecond = 3.5;
@@ -133,18 +216,25 @@ public class Constants {
         /* Constraint for kpx motion profilied robot angle controller */
         public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
             new TrapezoidProfile.Constraints(
-                kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
-
+                kMaxAngularSpeedRadiansPerSecond, 
+                kMaxAngularSpeedRadiansPerSecondSquared);
 
         public static final ProfiledPIDController thetaController =
             new ProfiledPIDController(
                 Constants.AutoConstants.kPThetaController, 0, kDThetaController, Constants.AutoConstants.kThetaControllerConstraints);
 
-            
-        
+  
+                Constants.AutoConstants.kPThetaController, 
+                0, 
+                0, 
+                Constants.AutoConstants.kThetaControllerConstraints);
+ 
     };
 
     public static final class Swerve{
+        public static final double robotWidth = 28;
+        public static final double robotLength = 32;
+
         public static final double trackWidth = Units.inchesToMeters(22.75); //TODO: This must be tuned to specific robot
         public static final double wheelBase = Units.inchesToMeters(26.75); //TODO: This must be tuned to specific robot
         public static final double wheelCircumference = 4 *Math.PI;

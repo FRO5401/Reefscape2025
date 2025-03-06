@@ -2,10 +2,15 @@ package frc.robot;
 
 import java.util.List;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
@@ -19,6 +24,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.generated.TunerConstants;
 
 public class Constants {
+
     public static class ModeConstants{
         public static final Mode simMode = Mode.SIM;
         public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
@@ -66,6 +72,97 @@ public class Constants {
         public static final double CONTROLLER_SENSITIVITY = 0.05;
     }
 
+    public static final class VisionConstants{
+        public static final int[] blueReefTagIDs = {17, 18, 19, 20, 21, 22};
+        public static final int[] redReefTagIDs = {6, 7, 8, 9, 10, 11};
+        
+            public static AprilTagFieldLayout aprilTagLayout =
+            AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+
+            public static final double REEF_DISTANCE = Units.feetToMeters(4) ;
+
+            public static final Transform3d ROBOT_TO_CAM = new Transform3d(new Translation3d(Units.inchesToMeters(13), Units.inchesToMeters(-11.5), Units.inchesToMeters(5)), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+    }
+
+    public class ElevatorConstants{ 
+        public static final int elevatorID = 13;
+        public static final double SPEED_MODIFIER = 160;
+        public static final double BARGE = 150+3 ;
+        public static final double L4 = 140+3;
+        public static final double L3 = 82+3;
+        
+
+        public static final double L2 = 53.91748046875+3;
+        public static final double STATION = 52+3;
+        public static final double PROCESSOR = 10;
+        public static final double FLOOR = 1;
+
+        public static final double KP = 4; // An error of 1 rotation results in 2.4 V output
+        public static final double KI = 3; // no output for integrated error
+        public static final double KD = .4; // A velocity of 1 rps results in 0.1 V output
+        public static final double KA=.1;
+        public static final double KV=.1;
+        public static final double KG=2.4;
+    }
+
+    public class InfeedConstants{
+
+        public static final int BEAM_BREAK_ID = 8;
+
+        public class IntakeConstants{
+            /*  ID of Spark Maxs */
+            //Intake wheel motors
+            public static final int INTAKE_MOTOR_LEFT = 20;
+            public static final int INTAKE_MOTOR_RIGHT=18;
+            //Rotation Motors
+            public static final int ROTATE_MOTOR_LEFT=17; 
+            public static final int ROTATE_MOTOR_RIGHT=15;
+
+            /*  PIDF Values */
+            public static final double ROTATE_KP = .5;
+            public static final double ROTATE_kI = 0;
+            public static final double ROTATE_kD = .1;
+            public static final double ROTATE_KF = 10;
+
+            /*  Position for each game piece */
+            //Closes in to suck in coral
+            public static final double HOLD_CORAL = 44;
+            //Sides parallel to hold algea
+            public static final double HOLD_ALGEA = 0;
+            //Place coral 62.49993896484375
+
+            
+        }
+
+        public class PivotConstants{
+            // ID of Neo 1650
+            public static final int PIVOT_ID=14;
+
+            /*  PID values */
+            public static final double PIVOT_KP=.5;
+            public static final double PIVOT_KI=0;
+            public static final double PIVOT_KD=0.1;
+
+            /*  Positon Values */
+            //90 degree angle on the intake
+            public static final double STRAIGHTOUT = -31;
+            //public static final double PROCESSOR = 53; //Will replace straight out most likely
+            //aimed up to shoot into the barge
+            public static final double BARGE = -15;
+            //Scoring on top of barge
+            public static final double L4 = -82;
+            //takes algea out and possibly place on L2 and L3
+            public static final double PLACE_CORAL = -62.49993896484375;
+            public static final double CLEAR_ALGEA =-40.49993896484375;
+            public static final double FLOOR_PICKUP =-85;
+
+            //Gets Coral from station
+            public static final double STATION = -29;
+        }
+
+
+    }
+
     public class ElevatorConstants{
 
         public static final int elevatorID = 14;
@@ -105,14 +202,16 @@ public class Constants {
 
     public class AutoConstants{
 
-        public static final double kMaxSpeedMetersPerSecond = 3;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+        public static final double kMaxSpeedMetersPerSecond = 3.5;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 2.5;
         public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
         public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
     
-        public static final double kPXController = .175;
-        public static final double kPYController = 2.5;
-        public static final double kPThetaController = .25;
+        public static final double kPXController = 1.687;
+        public static final double kPYController = 1.687;
+    
+        public static final double kPThetaController = 1.687;
+        public static final double kDThetaController = kPThetaController/2;
     
         /* Constraint for kpx motion profilied robot angle controller */
         public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
@@ -122,6 +221,9 @@ public class Constants {
 
         public static final ProfiledPIDController thetaController =
             new ProfiledPIDController(
+                Constants.AutoConstants.kPThetaController, 0, kDThetaController, Constants.AutoConstants.kThetaControllerConstraints);
+
+  
                 Constants.AutoConstants.kPThetaController, 
                 0, 
                 0, 
@@ -151,8 +253,38 @@ public class Constants {
         public static final  TrajectoryConfig config = new TrajectoryConfig(
                     TunerConstants.kSpeedAt12Volts.baseUnitMagnitude(),
                     //TODO: Fix this to be the actual constant. 
-                    3.23)
+                    2)
                 .setKinematics(Constants.Swerve.swerveKinematics);
+
+        public final static Trajectory onePiece =
+                TrajectoryGenerator.generateTrajectory(
+                    // Start at the origin facing the +X direction
+                    new Pose2d(0,0, new Rotation2d(Units.degreesToRadians(0))),
+                    // Pass through these two interior waypoints, making an 's' curve path
+                    List.of(new Translation2d(1,0)),
+                    // End 3 meters straight ahead of where we started, facing forward
+                    new Pose2d(2, 0, new Rotation2d(Units.degreesToRadians(0))),
+                    config);
+                
+                    public final static Trajectory onePieceReef = TrajectoryGenerator.generateTrajectory(
+                        // Start at the origin facing the +X direction
+                    new Pose2d(2, 0, new Rotation2d(Units.degreesToRadians(0))),
+                    // Pass through these two interior waypoints, making an 's' curve path
+                    List.of(new Translation2d(2.489185116263105,0)),
+                    // End 3 meters straight ahead of where we started, facing forward
+                    new Pose2d(3.25, 0, new Rotation2d(Units.degreesToRadians(0))),
+                    config);
+
+                    public final static Trajectory backup = TrajectoryGenerator.generateTrajectory(
+                        // Start at the origin facing the +X direction
+                    new Pose2d(3.25, 0, new Rotation2d(Units.degreesToRadians(0))),
+                    // Pass through these two interior waypoints, making an 's' curve path
+                    List.of(new Translation2d(2.489185116263105,0)),
+                    // End 3 meters straight ahead of where we started, facing forward
+                    new Pose2d(2, 0, new Rotation2d(Units.degreesToRadians(0))),
+                    config);
+                    
+        
 
 
         public final static Trajectory sCurveTrajectory =
@@ -168,12 +300,15 @@ public class Constants {
         public final static Trajectory rSCurveTrajectory =
             TrajectoryGenerator.generateTrajectory(
                 // Start at the origin facing the +X direction
-                new Pose2d(0,5, new Rotation2d(Units.degreesToRadians(90))),
+                new Pose2d(0,5, new Rotation2d(Units.degreesToRadians(180))),
                 // Pass through these two interior waypoints, making an 's' curve path
-                List.of(new Translation2d(-1,3), new Translation2d(1, 1)),
+                List.of(new Translation2d(-1,3), new Translation2d(1, 0)),
                 // End 3 meters straight ahead of where we started, facing forward
                 new Pose2d(0, 0, new Rotation2d(0)),
                 config);
-    };
+    }
+
+    public static final int CANdleID = 19;
+    
 
 }

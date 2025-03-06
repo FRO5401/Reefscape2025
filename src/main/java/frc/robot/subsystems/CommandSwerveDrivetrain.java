@@ -2,20 +2,34 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
+
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.PhotonUtils;
+
+import frc.robot.generated.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule.ModuleRequest;
+import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -25,13 +39,18 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
@@ -40,6 +59,9 @@ import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
  * Subsystem so it can easily be used in command-based projects.
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
+    PhotonCamera camera;
+    PhotonPoseEstimator poseEstimator;
+
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
@@ -55,6 +77,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
     private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
+    public List<PhotonPipelineResult> results;
+    
+        private final SwerveRequest.ApplyFieldSpeeds m_applyFieldSpeeds =
+            new SwerveRequest.ApplyFieldSpeeds()
+                    .withDriveRequestType(DriveRequestType.Velocity)
+                    .withSteerRequestType(SteerRequestType.MotionMagicExpo)
+                    .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
 
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
@@ -130,12 +159,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      */
     public CommandSwerveDrivetrain(
         SwerveDrivetrainConstants drivetrainConstants,
+        PhotonCamera m_camera,
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
         super(drivetrainConstants, modules);
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        camera = m_camera;
+        poseEstimator = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.AVERAGE_BEST_TARGETS, VisionConstants.ROBOT_TO_CAM);
 
     }
 
@@ -277,6 +309,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     @Override
     public void periodic() {
+        results = camera.getAllUnreadResults();
         /*
          * Periodically try to apply the operator perspective.
          * If we haven't applied the operator perspective before, then we should apply it regardless of DS state.
@@ -294,6 +327,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+        
+        SmartDashboard.putNumber("X", getPose().getX());
+        SmartDashboard.putNumber("Y", getPose().getY());
+        SmartDashboard.putNumber("Rotation", getPose().getRotation().getDegrees());
+        SmartDashboard.putNumber("has target", camera.getPipelineIndex());
+
+
+        Optional<EstimatedRobotPose> pose = getEstimatedGlobalPose();
+        if (pose.isPresent()){
+            addVisionMeasurement(pose.get().estimatedPose.toPose2d(), pose.get().timestampSeconds);
+        }
+        
           
     }
 
@@ -345,5 +390,54 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     ) {
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
     }
+
+    public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
+        camera.setPipelineIndex(0);
+        if(!results.isEmpty()){
+            return poseEstimator.update(results.get(0));
+        }
+        return Optional.empty();
+        
+
+    }
+    public SwerveRequest driveFieldRelative(ChassisSpeeds speeds) {
+        return m_applyFieldSpeeds.withSpeeds(speeds);
+    }
+    public Pose2d findNearestAprilTagPose() {
+        // TODO: filter out opposing side tags and non-reef tags
+        Pose2d currentPose = getPose();
+        Pose2d nearestAprilTagPose = null;
+        double nearestDistance = Double.MAX_VALUE;
+
+        Pose2d[] aprilTagPoses = new Pose2d[6];
+
+        if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+            for (int i = 0; i < 6; i++) {
+                aprilTagPoses[i] =
+                        VisionConstants.aprilTagLayout
+                                .getTagPose(VisionConstants.redReefTagIDs[i])
+                                .get()
+                                .toPose2d();
+            }
+        } else {
+            for (int i = 0; i < 6; i++) {
+                aprilTagPoses[i] =
+                        VisionConstants.aprilTagLayout
+                                .getTagPose(VisionConstants.blueReefTagIDs[i])
+                                .get()
+                                .toPose2d();
+            }
+        }
+        for (Pose2d tagPose : aprilTagPoses) {
+            double distance = currentPose.getTranslation().getDistance(tagPose.getTranslation());
+            if (distance < nearestDistance) {
+                nearestDistance = distance;
+                nearestAprilTagPose = tagPose;
+            }
+        }
+
+        return nearestAprilTagPose;
+    }
 }
+
 

@@ -30,7 +30,11 @@ public class Constants {
     public static final class VisionConstants{
         public static final int[] blueReefTagIDs = {17, 18, 19, 20, 21, 22};
         public static final int[] redReefTagIDs = {6, 7, 8, 9, 10, 11};
-        
+
+        public static final int[] redStationTagIDS = {1,2};
+        public static final int[] blueStationTagIDS = {12,13};
+
+    
             public static AprilTagFieldLayout aprilTagLayout =
             AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 

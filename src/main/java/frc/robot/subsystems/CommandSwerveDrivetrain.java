@@ -416,7 +416,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public SwerveRequest driveFieldRelative(ChassisSpeeds speeds) {
         return m_applyFieldSpeeds.withSpeeds(speeds);
     }
-    public Pose2d findNearestAprilTagPose() {
+    public Pose2d findNearestReefTagPose() {
         // TODO: filter out opposing side tags and non-reef tags
         Pose2d currentPose = getPose();
         Pose2d nearestAprilTagPose = null;
@@ -437,6 +437,41 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 aprilTagPoses[i] =
                         VisionConstants.aprilTagLayout
                                 .getTagPose(VisionConstants.blueReefTagIDs[i])
+                                .get()
+                                .toPose2d();
+            }
+        }
+        for (Pose2d tagPose : aprilTagPoses) {
+            double distance = currentPose.getTranslation().getDistance(tagPose.getTranslation());
+            if (distance < nearestDistance) {
+                nearestDistance = distance;
+                nearestAprilTagPose = tagPose;
+            }
+        }
+
+        return nearestAprilTagPose;
+    }
+    public Pose2d findNearestSourceTagPose() {
+        // TODO: filter out opposing side tags and non-reef tags
+        Pose2d currentPose = getPose();
+        Pose2d nearestAprilTagPose = null;
+        double nearestDistance = Double.MAX_VALUE;
+
+        Pose2d[] aprilTagPoses = new Pose2d[6];
+
+        if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+            for (int i = 0; i < 6; i++) {
+                aprilTagPoses[i] =
+                        VisionConstants.aprilTagLayout
+                                .getTagPose(VisionConstants.redStationTagIDS[i])
+                                .get()
+                                .toPose2d();
+            }
+        } else {
+            for (int i = 0; i < 6; i++) {
+                aprilTagPoses[i] =
+                        VisionConstants.aprilTagLayout
+                                .getTagPose(VisionConstants.blueStationTagIDS[i])
                                 .get()
                                 .toPose2d();
             }

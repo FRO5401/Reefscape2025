@@ -14,7 +14,7 @@ import frc.robot.subsystems.Elevator;
 
 import java.util.function.DoubleSupplier;
 
-public class AlignToReef extends Command {
+public class AlignToTag extends Command {
     private CommandSwerveDrivetrain drivetrain;
 
     private DoubleSupplier xVelocity;
@@ -28,7 +28,7 @@ public class AlignToReef extends Command {
 
     private Timer slewerTimer = new Timer();
 
-    public AlignToReef(
+    public AlignToTag(
             CommandSwerveDrivetrain drivetrain,
             DoubleSupplier xVelocity,
             DoubleSupplier yVelocity,

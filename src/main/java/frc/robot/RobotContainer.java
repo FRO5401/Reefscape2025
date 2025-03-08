@@ -36,7 +36,7 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.CANdleSystem.AnimationTypes;
 import frc.robot.subsystems.CANdleSystem;
-import frc.robot.Commands.AlignToReef;
+import frc.robot.Commands.AlignToTag;
 
 
 public class RobotContainer {
@@ -209,6 +209,7 @@ public class RobotContainer {
 
        driver.x().whileTrue(alignToReef(Units.inchesToMeters(-10 )));
        driver.b().whileTrue(alignToReef(Units.inchesToMeters(10)));
+       driver.a().whileTrue(alignToSource(Units.inchesToMeters(0)));
 
 
 }
@@ -217,7 +218,7 @@ public class RobotContainer {
     public Command alignAndDriveToReef(double offset) {
         return Commands.defer(
                 () -> {
-                    Pose2d alignmentPose = drivetrain.findNearestAprilTagPose()                      
+                    Pose2d alignmentPose = drivetrain.findNearestReefTagPose()                      
                     .plus(
                         new Transform2d(
                                 new Translation2d(offset, VisionConstants.REEF_DISTANCE),
@@ -234,8 +235,23 @@ public class RobotContainer {
     public Command alignToReef(double offset) {
         return Commands.defer(
             () -> {
-                Pose2d alignmentPose = drivetrain.findNearestAprilTagPose();
-                return new AlignToReef(
+                Pose2d alignmentPose = drivetrain.findNearestReefTagPose();
+                return new AlignToTag(
+                        drivetrain,
+                        ()->driver.getLeftX()*elevator.getSpeedModifier(),
+                        ()->driver.getLeftY()*elevator.getSpeedModifier(),
+                        offset,
+                        alignmentPose,
+                        Rotation2d.kPi);
+                },
+                Set.of(drivetrain));
+    }
+
+    public Command alignToSource(double offset) {
+        return Commands.defer(
+            () -> {
+                Pose2d alignmentPose = drivetrain.findNearestSourceTagPose();
+                return new AlignToTag(
                         drivetrain,
                         ()->driver.getLeftX()*elevator.getSpeedModifier(),
                         ()->driver.getLeftY()*elevator.getSpeedModifier(),

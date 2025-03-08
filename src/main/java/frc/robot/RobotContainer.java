@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.AlignAndDriveToReef;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.InfeedConstants.IntakeConstants;
@@ -78,6 +79,7 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
+        Trigger tiltingElevator = new Trigger(()->drivetrain.getPitch() >25);
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
@@ -89,6 +91,7 @@ public class RobotContainer {
             )
         );
 
+        tiltingElevator.onTrue(elevator.setPosition(ElevatorConstants.PROCESSOR));
 
         //driver.a().whileTrue(drivetrain.applyRequest(() -> brake));
         driver.b().whileTrue(drivetrain.applyRequest(() ->

@@ -68,7 +68,7 @@ public class Elevator extends SubsystemBase {
      * returns the inverse of the elevator position as a percent to slow down the robot
      */
   public double getSpeedModifier(){
-    return 1-(elevator.getPosition().getValueAsDouble()/ElevatorConstants.SPEED_MODIFIER);
+    return (Math.pow(Math.E, -3*(elevator.getPosition().getValueAsDouble()/ElevatorConstants.SPEED_MODIFIER)));
   }
 
   @Override

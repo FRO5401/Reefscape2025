@@ -14,6 +14,7 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.ModuleRequest;
@@ -60,6 +61,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     PhotonCamera rightCamera;
     PhotonPoseEstimator rightPoseEstimator;
 
+    Pigeon2 pigeon2;
 
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
@@ -174,7 +176,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         rightCamera = m_rightcamera;
         rightPoseEstimator = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.AVERAGE_BEST_TARGETS, VisionConstants.ROBOT_TO_RIGHT_CAM);
+
+        pigeon2 = new Pigeon2(0, "Drivebase");
     }
+
 
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.
@@ -350,7 +355,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
 
         
-        Logger.recordOutput("MyPose", getPose());
+        SmartDashboard.putNumber("Pitch", getPitch());     
         
         
     }
@@ -460,7 +465,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         Pose2d[] aprilTagPoses = new Pose2d[6];
 
         if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
-            for (int i = 0; i < 6; i++) {
+            for (int i = 0; i < VisionConstants.blueStationTagIDS.length; i++) {
                 aprilTagPoses[i] =
                         VisionConstants.aprilTagLayout
                                 .getTagPose(VisionConstants.redStationTagIDS[i])
@@ -487,6 +492,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return nearestAprilTagPose;
     }
 
+    public double getPitch(){
+        return pigeon2.getRoll().getValueAsDouble();
+    }
 
 }
 

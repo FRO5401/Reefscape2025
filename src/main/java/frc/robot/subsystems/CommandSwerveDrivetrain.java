@@ -88,6 +88,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                     .withDriveRequestType(DriveRequestType.Velocity)
                     .withSteerRequestType(SteerRequestType.MotionMagicExpo)
                     .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
+            private final SwerveRequest.FieldCentric drive = 
+            new SwerveRequest.FieldCentric()
+                    .withDeadband( Constants.Swerve.MaxSpeed * 0.01).withRotationalDeadband(Constants.Swerve.MaxAngularRate * 0.01) // Add a 10% deadband
+                    .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
@@ -421,6 +425,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public SwerveRequest driveFieldRelative(ChassisSpeeds speeds) {
         return m_applyFieldSpeeds.withSpeeds(speeds);
     }
+    
     public Pose2d findNearestReefTagPose() {
         // TODO: filter out opposing side tags and non-reef tags
         Pose2d currentPose = getPose();
@@ -462,10 +467,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         Pose2d nearestAprilTagPose = null;
         double nearestDistance = Double.MAX_VALUE;
 
-        Pose2d[] aprilTagPoses = new Pose2d[6];
+        Pose2d[] aprilTagPoses = new Pose2d[2];
 
         if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
-            for (int i = 0; i < VisionConstants.blueStationTagIDS.length; i++) {
+            for (int i = 0; i < 2; i++) {
                 aprilTagPoses[i] =
                         VisionConstants.aprilTagLayout
                                 .getTagPose(VisionConstants.redStationTagIDS[i])
@@ -473,7 +478,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                                 .toPose2d();
             }
         } else {
-            for (int i = 0; i < 6; i++) {
+            for (int i = 0; i < 2; i++) {
                 aprilTagPoses[i] =
                         VisionConstants.aprilTagLayout
                                 .getTagPose(VisionConstants.blueStationTagIDS[i])
@@ -493,7 +498,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public double getPitch(){
-        return pigeon2.getRoll().getValueAsDouble();
+        return pigeon2.getPitch().getValueAsDouble();
     }
 
 }

@@ -41,8 +41,6 @@ import frc.robot.Commands.AlignToTag;
 
 
 public class RobotContainer {
-    private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    private double MaxAngularRate = RotationsPerSecond.of(1).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     private PhotonCamera FrontCam = new PhotonCamera("FrontCam");
     private PhotonCamera FrontRight = new PhotonCamera("FrontRight");
@@ -59,7 +57,7 @@ public class RobotContainer {
     
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.01).withRotationalDeadband(MaxAngularRate * 0.01) // Add a 10% deadband
+            .withDeadband(Constants.Swerve.MaxSpeed * 0.01).withRotationalDeadband(Constants.Swerve.MaxAngularRate * 0.01) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
@@ -71,7 +69,7 @@ public class RobotContainer {
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(FrontCam, FrontRight);
 
-    public final Telemetry logger = new Telemetry(MaxSpeed);
+    public final Telemetry logger = new Telemetry(Constants.Swerve.MaxSpeed);
 
     public RobotContainer() {
         configureBindings();
@@ -85,9 +83,9 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-driver.getLeftY() * MaxSpeed * elevator.getSpeedModifier()) // Drive forward with negative Y (forward)
-                    .withVelocityY(-driver.getLeftX() * MaxSpeed * elevator.getSpeedModifier()) // Drive left with negative X (left)
-                    .withRotationalRate(-driver.getRightX() * MaxAngularRate * elevator.getSpeedModifier()) // Drive counterclockwise with negative X (left)
+                drive.withVelocityX(-driver.getLeftY() * Constants.Swerve.MaxSpeed * elevator.getSpeedModifier()) // Drive forward with negative Y (forward)
+                    .withVelocityY(-driver.getLeftX() * Constants.Swerve.MaxSpeed * elevator.getSpeedModifier()) // Drive left with negative X (left)
+                    .withRotationalRate(-driver.getRightX() * Constants.Swerve.MaxAngularRate * elevator.getSpeedModifier()) // Drive counterclockwise with negative X (left)
             )
         );
 
@@ -210,8 +208,8 @@ public class RobotContainer {
         operator.leftBumper().onTrue(maniuplator.stopIntake());
        drivetrain.registerTelemetry(logger::telemeterize);
 
-       driver.x().whileTrue(alignToReef(Units.inchesToMeters(-10 )));
-       driver.b().whileTrue(alignToReef(Units.inchesToMeters(10)));
+       driver.x().whileTrue(alignToReef(Units.inchesToMeters(-8 )));
+       driver.b().whileTrue(alignToReef(Units.inchesToMeters(8)));
        driver.a().whileTrue(alignToSource(Units.inchesToMeters(0)));
 
 
@@ -241,11 +239,11 @@ public class RobotContainer {
                 Pose2d alignmentPose = drivetrain.findNearestReefTagPose();
                 return new AlignToTag(
                         drivetrain,
-                        ()->driver.getLeftX()*elevator.getSpeedModifier(),
-                        ()->driver.getLeftY()*elevator.getSpeedModifier(),
+                        ()->driver.getLeftY(),
+                        ()->driver.getLeftX(),
                         offset,
                         alignmentPose,
-                        Rotation2d.kPi);
+                        Rotation2d.kPi.plus(new Rotation2d(Units.degreesToRadians(-3))));
                 },
                 Set.of(drivetrain));
     }
@@ -256,11 +254,11 @@ public class RobotContainer {
                 Pose2d alignmentPose = drivetrain.findNearestSourceTagPose();
                 return new AlignToTag(
                         drivetrain,
-                        ()->driver.getLeftX()*elevator.getSpeedModifier(),
-                        ()->driver.getLeftY()*elevator.getSpeedModifier(),
+                        ()->driver.getLeftX(),
+                        ()->driver.getLeftY(),
                         offset,
                         alignmentPose,
-                        Rotation2d.kPi);
+                        Rotation2d.kPi.plus(new Rotation2d(Units.degreesToRadians(-3))));
                 },
                 Set.of(drivetrain));
     }

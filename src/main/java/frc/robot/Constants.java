@@ -1,5 +1,9 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import java.util.List;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -48,13 +52,13 @@ public class Constants {
     public class ElevatorConstants{ 
         public static final int elevatorID = 13;
         public static final double SPEED_MODIFIER = 166;
-        public static final double BARGE = 150+6 ;
-        public static final double L4 = 140+6;
-        public static final double L3 = 82+6;
+        public static final double BARGE = 150+9 ;
+        public static final double L4 = 140+9;
+        public static final double L3 = 82+9;
         
 
-        public static final double L2 = 53.91748046875+3;
-        public static final double STATION = 52+6;
+        public static final double L2 = 53.91748046875+6;
+        public static final double STATION = 52+9;
         public static final double PROCESSOR = 10;
         public static final double FLOOR = 1;
 
@@ -106,16 +110,16 @@ public class Constants {
 
             /*  Positon Values */
             //90 degree angle on the intake
-            public static final double STRAIGHTOUT = -31;
+            public static final double STRAIGHTOUT = -31+5;
             //public static final double PROCESSOR = 53; //Will replace straight out most likely
             //aimed up to shoot into the barge
-            public static final double BARGE = -15;
+            public static final double BARGE = -15+5;
             //Scoring on top of barge
-            public static final double L4 = -82;
+            public static final double L4 = -82+5;
             //takes algea out and possibly place on L2 and L3
-            public static final double PLACE_CORAL = -62.49993896484375;
-            public static final double CLEAR_ALGEA =-40.49993896484375;
-            public static final double FLOOR_PICKUP =-85;
+            public static final double PLACE_CORAL = -62.49993896484375+5;
+            public static final double CLEAR_ALGEA =-40.49993896484375+5;
+            public static final double FLOOR_PICKUP =-85+5;
 
             //Gets Coral from station
             public static final double STATION = -29;
@@ -162,6 +166,9 @@ public class Constants {
             new Translation2d(wheelBase / 2.0, -trackWidth / 2.0),
             new Translation2d(-wheelBase / 2.0, trackWidth / 2.0),
             new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0));
+        
+        public static final double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+        public static final double MaxAngularRate = RotationsPerSecond.of(1).in(RadiansPerSecond);
     }
 
     public static final class Trajectorys {

@@ -20,8 +20,8 @@ public class AlignToTag extends Command {
     private DoubleSupplier xVelocity;
     private DoubleSupplier yVelocity;
 
-    private PIDController thetaController = new PIDController(4, 0, 0);
-    private PIDController yController = new PIDController(6, 0, 0);
+    private PIDController thetaController = new PIDController(6, 0, 0);
+    private PIDController yController = new PIDController(5.3, 0, .2);
     private Pose2d targetPose;
     private double offset;
     private Rotation2d rotationOffset;
@@ -81,7 +81,7 @@ public class AlignToTag extends Command {
 
         ChassisSpeeds fieldCommandedVelocities =
                 ChassisSpeeds.fromRobotRelativeSpeeds(
-                        driverCommandedVelocities, drivetrain.getOperatorForwardDirection());
+                        driverCommandedVelocities, drivetrain.getPose().getRotation());
 
         ChassisSpeeds tagRelativeCommandedVelocities =
                 ChassisSpeeds.fromFieldRelativeSpeeds(fieldCommandedVelocities, tagRotation);

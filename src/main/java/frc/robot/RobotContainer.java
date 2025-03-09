@@ -239,7 +239,7 @@ public class RobotContainer {
                 Pose2d alignmentPose = drivetrain.findNearestReefTagPose();
                 return new AlignToTag(
                         drivetrain,
-                        ()->driver.getLeftY(),
+                        ()->-driver.getLeftY(),
                         ()->driver.getLeftX(),
                         offset,
                         alignmentPose,
@@ -254,8 +254,8 @@ public class RobotContainer {
                 Pose2d alignmentPose = drivetrain.findNearestSourceTagPose();
                 return new AlignToTag(
                         drivetrain,
+                        ()->-driver.getLeftY(),
                         ()->driver.getLeftX(),
-                        ()->driver.getLeftY(),
                         offset,
                         alignmentPose,
                         Rotation2d.kPi.plus(new Rotation2d(Units.degreesToRadians(-3))));

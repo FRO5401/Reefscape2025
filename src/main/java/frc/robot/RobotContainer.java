@@ -270,144 +270,148 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         return chooser.getSelected();
     }
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.ModeConstants;
-import frc.robot.Constants.ElevatorConstants.ElevatorSimConstants;
-import frc.robot.commands.DriveCommands;
-import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
-import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.drive.ModuleIOTalonFX;
-import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.elevator.ElevatorSimulation;
+}   
+// /*
 
-/**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and button mappings) should be declared here.
- */
-public class RobotContainer {
-  // Subsystems
-  private final Drive drive;
-  // Controller
-  private final CommandXboxController driver = Controls.driver;
-  private final CommandXboxController operator = Controls.operator;
+// import edu.wpi.first.wpilibj2.command.button.Trigger;
+// import frc.robot.Constants.ElevatorConstants;
+// import frc.robot.Constants.ModeConstants;
+// import frc.robot.Constants.ElevatorConstants.ElevatorSimConstants;
+// import frc.robot.commands.DriveCommands;
+// import frc.robot.generated.TunerConstants;
+// import frc.robot.subsystems.drive.Drive;
+// import frc.robot.subsystems.drive.GyroIO;
+// import frc.robot.subsystems.drive.GyroIOPigeon2;
+// import frc.robot.subsystems.drive.ModuleIO;
+// import frc.robot.subsystems.drive.ModuleIOSim;
+// import frc.robot.subsystems.drive.ModuleIOTalonFX;
+// import frc.robot.subsystems.elevator.Elevator;
+// import frc.robot.subsystems.elevator.ElevatorSimulation;
+
+// /**
+//  * This class is where the bulk of the robot should be declared. Since Command-based is a
+//  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
+//  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+//  * subsystems, commands, and button mappings) should be declared here.
+//  */
+// public class RobotContainer {
+//   // Subsystems
+//   private final Drive drive;
+//   // Controller
+//   private final CommandXboxController driver = Controls.driver;
+//   private final CommandXboxController operator = Controls.operator;
   
-  private final Encoder elevatorEncoder = new Encoder(ElevatorSimConstants.kEncoderAChannel, ElevatorSimConstants.kEncoderBChannel);
-    private final PWMSparkMax elevatorMotor = new PWMSparkMax(ElevatorConstants.elevatorID);
+//   private final Encoder elevatorEncoder = new Encoder(ElevatorSimConstants.kEncoderAChannel, ElevatorSimConstants.kEncoderBChannel);
+//     private final PWMSparkMax elevatorMotor = new PWMSparkMax(ElevatorConstants.elevatorID);
 
-    private final Elevator m_elevator = new Elevator(elevatorEncoder, elevatorMotor);
+//     private final Elevator m_elevator = new Elevator(elevatorEncoder, elevatorMotor);
 
-    private ElevatorSimulation m_elevatorSimulation;
+//     private ElevatorSimulation m_elevatorSimulation;
   
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
-    switch (ModeConstants.currentMode) {
-      case REAL:
-        // Real robot, instantiate hardware IO implementations
-        drive =
-            new Drive(
-                new GyroIOPigeon2(),
-                new ModuleIOTalonFX(TunerConstants.FrontLeft),
-                new ModuleIOTalonFX(TunerConstants.FrontRight),
-                new ModuleIOTalonFX(TunerConstants.BackLeft),
-                new ModuleIOTalonFX(TunerConstants.BackRight));
-        break;
+//   /** The container for the robot. Contains subsystems, OI devices, and commands. */
+//   public RobotContainer() {
+//     switch (ModeConstants.currentMode) {
+//       case REAL:
+//         // Real robot, instantiate hardware IO implementations
+//         drive =
+//             new Drive(
+//                 new GyroIOPigeon2(),
+//                 new ModuleIOTalonFX(TunerConstants.FrontLeft),
+//                 new ModuleIOTalonFX(TunerConstants.FrontRight),
+//                 new ModuleIOTalonFX(TunerConstants.BackLeft),
+//                 new ModuleIOTalonFX(TunerConstants.BackRight));
+//         break;
 
-      case SIM:
-        // Sim robot, instantiate physics sim IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(TunerConstants.FrontLeft),
-                new ModuleIOSim(TunerConstants.FrontRight),
-                new ModuleIOSim(TunerConstants.BackLeft),
-                new ModuleIOSim(TunerConstants.BackRight));
+//       case SIM:
+//         // Sim robot, instantiate physics sim IO implementations
+//         drive =
+//             new Drive(
+//                 new GyroIO() {},
+//                 new ModuleIOSim(TunerConstants.FrontLeft),
+//                 new ModuleIOSim(TunerConstants.FrontRight),
+//                 new ModuleIOSim(TunerConstants.BackLeft),
+//                 new ModuleIOSim(TunerConstants.BackRight));
         
-        m_elevatorSimulation = new ElevatorSimulation(elevatorEncoder, elevatorMotor);
-        break;
+//         m_elevatorSimulation = new ElevatorSimulation(elevatorEncoder, elevatorMotor);
+//         break;
 
-      default:
-        // Replayed robot, disable IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
-        break;
-    }
-    CommandScheduler.getInstance().setDefaultCommand(m_elevator, m_elevator.depower());
+//       default:
+//         // Replayed robot, disable IO implementations
+//         drive =
+//             new Drive(
+//                 new GyroIO() {},
+//                 new ModuleIO() {},
+//                 new ModuleIO() {},
+//                 new ModuleIO() {},
+//                 new ModuleIO() {});
+//         break;
+//     }
+//     CommandScheduler.getInstance().setDefaultCommand(m_elevator, m_elevator.depower());
 
-    // Configure the button bindings
-    configureButtonBindings();
-  }
+//     // Configure the button bindings
+//     configureButtonBindings();
+//   }
 
-  private void configureButtonBindings() {
-    // Default command, normal field-relative drive
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
-            () -> -driver.getLeftY() * ModeConstants.flipped(),
-            () -> -driver.getLeftX() * ModeConstants.flipped(),
-            () -> -driver.getRawAxis(5) * ModeConstants.flipped()));
+//   private void configureButtonBindings() {
+//     // Default command, normal field-relative drive
+//     drive.setDefaultCommand(
+//         DriveCommands.joystickDrive(
+//             drive,
+//             () -> -driver.getLeftY() * ModeConstants.flipped(),
+//             () -> -driver.getLeftX() * ModeConstants.flipped(),
+//             () -> -driver.getRawAxis(5) * ModeConstants.flipped()));
 
-    // Lock to 0° when A button is held
-    driver
-        .a()
-        .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                drive,
-                () -> -driver.getLeftY() * ModeConstants.flipped(),
-                () -> -driver.getLeftX() * ModeConstants.flipped(),
-                () -> new Rotation2d()));
+//     // Lock to 0° when A button is held
+//     driver
+//         .a()
+//         .whileTrue(
+//             DriveCommands.joystickDriveAtAngle(
+//                 drive,
+//                 () -> -driver.getLeftY() * ModeConstants.flipped(),
+//                 () -> -driver.getLeftX() * ModeConstants.flipped(),
+//                 () -> new Rotation2d()));
 
-    // Switch to X pattern when X button is pressed
-    driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+//     // Switch to X pattern when X button is pressed
+//     driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    // Reset gyro to 0° when B button is pressed
-    driver
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
-                    drive)
-                .ignoringDisable(true));
+//     // Reset gyro to 0° when B button is pressed
+//     driver
+//         .b()
+//         .onTrue(
+//             Commands.runOnce(
+//                     () ->
+//                         drive.setPose(
+//                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
+//                     drive)
+//                 .ignoringDisable(true));
     
-    new Trigger(()->{return RobotState.isEnabled() && RobotState.isTeleop();}).onTrue(m_elevator.initConstants());
+//     new Trigger(()->{return RobotState.isEnabled() && RobotState.isTeleop();}).onTrue(m_elevator.initConstants());
 
-    operator.a().onTrue(m_elevator.goToHeight(0.25));
-    operator.b().onTrue(m_elevator.goToHeight(0.50));
-    operator.y().onTrue(m_elevator.goToHeight(0.75));
-    operator.x().onTrue(m_elevator.goToHeight(1.00));
-    operator.povDown().onTrue(m_elevator.goToHeight(0.00));
+//     operator.a().onTrue(m_elevator.goToHeight(0.25));
+//     operator.b().onTrue(m_elevator.goToHeight(0.50));
+//     operator.y().onTrue(m_elevator.goToHeight(0.75));
+//     operator.x().onTrue(m_elevator.goToHeight(1.00));
+//     operator.povDown().onTrue(m_elevator.goToHeight(0.00));
         
-    operator.start().whileTrue(m_elevator.manualControl(()->-0.2*operator.getLeftY()));
-    operator.back().whileTrue(m_elevator.closedLoopManualSetpoint(()->-1.25*operator.getLeftY()));
+//     operator.start().whileTrue(m_elevator.manualControl(()->-0.2*operator.getLeftY()));
+//     operator.back().whileTrue(m_elevator.closedLoopManualSetpoint(()->-1.25*operator.getLeftY()));
 
-  }
-  public void simulationPeriodic()
-  {
-      m_elevatorSimulation.elevatorSimulationPeriodic();
-  }
+//   }
+//   public void simulationPeriodic()
+//   {
+//       m_elevatorSimulation.elevatorSimulationPeriodic();
+//   }
 
-  public void close() 
-    {
-        elevatorEncoder.close();
-        elevatorMotor.close();
-        m_elevator.close();
-    }
+//   public void close() 
+//     {
+//         elevatorEncoder.close();
+//         elevatorMotor.close();
+//         m_elevator.close();
+//     }
 
-  public Command getAutonomousCommand() {
-    return null;
-  }
+//   public Command getAutonomousCommand() {
+//     return null;
+//   }
 
-}
+// }
+// */

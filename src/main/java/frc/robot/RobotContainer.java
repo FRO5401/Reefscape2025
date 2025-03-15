@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
-
 import java.util.Set;
 
 import org.photonvision.PhotonCamera;
@@ -39,14 +37,10 @@ import frc.robot.subsystems.CANdleSystem.AnimationTypes;
 import frc.robot.subsystems.CANdleSystem;
 import frc.robot.Commands.AlignToTag;
 
-
 public class RobotContainer {
 
-    private PhotonCamera FrontCam = new PhotonCamera("FrontCam");
-    private PhotonCamera FrontRight = new PhotonCamera("FrontRight");
-
-
-
+    private static PhotonCamera FrontCam = new PhotonCamera("FrontCam");
+    private static PhotonCamera FrontRight = new PhotonCamera("FrontRight");
 
     Elevator elevator = new Elevator();
     Manipulator maniuplator = new Manipulator();
@@ -54,20 +48,16 @@ public class RobotContainer {
 
     private final SendableChooser<Command> chooser = new SendableChooser<>();
 
-    
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(Constants.Swerve.MaxSpeed * 0.01).withRotationalDeadband(Constants.Swerve.MaxAngularRate * 0.01) // Add a 10% deadband
+            .withDeadband(Constants.Swerve.MaxSpeed * 0.01)
+            .withRotationalDeadband(Constants.Swerve.MaxAngularRate * 0.01) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-
-    private final CommandXboxController driver = Controls.driver;
-
+    private final static CommandXboxController driver = Controls.driver;
     private final CommandXboxController operator = Controls.operator;
-
-
-    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(FrontCam, FrontRight);
+    public final static CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(FrontCam, FrontRight);
 
     public final Telemetry logger = new Telemetry(Constants.Swerve.MaxSpeed);
 
@@ -77,153 +67,156 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        Trigger tiltingElevator = new Trigger(()->drivetrain.getPitch() >25);
+        Trigger tiltingElevator = new Trigger(() -> drivetrain.getPitch() > 25);
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
-            // Drivetrain will execute this command periodically
-            drivetrain.applyRequest(() ->
-                drive.withVelocityX(-driver.getLeftY() * Constants.Swerve.MaxSpeed * elevator.getSpeedModifier()) // Drive forward with negative Y (forward)
-                    .withVelocityY(-driver.getLeftX() * Constants.Swerve.MaxSpeed * elevator.getSpeedModifier()) // Drive left with negative X (left)
-                    .withRotationalRate(-driver.getRightX() * Constants.Swerve.MaxAngularRate * elevator.getSpeedModifier()) // Drive counterclockwise with negative X (left)
-            )
-        );
+                // Drivetrain will execute this command periodically
+                drivetrain.applyRequest(() -> drive
+                        .withVelocityX(-driver.getLeftY() * Constants.Swerve.MaxSpeed * elevator.getSpeedModifier()) // Drive
+                                                                                                                     // forward
+                                                                                                                     // with
+                                                                                                                     // negative
+                                                                                                                     // Y
+                                                                                                                     // (forward)
+                        .withVelocityY(-driver.getLeftX() * Constants.Swerve.MaxSpeed * elevator.getSpeedModifier()) // Drive
+                                                                                                                     // left
+                                                                                                                     // with
+                                                                                                                     // negative
+                                                                                                                     // X
+                                                                                                                     // (left)
+                        .withRotationalRate(
+                                -driver.getRightX() * Constants.Swerve.MaxAngularRate * elevator.getSpeedModifier()) // Drive
+                                                                                                                     // counterclockwise
+                                                                                                                     // with
+                                                                                                                     // negative
+                                                                                                                     // X
+                                                                                                                     // (left)
+                ));
 
         tiltingElevator.onTrue(elevator.setPosition(ElevatorConstants.PROCESSOR));
 
-        //driver.a().whileTrue(drivetrain.applyRequest(() -> brake));
-        driver.b().whileTrue(drivetrain.applyRequest(() ->
-            point.withModuleDirection(new Rotation2d(-driver.getLeftY(), -driver.getLeftX()))
-        ));
+        // driver.a().whileTrue(drivetrain.applyRequest(() -> brake));
+        driver.b().whileTrue(drivetrain
+                .applyRequest(() -> point.withModuleDirection(new Rotation2d(-driver.getLeftY(), -driver.getLeftX()))));
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-       // driver.back().and(driver.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-       // driver.back().and(driver.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-       // driver.start().and(driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-       // driver.start().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        // driver.back().and(driver.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        // driver.back().and(driver.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        // driver.start().and(driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        // driver.start().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // reset the field-centric heading on left bumper press
         driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-        //driver.a().whileTrue(new AlignToTag(drivetrain, frontRightCam, frontLeftCam, ()->driver.getLeftX()));
+        // driver.a().whileTrue(new AlignToTag(drivetrain, frontRightCam, frontLeftCam,
+        // ()->driver.getLeftX()));
 
-        driver.povDown().onTrue(candle.runOnce(()->{
-            candle.clearAllAnims(); 
+        driver.povDown().onTrue(candle.runOnce(() -> {
+            candle.clearAllAnims();
             candle.incrementAnimation();
         }));
 
-
-        driver.povUp().onTrue(candle.runOnce(()->{ 
+        driver.povUp().onTrue(candle.runOnce(() -> {
             candle.clearAllAnims();
             candle.changeAnimation(AnimationTypes.Strobe);
         }));
-        
 
         operator.y().onTrue(new ParallelCommandGroup(
-            elevator.setPosition(
-                ElevatorConstants.L4),
-            maniuplator.setPosition(
-                IntakeConstants.HOLD_CORAL,
-                PivotConstants.L4)
-            ));
+                elevator.setPosition(
+                        ElevatorConstants.L4),
+                maniuplator.setPosition(
+                        IntakeConstants.HOLD_CORAL,
+                        PivotConstants.L4)));
         operator.b().onTrue(new ParallelCommandGroup(
-            elevator.setPosition(
-                ElevatorConstants.L3),
-            maniuplator.setPosition(
-                IntakeConstants.HOLD_CORAL,
-                PivotConstants.PLACE_CORAL)
-            ));
+                elevator.setPosition(
+                        ElevatorConstants.L3),
+                maniuplator.setPosition(
+                        IntakeConstants.HOLD_CORAL,
+                        PivotConstants.PLACE_CORAL)));
         operator.a().onTrue(new ParallelCommandGroup(
-            elevator.setPosition(
-                ElevatorConstants.L2),
-            maniuplator.setPosition(
-                IntakeConstants.HOLD_CORAL,
-                PivotConstants.PLACE_CORAL)
-            ));
+                elevator.setPosition(
+                        ElevatorConstants.L2),
+                maniuplator.setPosition(
+                        IntakeConstants.HOLD_CORAL,
+                        PivotConstants.PLACE_CORAL)));
 
         operator.x().onTrue(new ParallelCommandGroup(
-            elevator.setPosition(
-                ElevatorConstants.STATION),
-            new SequentialCommandGroup(
-            maniuplator.setPosition(
-                IntakeConstants.HOLD_CORAL,
-                PivotConstants.STATION),
-            maniuplator.setVelocity(()-> 1))
-            ));
-    
+                elevator.setPosition(
+                        ElevatorConstants.STATION),
+                new SequentialCommandGroup(
+                        maniuplator.setPosition(
+                                IntakeConstants.HOLD_CORAL,
+                                PivotConstants.STATION),
+                        maniuplator.setVelocity(() -> 1))));
+
         // Straightens out intake and position to hold coral
         operator.povLeft().onTrue(
-            new ParallelCommandGroup(
-                maniuplator.setPosition(
-               
-                IntakeConstants.HOLD_ALGEA,
-                    PivotConstants.STRAIGHTOUT),
-                elevator.setPosition(ElevatorConstants.L2-6)
-            ));
-        
-        //  Straightens out intake
-        operator.povRight().onTrue(
-            new ParallelCommandGroup(
-                maniuplator.setPosition(
-                    IntakeConstants.HOLD_ALGEA,
-                    PivotConstants.STRAIGHTOUT),
-                elevator.setPosition(ElevatorConstants.L3-6)
-            ));
-            
-        //  Sucks in piece
-        operator.leftTrigger(.01).whileTrue(
-            maniuplator.setVelocity(()->1)
-            );
+                new ParallelCommandGroup(
+                        maniuplator.setPosition(
 
-        //  Repels piece in intake
+                                IntakeConstants.HOLD_ALGEA,
+                                PivotConstants.STRAIGHTOUT),
+                        elevator.setPosition(ElevatorConstants.L2 - 6)));
+
+        // Straightens out intake
+        operator.povRight().onTrue(
+                new ParallelCommandGroup(
+                        maniuplator.setPosition(
+                                IntakeConstants.HOLD_ALGEA,
+                                PivotConstants.STRAIGHTOUT),
+                        elevator.setPosition(ElevatorConstants.L3 - 6)));
+
+        // Sucks in piece
+        operator.leftTrigger(.01).whileTrue(
+                maniuplator.setVelocity(() -> 1));
+
+        // Repels piece in intake
         operator.rightTrigger(.01).whileTrue(
-            new SequentialCommandGroup(maniuplator.setVelocity(()->-1), maniuplator.setClaw(IntakeConstants.HOLD_ALGEA)));
+                new SequentialCommandGroup(maniuplator.setVelocity(() -> -1),
+                        maniuplator.setClaw(IntakeConstants.HOLD_ALGEA)));
 
         // Moves Elevator Up to score in barge
         operator.povUp().onTrue(new ParallelCommandGroup(
-            elevator.setPosition(ElevatorConstants.BARGE), 
-            maniuplator.setPosition(
-                IntakeConstants.HOLD_ALGEA, 
-                PivotConstants.BARGE),
-            candle.setLights(AnimationTypes.Rainbow)
-            ));
+                elevator.setPosition(ElevatorConstants.BARGE),
+                maniuplator.setPosition(
+                        IntakeConstants.HOLD_ALGEA,
+                        PivotConstants.BARGE),
+                candle.setLights(AnimationTypes.Rainbow)));
+
         // Moves Elevator Down
         operator.povDown().onTrue(new ParallelCommandGroup(
-            elevator.setPosition(ElevatorConstants.PROCESSOR), 
-            maniuplator.setPosition(
-                IntakeConstants.HOLD_CORAL, 
-                PivotConstants.CLEAR_ALGEA),
-            candle.setLights(AnimationTypes.SingleFade)
-            )); 
-             
+                elevator.setPosition(ElevatorConstants.PROCESSOR),
+                maniuplator.setPosition(
+                        IntakeConstants.HOLD_CORAL,
+                        PivotConstants.CLEAR_ALGEA),
+                candle.setLights(AnimationTypes.SingleFade)));
+
         operator.start().onTrue(new ParallelCommandGroup(
-            elevator.setPosition(ElevatorConstants.FLOOR), 
-            maniuplator.setPosition(
-                IntakeConstants.HOLD_ALGEA, 
-                PivotConstants.PLACE_CORAL+2)
-            ));
-        
+                elevator.setPosition(ElevatorConstants.FLOOR),
+                maniuplator.setPosition(
+                        IntakeConstants.HOLD_ALGEA,
+                        PivotConstants.PLACE_CORAL + 2)));
 
         operator.leftBumper().onTrue(maniuplator.stopIntake());
-       drivetrain.registerTelemetry(logger::telemeterize);
+        drivetrain.registerTelemetry(logger::telemeterize);
 
-       driver.x().whileTrue(alignToReef(Units.inchesToMeters(-8 )));
-       driver.b().whileTrue(alignToReef(Units.inchesToMeters(8)));
-       driver.a().whileTrue(alignToSource(Units.inchesToMeters(0)));
+        driver.x().whileTrue(alignAndDriveToReef(Units.inchesToMeters(-5)));
+        driver.b().whileTrue(alignToReef(Units.inchesToMeters(5)));
+        driver.a().whileTrue(alignToSource(Units.inchesToMeters(0)));
 
-
-}
+    }
 
     // Automatically chooses closest tag
-    public Command alignAndDriveToReef(double offset) {
+    public static Command alignAndDriveToReef(double offset) {
         return Commands.defer(
                 () -> {
-                    Pose2d alignmentPose = drivetrain.findNearestReefTagPose()                      
-                    .plus(
-                        new Transform2d(
-                                new Translation2d(offset, VisionConstants.REEF_DISTANCE),
-                                new Rotation2d()));
+                    Pose2d alignmentPose = drivetrain.findNearestReefTagPose()
+                            .plus(
+                                    new Transform2d(
+                                            new Translation2d(offset, VisionConstants.REEF_DISTANCE),
+                                            new Rotation2d()));
                     return new AlignAndDriveToReef(
                             drivetrain,
                             offset,
@@ -233,55 +226,51 @@ public class RobotContainer {
                 Set.of(drivetrain));
     }
 
-    public Command alignToReef(double offset) {
+    public static Command alignToReef(double offset) {
         return Commands.defer(
-            () -> {
-                Pose2d alignmentPose = drivetrain.findNearestReefTagPose();
-                return new AlignToTag(
-                        drivetrain,
-                        ()->-driver.getLeftY(),
-                        ()->driver.getLeftX(),
-                        offset,
-                        alignmentPose,
-                        Rotation2d.kPi.plus(new Rotation2d(Units.degreesToRadians(-3))));
+                () -> {
+                    Pose2d alignmentPose = drivetrain.findNearestReefTagPose();
+                    return new AlignToTag(
+                            drivetrain,
+                            () -> -driver.getLeftX(),
+                            () -> driver.getLeftY(),
+                            offset,
+                            alignmentPose,
+                            Rotation2d.kPi.plus(new Rotation2d(Units.degreesToRadians(-3))));
                 },
                 Set.of(drivetrain));
     }
 
-    public Command alignToSource(double offset) {
+    public static Command alignToSource(double offset) {
         return Commands.defer(
-            () -> {
-                Pose2d alignmentPose = drivetrain.findNearestSourceTagPose();
-                return new AlignToTag(
-                        drivetrain,
-                        ()->driver.getLeftX(),
-                        ()->driver.getLeftY(),
-                        offset,
-                        alignmentPose,
-                        Rotation2d.kPi.plus(new Rotation2d(Units.degreesToRadians(-3))));
+                () -> {
+                    Pose2d alignmentPose = drivetrain.findNearestSourceTagPose();
+                    return new AlignToTag(
+                            drivetrain,
+                            () -> driver.getLeftX(),
+                            () -> driver.getLeftY(),
+                            offset,
+                            alignmentPose,
+                            Rotation2d.kPi.plus(new Rotation2d(Units.degreesToRadians(-3))));
                 },
                 Set.of(drivetrain));
     }
 
+    public void chooseAuto() {
 
+        // chooser.setDefaultOption("One Piece", new
+        // OnePiece(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        // chooser.addOption("Move Forward",
+        // drivetrain.getAutoCommand(Trajectorys.onePiece));
+        chooser.setDefaultOption("Do Nothing", elevator.setPosition(ElevatorConstants.PROCESSOR));
 
-    public void chooseAuto(){
-        
-    //chooser.setDefaultOption("One Piece", new OnePiece(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-    //chooser.addOption("Move Forward", drivetrain.getAutoCommand(Trajectorys.onePiece));
-    chooser.setDefaultOption("Do Nothing", elevator.setPosition(ElevatorConstants.PROCESSOR));
+        Shuffleboard.getTab("Autonomous").add(chooser);
+        SmartDashboard.putData(chooser);
 
-    Shuffleboard.getTab("Autonomous").add(chooser);
-    SmartDashboard.putData(chooser);
-
-  }
-
+    }
 
     public Command getAutonomousCommand() {
         return chooser.getSelected();
     }
 
-  
-
 }
-

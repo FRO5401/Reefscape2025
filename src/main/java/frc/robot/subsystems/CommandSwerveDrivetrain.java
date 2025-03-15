@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -27,7 +26,6 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -88,10 +86,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                     .withDriveRequestType(DriveRequestType.Velocity)
                     .withSteerRequestType(SteerRequestType.MotionMagicExpo)
                     .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
-            private final SwerveRequest.FieldCentric drive = 
-            new SwerveRequest.FieldCentric()
-                    .withDeadband( Constants.Swerve.MaxSpeed * 0.01).withRotationalDeadband(Constants.Swerve.MaxAngularRate * 0.01) // Add a 10% deadband
-                    .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(

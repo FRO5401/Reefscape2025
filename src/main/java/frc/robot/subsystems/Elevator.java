@@ -41,7 +41,7 @@ public class Elevator extends SubsystemBase {
     Slot0Configs slot0Configs = new Slot0Configs();
     TalonFXConfiguration config = new TalonFXConfiguration();
     config.withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimit(Amps.of(120)).withSupplyCurrentLimit(Amps.of(80)));
-    config.withMotorOutput(new MotorOutputConfigs().withInverted(InvertedValue.Clockwise_Positive));
+    config.withMotorOutput(new MotorOutputConfigs().withInverted(InvertedValue.CounterClockwise_Positive));
     slot0Configs.kP = Constants.ElevatorConstants.KP; // An error of 1 rotation results in 2.4 V output
     slot0Configs.kI = Constants.ElevatorConstants.KI; // no output for integrated error
     slot0Configs.kD = Constants.ElevatorConstants.KD; // A velocity of 1 rps results in 0.1 V output

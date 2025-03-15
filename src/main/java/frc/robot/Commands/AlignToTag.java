@@ -8,9 +8,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.Elevator;
 
 import java.util.function.DoubleSupplier;
 
@@ -20,8 +18,8 @@ public class AlignToTag extends Command {
     private DoubleSupplier xVelocity;
     private DoubleSupplier yVelocity;
 
-    private PIDController thetaController = new PIDController(6, 0, 0);
-    private PIDController yController = new PIDController(5.3, 0, .2);
+    private PIDController thetaController = new PIDController(4, 0, 0);
+    private PIDController yController = new PIDController(6, 0, .2);
     private Pose2d targetPose;
     private double offset;
     private Rotation2d rotationOffset;
@@ -54,7 +52,7 @@ public class AlignToTag extends Command {
         thetaController.setSetpoint(rotationOffset.getRadians());
         yController.setSetpoint(offset);
         thetaController.enableContinuousInput(0, 2 * Math.PI);
-        thetaController.setTolerance(Units.degreesToRadians(0.5));
+        thetaController.setTolerance(Units.degreesToRadians(1));
         yController.setTolerance(Units.inchesToMeters(0.2));
     }
 

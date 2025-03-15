@@ -30,7 +30,6 @@ import frc.robot.Constants.InfeedConstants.IntakeConstants;
 import frc.robot.Constants.InfeedConstants.PivotConstants;
 import frc.robot.Constants.VisionConstants;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.Commands.Climb;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
@@ -207,11 +206,15 @@ public class RobotContainer {
                         PivotConstants.PLACE_CORAL + 2)));
 
         operator.leftBumper().onTrue(maniuplator.stopIntake());
-        drivetrain.registerTelemetry(logger::telemeterize);
 
+        climber.climb(()->operator.getLeftY());
+
+        drivetrain.registerTelemetry(logger::telemeterize);
         driver.x().whileTrue(alignAndDriveToReef(Units.inchesToMeters(-5)));
         driver.b().whileTrue(alignToReef(Units.inchesToMeters(5)));
         driver.a().whileTrue(alignToSource(Units.inchesToMeters(0)));
+
+
 
     }
 

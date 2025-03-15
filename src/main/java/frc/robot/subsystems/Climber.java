@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -14,46 +16,60 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ClimberConstants;
 
 public class Climber extends SubsystemBase {
   /** Creates a new Climber. */
-  SparkMax sparkMax;
+  SparkMax climberLeft;
+  SparkMax climberRight;
   SparkMaxConfig climberGlobal;
-  SparkMaxConfig climberPivotConfig;
+  SparkMaxConfig climberLeftConfig;
+  SparkMaxConfig climberRightConfig;
   RelativeEncoder climberEncoder;
 
   public Climber() {
-    sparkMax = new SparkMax(ClimberConstants.sparkID, MotorType.kBrushless);
+    climberLeft = new SparkMax(ClimberConstants.sparkID, MotorType.kBrushless);
+    climberLeft = new SparkMax(ClimberConstants.sparkID, MotorType.kBrushless);
+
     
     climberGlobal = new SparkMaxConfig();
-    climberPivotConfig = new SparkMaxConfig();
+    climberLeftConfig = new SparkMaxConfig();
+    climberRightConfig = new SparkMaxConfig();
 
     climberGlobal
       .smartCurrentLimit(80)
       .idleMode(IdleMode.kBrake);
 
-    climberPivotConfig
+    climberLeftConfig
       .apply(climberGlobal)
       .inverted(true)
       .smartCurrentLimit(80)
       .encoder
       .positionConversionFactor(225);
 
+    climberRightConfig
+      .apply(climberGlobal)
+      .follow(climberLeft, true)
+      .smartCurrentLimit(80)
+      .encoder
+        .positionConversionFactor(225);
 
-    sparkMax.configure(climberPivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+    climberLeft.configure(climberLeftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     climberEncoder.setPosition(0);
   }
 
-  public void climb(double speed) {
-    sparkMax.set(speed);
+  public Command climb(DoubleSupplier speed) {
+    return runOnce(()->climberLeft.set(speed.getAsDouble()));
   }
 
-  public void stopClimb() {
-    sparkMax.set(0);
+  public Command stopClimb() {
+    return runOnce(()->climberLeft.set(0));
   }
 
   public double getEncoderValue() {

@@ -189,6 +189,18 @@ public class Manipulator extends SubsystemBase {
   return !beamBreak.get();
  }
 
+ public double rightIntakeCurrent(){
+  return intakeRight.getAppliedOutput();
+ }
+
+ public double leftIntakeCurrent(){
+  return intakeLeft.getAppliedOutput();
+ }
+ 
+ public boolean iscurrentspiked(double current){
+  return current>42;
+ }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -197,6 +209,8 @@ public class Manipulator extends SubsystemBase {
     SmartDashboard.putNumber("Pinch right Position", rotateRightEncoder.getPosition());
 
     SmartDashboard.putBoolean("HasCoral", getBeamBreak());
+    SmartDashboard.putNumber("right Intake", rightIntakeCurrent());
+    SmartDashboard.putNumber("Left Intake", leftIntakeCurrent());
 
   }
 }

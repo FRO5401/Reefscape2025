@@ -190,13 +190,13 @@ public class Manipulator extends SubsystemBase {
  }
 
  public double rightIntakeCurrent(){
-  return intakeRight.getAppliedOutput();
+  return intakeRight.getOutputCurrent();
  }
 
  public double leftIntakeCurrent(){
-  return intakeLeft.getAppliedOutput();
+  return intakeLeft.getOutputCurrent();
  }
- 
+
  public boolean iscurrentspiked(double current){
   return current>42;
  }
@@ -209,8 +209,8 @@ public class Manipulator extends SubsystemBase {
     SmartDashboard.putNumber("Pinch right Position", rotateRightEncoder.getPosition());
 
     SmartDashboard.putBoolean("HasCoral", getBeamBreak());
-    SmartDashboard.putNumber("right Intake", rightIntakeCurrent());
-    SmartDashboard.putNumber("Left Intake", leftIntakeCurrent());
+    SmartDashboard.putNumber("right Intake Current", rightIntakeCurrent());
+    SmartDashboard.putNumber("Left Intake Current", leftIntakeCurrent());
 
   }
 }

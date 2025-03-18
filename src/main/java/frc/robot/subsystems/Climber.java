@@ -32,8 +32,10 @@ public class Climber extends SubsystemBase {
   RelativeEncoder climberEncoder;
 
   public Climber() {
-    climberLeft = new SparkMax(ClimberConstants.sparkID, MotorType.kBrushless);
-    climberLeft = new SparkMax(ClimberConstants.sparkID, MotorType.kBrushless);
+    climberLeft = new SparkMax(ClimberConstants.LEFT_SPARK_ID, MotorType.kBrushless);
+    climberLeft = new SparkMax(ClimberConstants.RIGHT_SPARK_ID, MotorType.kBrushless);
+
+    
 
     
     climberGlobal = new SparkMaxConfig();
@@ -46,7 +48,7 @@ public class Climber extends SubsystemBase {
 
     climberLeftConfig
       .apply(climberGlobal)
-      .inverted(true)
+      .inverted(false)
       .smartCurrentLimit(80)
       .encoder
       .positionConversionFactor(225);
@@ -61,11 +63,12 @@ public class Climber extends SubsystemBase {
 
     climberLeft.configure(climberLeftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    climberEncoder.setPosition(0);
   }
 
-  public Command climb(DoubleSupplier speed) {
-    return runOnce(()->climberLeft.set(speed.getAsDouble()));
+  public Command climb(DoubleSupplier velocity){
+    return runOnce(()->{
+      climberLeft.setVoltage(velocity.getAsDouble()*14);
+    });
   }
 
   public Command stopClimb() {
@@ -79,6 +82,6 @@ public class Climber extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Climber Rotate Position", climberEncoder.getPosition());
+    //SmartDashboard.putNumber("Climber Rotate Position", climberEncoder.getPosition());
   }
 }

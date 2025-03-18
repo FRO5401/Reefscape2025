@@ -102,8 +102,10 @@ public class Manipulator extends SubsystemBase {
       .apply(globalConfig)
       .inverted(true)
       .smartCurrentLimit(70)
+      .idleMode(IdleMode.kBrake)
       .encoder
-        .positionConversionFactor(15);
+        .positionConversionFactor(25);
+      
       
     rotateLeftConfig.closedLoop
       .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
@@ -192,7 +194,9 @@ public class Manipulator extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Pivot Position", pivotEncoeer.getPosition());
     SmartDashboard.putNumber("Pinch Position", rotateLeftEncoder.getPosition());
-        
+    SmartDashboard.putNumber("Pinch right Position", rotateRightEncoder.getPosition());
+
+    SmartDashboard.putBoolean("HasCoral", getBeamBreak());
 
   }
 }

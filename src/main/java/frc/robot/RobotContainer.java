@@ -41,7 +41,7 @@ import frc.robot.Commands.AlignToTag;
 
 public class RobotContainer {
 
-    private static PhotonCamera FrontCam = new PhotonCamera("FrontCam");
+    private static PhotonCamera FrontCam = new PhotonCamera("Temp");
     private static PhotonCamera FrontRight = new PhotonCamera("FrontRight");
 
     Elevator elevator = new Elevator();
@@ -203,15 +203,15 @@ public class RobotContainer {
                 elevator.setPosition(ElevatorConstants.FLOOR),
                 maniuplator.setPosition(
                         IntakeConstants.HOLD_ALGEA,
-                        PivotConstants.PLACE_CORAL + 2)));
+                        PivotConstants.FLOOR_PICKUP + 2)));
 
         operator.leftBumper().onTrue(maniuplator.stopIntake());
 
-        climber.climb(()->operator.getLeftY());
+        climber.setDefaultCommand(climber.climb(()->operator.getLeftY()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
-        driver.x().whileTrue(alignAndDriveToReef(Units.inchesToMeters(-5)));
-        driver.b().whileTrue(alignToReef(Units.inchesToMeters(5)));
+        driver.x().whileTrue(alignAndDriveToReef(Units.inchesToMeters(-2.5)));
+        driver.b().whileTrue(alignAndDriveToReef(Units.inchesToMeters(2.5)));
         driver.a().whileTrue(alignToSource(Units.inchesToMeters(0)));
 
 
@@ -225,7 +225,7 @@ public class RobotContainer {
                     Pose2d alignmentPose = drivetrain.findNearestReefTagPose()
                             .plus(
                                     new Transform2d(
-                                            new Translation2d(offset, VisionConstants.REEF_DISTANCE),
+                                            new Translation2d(VisionConstants.REEF_DISTANCE, offset),
                                             new Rotation2d()));
                     return new AlignAndDriveToReef(
                             drivetrain,
@@ -242,11 +242,11 @@ public class RobotContainer {
                     Pose2d alignmentPose = drivetrain.findNearestReefTagPose();
                     return new AlignToTag(
                             drivetrain,
-                            () -> -driver.getLeftX(),
-                            () -> driver.getLeftY(),
+                            () -> -driver.getLeftY(),
+                            () -> driver.getLeftX(),
                             offset,
                             alignmentPose,
-                            Rotation2d.kPi.plus(new Rotation2d(Units.degreesToRadians(-3))));
+                            Rotation2d.kPi.plus(new Rotation2d()));
                 },
                 Set.of(drivetrain));
     }
@@ -257,11 +257,11 @@ public class RobotContainer {
                     Pose2d alignmentPose = drivetrain.findNearestSourceTagPose();
                     return new AlignToTag(
                             drivetrain,
-                            () -> driver.getLeftX(),
                             () -> driver.getLeftY(),
+                            () -> driver.getLeftX(),
                             offset,
                             alignmentPose,
-                            Rotation2d.kPi.plus(new Rotation2d(Units.degreesToRadians(-3))));
+                            Rotation2d.kPi.plus(new Rotation2d()));
                 },
                 Set.of(drivetrain));
     }

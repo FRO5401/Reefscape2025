@@ -42,7 +42,7 @@ public class Constants {
             public static AprilTagFieldLayout aprilTagLayout =
             AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
-            public static final double REEF_DISTANCE = Units.feetToMeters(4) ;
+            public static final double REEF_DISTANCE = Units.feetToMeters(1);
 
             public static final Transform3d ROBOT_TO_FRONT_CAM = new Transform3d(new Translation3d(Units.inchesToMeters(13), Units.inchesToMeters(11.5), Units.inchesToMeters(5)), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
             public static final Transform3d ROBOT_TO_RIGHT_CAM = new Transform3d(new Translation3d(Units.inchesToMeters(13), Units.inchesToMeters(-11.5), Units.inchesToMeters(5)), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
@@ -52,14 +52,14 @@ public class Constants {
     public class ElevatorConstants{ 
         public static final int elevatorID = 13;
         public static final double SPEED_MODIFIER = 166;
-        public static final double BARGE = 150+9 ;
-        public static final double L4 = 140+9;
-        public static final double L3 = 82+9;
+        public static final double BARGE = 150 ;
+        public static final double L4 = 140-5;
+        public static final double L3 = 82-5;
         
 
-        public static final double L2 = 53.91748046875+6;
-        public static final double STATION = 52+9;
-        public static final double PROCESSOR = 10;
+        public static final double L2 = 53.91748046875-5;
+        public static final double STATION = 52-2;
+        public static final double PROCESSOR = 10-5;
         public static final double FLOOR = 1;
 
         public static final double KP = 4; // An error of 1 rotation results in 2.4 V output
@@ -72,7 +72,7 @@ public class Constants {
 
     public class InfeedConstants{
 
-        public static final int BEAM_BREAK_ID = 8;
+        public static final int BEAM_BREAK_ID = 0;
 
         public class IntakeConstants{
             /*  ID of Spark Maxs */
@@ -91,7 +91,7 @@ public class Constants {
 
             /*  Position for each game piece */
             //Closes in to suck in coral
-            public static final double HOLD_CORAL = 44;
+            public static final double HOLD_CORAL = 40;
             //Sides parallel to hold algea
             public static final double HOLD_ALGEA = 6;
             //Place coral 62.49993896484375
@@ -110,19 +110,19 @@ public class Constants {
 
             /*  Positon Values */
             //90 degree angle on the intake
-            public static final double STRAIGHTOUT = -31+5;
+            public static final double STRAIGHTOUT = -31*2;
             //public static final double PROCESSOR = 53; //Will replace straight out most likely
             //aimed up to shoot into the barge
-            public static final double BARGE = -15+5;
+            public static final double BARGE = -15*2;
             //Scoring on top of barge
-            public static final double L4 = -82+5;
+            public static final double L4 = -82*2;
             //takes algea out and possibly place on L2 and L3
-            public static final double PLACE_CORAL = -62.49993896484375+5;
-            public static final double CLEAR_ALGEA =-40.49993896484375+5;
-            public static final double FLOOR_PICKUP =-85+5;
+            public static final double PLACE_CORAL = -62.49993896484375*2;
+            public static final double CLEAR_ALGEA =-40.49993896484375*2;
+            public static final double FLOOR_PICKUP =-50*2;
 
             //Gets Coral from station
-            public static final double STATION = -29;
+            public static final double STATION = -29*2;
         }
 
 
@@ -231,9 +231,10 @@ public class Constants {
                 config);
     }
     public class ClimberConstants {
-        public static final int sparkID = 21;
+        public static final int LEFT_SPARK_ID = 24;
+        public static final int RIGHT_SPARK_ID = 23;
     }
-
+ 
     public static final int CANdleID = 19;
     
 

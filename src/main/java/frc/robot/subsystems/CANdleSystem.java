@@ -180,7 +180,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
                  m_toAnimate = new SingleFadeAnimation(0, 0, 255, 0, 0.5, LEDS_PER_ANIMATION,  8);
                  break;
              case Strobe:
-                 m_toAnimate = new StrobeAnimation(240, 10, 180, 0, 0.01, LEDS_PER_ANIMATION,  8);
+                 m_toAnimate = new StrobeAnimation(0, 0, 255, 0, 0.1, LEDS_PER_ANIMATION,  8);
                  break;
              case Twinkle:
                  m_toAnimate = new TwinkleAnimation(30, 70, 60, 0, 0.4, LEDS_PER_ANIMATION, TwinklePercent.Percent42, 8  );

@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import com.revrobotics.RelativeEncoder;
@@ -197,8 +198,8 @@ public class Manipulator extends SubsystemBase {
   return intakeLeft.getOutputCurrent();
  }
 
- public boolean iscurrentspiked(double current){
-  return current>42;
+ public BooleanSupplier iscurrentspiked(){
+  return ()->leftIntakeCurrent()>22;
  }
 
   @Override

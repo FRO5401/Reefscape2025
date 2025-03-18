@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -38,6 +39,7 @@ import frc.robot.subsystems.CANdleSystem.AnimationTypes;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CANdleSystem;
 import frc.robot.Commands.AlignToTag;
+import frc.robot.Commands.Autos.OnePiece;
 
 public class RobotContainer {
 
@@ -74,6 +76,8 @@ public class RobotContainer {
 
     private void configureBindings() {
         Trigger tiltingElevator = new Trigger(() -> drivetrain.getPitch() > 25);
+        Trigger hasAlgea = new Trigger(maniuplator.iscurrentspiked()).debounce(.1);
+        Trigger hasCoral = new Trigger(()-> maniuplator.getBeamBreak());
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
@@ -101,6 +105,15 @@ public class RobotContainer {
                 ));
 
         tiltingElevator.onTrue(elevator.setPosition(ElevatorConstants.PROCESSOR));
+        hasAlgea.onTrue(new ParallelCommandGroup(
+                maniuplator.setPosition(
+                        IntakeConstants.HOLD_CORAL,
+                        PivotConstants.STRAIGHTOUT),
+                candle.setLights(AnimationTypes.Strobe)));
+        hasCoral.onTrue(new ParallelCommandGroup(
+                maniuplator.stopIntake(),
+                candle.setLights(AnimationTypes.Strobe)
+                ));
 
         // driver.a().whileTrue(drivetrain.applyRequest(() -> brake));
         driver.b().whileTrue(drivetrain
@@ -210,8 +223,8 @@ public class RobotContainer {
         climber.setDefaultCommand(climber.climb(()->operator.getLeftY()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
-        driver.x().whileTrue(alignAndDriveToReef(Units.inchesToMeters(-2.5)));
-        driver.b().whileTrue(alignAndDriveToReef(Units.inchesToMeters(2.5)));
+        driver.x().whileTrue(alignAndDriveToReef(Units.inchesToMeters(-3.5)));
+        driver.b().whileTrue(alignAndDriveToReef(Units.inchesToMeters(3.5)));
         driver.a().whileTrue(alignToSource(Units.inchesToMeters(0)));
 
 
@@ -226,6 +239,23 @@ public class RobotContainer {
                             .plus(
                                     new Transform2d(
                                             new Translation2d(VisionConstants.REEF_DISTANCE, offset),
+                                            new Rotation2d()));
+                    return new AlignAndDriveToReef(
+                            drivetrain,
+                            offset,
+                            alignmentPose,
+                            Rotation2d.kPi);
+                },
+                Set.of(drivetrain));
+    }
+
+    public static Command alignAndDriveToReef(int tag, double offset, double distanceOffset) {
+        return Commands.defer(
+                () -> {
+                    Pose2d alignmentPose = VisionConstants.aprilTagLayout.getTagPose(tag).get().toPose2d()
+                            .plus(
+                                    new Transform2d(
+                                            new Translation2d(distanceOffset, offset),
                                             new Rotation2d()));
                     return new AlignAndDriveToReef(
                             drivetrain,
@@ -268,8 +298,7 @@ public class RobotContainer {
 
     public void chooseAuto() {
 
-        // chooser.setDefaultOption("One Piece", new
-        // OnePiece(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        chooser.setDefaultOption("One Piece", new OnePiece(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
         // chooser.addOption("Move Forward",
         // drivetrain.getAutoCommand(Trajectorys.onePiece));
         chooser.setDefaultOption("Do Nothing", elevator.setPosition(ElevatorConstants.PROCESSOR));

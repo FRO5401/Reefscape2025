@@ -42,7 +42,12 @@ public class Constants {
             public static AprilTagFieldLayout aprilTagLayout =
             AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
-            public static final double REEF_DISTANCE = Units.feetToMeters(1);
+            public static final double REEF_DISTANCE = Units.feetToMeters(1.4);
+            public static final double ALGEA_DISTANCE = Units.feetToMeters(1);
+            public static final double BARGE_DISTANCE = Units.feetToMeters(6);
+
+
+            public static final double AUTO_DISTANCE = Units.feetToMeters(5);
 
             public static final Transform3d ROBOT_TO_FRONT_CAM = new Transform3d(new Translation3d(Units.inchesToMeters(13), Units.inchesToMeters(11.5), Units.inchesToMeters(5)), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
             public static final Transform3d ROBOT_TO_RIGHT_CAM = new Transform3d(new Translation3d(Units.inchesToMeters(13), Units.inchesToMeters(-11.5), Units.inchesToMeters(5)), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
@@ -53,13 +58,13 @@ public class Constants {
         public static final int elevatorID = 13;
         public static final double SPEED_MODIFIER = 166;
         public static final double BARGE = 150 ;
-        public static final double L4 = 140-5;
-        public static final double L3 = 82-5;
+        public static final double L4 = 140-4;
+        public static final double L3 = 82-4;
         
 
-        public static final double L2 = 53.91748046875-5;
-        public static final double STATION = 52-2;
-        public static final double PROCESSOR = 10-5;
+        public static final double L2 = 53.91748046875-4;
+        public static final double STATION = 52-4;
+        public static final double PROCESSOR = 5;
         public static final double FLOOR = 1;
 
         public static final double KP = 4; // An error of 1 rotation results in 2.4 V output
@@ -113,7 +118,7 @@ public class Constants {
             public static final double STRAIGHTOUT = -31*2;
             //public static final double PROCESSOR = 53; //Will replace straight out most likely
             //aimed up to shoot into the barge
-            public static final double BARGE = -15*2;
+            public static final double BARGE = -13*2;
             //Scoring on top of barge
             public static final double L4 = -82*2;
             //takes algea out and possibly place on L2 and L3

@@ -10,15 +10,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
-public class AlignAndDriveToReef extends Command {
+    public class AlignAndDriveToReef extends Command {
     private CommandSwerveDrivetrain drivetrain;
 
     private PIDController thetaController = new PIDController(6, 0, 0);
     private PIDController yController = new PIDController(5, 0, 0);
-    private PIDController xController = new PIDController(1, 0, 0);
+    private PIDController xController = new PIDController(3.2, 0, 0);
     private Pose2d targetPose;
     private double offset;
     private Rotation2d rotationOffset;
+    Transform2d poseOffset;
 
     public AlignAndDriveToReef(
             CommandSwerveDrivetrain drivetrain,
@@ -43,9 +44,9 @@ public class AlignAndDriveToReef extends Command {
         thetaController.setSetpoint(rotationOffset.getRadians());
         yController.setSetpoint(offset);
         thetaController.enableContinuousInput(0, 2 * Math.PI);
-        thetaController.setTolerance(Units.degreesToRadians(1));
-        yController.setTolerance(Units.inchesToMeters(0.2));
-        xController.setTolerance(Units.inchesToMeters(0.2));
+        thetaController.setTolerance(Units.degreesToRadians(2));
+        yController.setTolerance(Units.inchesToMeters(-0.15));
+        xController.setTolerance(Units.inchesToMeters(0.15));
     }
 
     @Override
@@ -53,17 +54,17 @@ public class AlignAndDriveToReef extends Command {
         // double currentHeading = drivetrain.getState().Pose.getRotation().getRadians();
         Pose2d currentPose = drivetrain.getState().Pose;
 
-        Transform2d offset = currentPose.minus(targetPose);
+        poseOffset = currentPose.minus(targetPose);
 
-        double thetaVelocity = thetaController.calculate(offset.getRotation().getRadians());
+        double thetaVelocity = thetaController.calculate(poseOffset.getRotation().getDegrees());
         if (thetaController.atSetpoint()) {
             thetaVelocity = 0;
         }
-        double yVelocityController = yController.calculate(offset.getY());
+        double yVelocityController = yController.calculate(poseOffset.getY());
         if (yController.atSetpoint()) {
             yVelocityController = 0;
         }
-        double xVelocityController = xController.calculate(offset.getX());
+        double xVelocityController = xController.calculate(poseOffset.getX());
         if (xController.atSetpoint()) {
             xVelocityController = 0;
         }
@@ -82,12 +83,14 @@ public class AlignAndDriveToReef extends Command {
         // System.out.println(offset.getRotation().getRadians());
         drivetrain.setControl(drivetrain.driveFieldRelative(fieldRelativeSpeeds));
         
-        SmartDashboard.putNumber("x Offset", offset.getX());
+        SmartDashboard.putNumber("x Offset", xController.getError());
+        SmartDashboard.putNumber("y Offset", yController.getError());
+
     }
 
     @Override
     public boolean isFinished() {
-        return false;
-        // return thetaController.atSetpoint() && yController.atSetpoint();
+
+        return Math.abs(poseOffset.getX()) < .1 && Math.abs(poseOffset.getY()) < .1;
     }
 }

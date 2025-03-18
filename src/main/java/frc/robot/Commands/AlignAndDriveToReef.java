@@ -11,14 +11,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
     public class AlignAndDriveToReef extends Command {
-    private CommandSwerveDrivetrain drivetrain;
+    private final CommandSwerveDrivetrain drivetrain;
 
-    private PIDController thetaController = new PIDController(6, 0, 0);
-    private PIDController yController = new PIDController(5, 0, 0);
-    private PIDController xController = new PIDController(3.2, 0, 0);
-    private Pose2d targetPose;
-    private double offset;
-    private Rotation2d rotationOffset;
+    private final PIDController thetaController = new PIDController(4, 0, 0);
+    private final PIDController yController = new PIDController(5, 0, 0);
+    private final PIDController xController = new PIDController(3.2, 0, 0);
+    private final Pose2d targetPose;
+    private final double offset;
+    private final Rotation2d rotationOffset;
     Transform2d poseOffset;
 
     public AlignAndDriveToReef(
@@ -41,7 +41,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
         // Rotation to face the tag
         
 
-        thetaController.setSetpoint(rotationOffset.getRadians());
+        thetaController.setSetpoint(rotationOffset.getDegrees());
         yController.setSetpoint(offset);
         thetaController.enableContinuousInput(0, 2 * Math.PI);
         thetaController.setTolerance(Units.degreesToRadians(2));
@@ -91,6 +91,6 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
     @Override
     public boolean isFinished() {
 
-        return Math.abs(poseOffset.getX()) < .1 && Math.abs(poseOffset.getY()) < .1;
+        return Math.abs(poseOffset.getX()) < .1 && Math.abs(poseOffset.getY()) < .1 && Math.abs(poseOffset.getRotation().getDegrees()) < .1;
     }
 }

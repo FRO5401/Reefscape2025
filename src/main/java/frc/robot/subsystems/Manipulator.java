@@ -186,7 +186,7 @@ public class Manipulator extends SubsystemBase {
  }
 
  public boolean getBeamBreak(){
-  return beamBreak.get();
+  return !beamBreak.get();
  }
 
   @Override

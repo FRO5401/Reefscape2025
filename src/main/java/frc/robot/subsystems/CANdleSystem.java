@@ -49,17 +49,27 @@
 
  package frc.robot.subsystems;
 
- import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
- import frc.robot.Constants;
- 
- import com.ctre.phoenix.led.*;
+ import com.ctre.phoenix.led.Animation;
+import com.ctre.phoenix.led.CANdle;
  import com.ctre.phoenix.led.CANdle.LEDStripType;
  import com.ctre.phoenix.led.CANdle.VBatOutputMode;
+ import com.ctre.phoenix.led.CANdleConfiguration;
+ import com.ctre.phoenix.led.ColorFlowAnimation;
  import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
+ import com.ctre.phoenix.led.LarsonAnimation;
  import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
- import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
- import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
+ import com.ctre.phoenix.led.RainbowAnimation;
+import com.ctre.phoenix.led.RgbFadeAnimation;
+import com.ctre.phoenix.led.SingleFadeAnimation;
+import com.ctre.phoenix.led.StrobeAnimation;
+import com.ctre.phoenix.led.TwinkleAnimation;
+import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
+import com.ctre.phoenix.led.TwinkleOffAnimation;
+import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
+
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
  
  public class CANdleSystem extends SubsystemBase {
      private final int LEDS_PER_ANIMATION = 308-101;
@@ -75,7 +85,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  
      public enum AnimationTypes {
          ColorFlow,
-         Fire,
          Larson,
          Rainbow,
          RgbFade,
@@ -84,6 +93,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
          Twinkle,
          TwinkleOff,
          SetAll,
+         HasAlgea,
+         HasCoral,
+         Looking,
          Empty
      }
      private AnimationTypes m_currentAnimation;
@@ -112,36 +124,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
          return m_candle.getMaxSimultaneousAnimationCount();
      }
  
-     public void incrementAnimation() {
-         switch(m_currentAnimation) {
-             case ColorFlow: changeAnimation(AnimationTypes.Fire); break;
-             case Fire: changeAnimation(AnimationTypes.Larson); break;
-             case Larson: changeAnimation(AnimationTypes.Rainbow); break;
-             case Rainbow: changeAnimation(AnimationTypes.RgbFade); break;
-             case RgbFade: changeAnimation(AnimationTypes.SingleFade); break;
-             case SingleFade: changeAnimation(AnimationTypes.Strobe); break;
-             case Strobe: changeAnimation(AnimationTypes.Twinkle); break;
-             case Twinkle: changeAnimation(AnimationTypes.TwinkleOff); break;
-             case TwinkleOff: changeAnimation(AnimationTypes.Empty); break;
-             case Empty: changeAnimation(AnimationTypes.ColorFlow); break;
-             case SetAll: changeAnimation(AnimationTypes.ColorFlow); break;
-         }
-     }
-     public void decrementAnimation() {
-         switch(m_currentAnimation) {
-             case ColorFlow: changeAnimation(AnimationTypes.Empty); break;
-             case Fire: changeAnimation(AnimationTypes.ColorFlow); break;
-             case Larson: changeAnimation(AnimationTypes.Fire); break;
-             case Rainbow: changeAnimation(AnimationTypes.Larson); break;
-             case RgbFade: changeAnimation(AnimationTypes.Rainbow); break;
-             case SingleFade: changeAnimation(AnimationTypes.RgbFade); break;
-             case Strobe: changeAnimation(AnimationTypes.SingleFade); break;
-             case Twinkle: changeAnimation(AnimationTypes.Strobe); break;
-             case TwinkleOff: changeAnimation(AnimationTypes.Twinkle); break;
-             case Empty: changeAnimation(AnimationTypes.TwinkleOff); break;
-             case SetAll: changeAnimation(AnimationTypes.ColorFlow); break;
-         }
-     }
+
+    
+  
+
 
  
      /* Wrappers so we can access the CANdle from the subsystem */
@@ -161,37 +147,53 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
          {
              default:
              case ColorFlow:
-                 m_candleChannel = 8;
                     m_toAnimate = new ColorFlowAnimation(128, 20, 70, 0, 0.7, LEDS_PER_ANIMATION, Direction.Forward,  8);
                  break;
-             case Fire:
-                 m_toAnimate = new FireAnimation(0.5, 0.7, LEDS_PER_ANIMATION, 0.8, 0.5, m_animDirection, 8);
-                 break;
+
              case Larson:
                  m_toAnimate = new LarsonAnimation(0, 0, 255, 0, 0.5, LEDS_PER_ANIMATION, BounceMode.Front, 5, 8  );
                  break;
+
              case Rainbow:
                  m_toAnimate = new RainbowAnimation(1, 0.1, LEDS_PER_ANIMATION, m_animDirection,8);
                  break;
+
              case RgbFade:
                  m_toAnimate = new RgbFadeAnimation(0.7, 0.4, LEDS_PER_ANIMATION,  8 );
                  break;
+
              case SingleFade:
                  m_toAnimate = new SingleFadeAnimation(0, 0, 255, 0, 0.5, LEDS_PER_ANIMATION,  8);
                  break;
+
              case Strobe:
                  m_toAnimate = new StrobeAnimation(0, 0, 255, 0, 0.1, LEDS_PER_ANIMATION,  8);
                  break;
+
              case Twinkle:
                  m_toAnimate = new TwinkleAnimation(30, 70, 60, 0, 0.4, LEDS_PER_ANIMATION, TwinklePercent.Percent42, 8  );
                  break;
+
              case TwinkleOff:
                  m_toAnimate = new TwinkleOffAnimation(70, 90, 175, 0, 0.2, LEDS_PER_ANIMATION, TwinkleOffPercent.Percent76, 8 );
                  break;
+
              case Empty:
                  m_toAnimate = new RainbowAnimation(1, 0.7, LEDS_PER_ANIMATION, m_animDirection, 8 );
                  break;
- 
+            
+            case HasAlgea:
+                m_toAnimate = new StrobeAnimation(0, 0, 255, 0, 0.1, LEDS_PER_ANIMATION,  8);
+                break;
+
+            case HasCoral:
+                m_toAnimate = new StrobeAnimation(255, 0, 0, 0, 0.1, LEDS_PER_ANIMATION,  8);
+                break;
+
+            case Looking:
+            m_toAnimate = new LarsonAnimation(255, 0, 255, 0, 0.5, LEDS_PER_ANIMATION, BounceMode.Front, 7, 8  );
+                break;
+
              case SetAll:
                  m_toAnimate = null;
                  break;

@@ -7,6 +7,7 @@ package frc.robot;
 import java.util.Set;
 
 import org.photonvision.PhotonCamera;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -26,25 +27,28 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.AlignAndDriveToReef;
+import frc.robot.Commands.AlignToTag;
+import frc.robot.Commands.Autos.OnePiece;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.InfeedConstants.IntakeConstants;
 import frc.robot.Constants.InfeedConstants.PivotConstants;
 import frc.robot.Constants.VisionConstants;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.CANdleSystem;
+import frc.robot.subsystems.CANdleSystem.AnimationTypes;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Manipulator;
-import frc.robot.subsystems.CANdleSystem.AnimationTypes;
-import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.CANdleSystem;
-import frc.robot.Commands.AlignToTag;
-import frc.robot.Commands.Autos.OnePiece;
 
-public class RobotContainer {
+public final class RobotContainer {
 
-    private static PhotonCamera FrontCam = new PhotonCamera("Temp");
-    private static PhotonCamera FrontRight = new PhotonCamera("FrontRight");
+    private static final PhotonCamera FrontCam = new PhotonCamera("Temp");
+    private static final PhotonCamera FrontRight = new PhotonCamera("FrontRight");
+
+    public static PhotonCamera getFrontRight() {
+        return FrontRight;
+    }
 
     Elevator elevator = new Elevator();
     Manipulator maniuplator = new Manipulator();
@@ -109,10 +113,10 @@ public class RobotContainer {
                 maniuplator.setPosition(
                         IntakeConstants.HOLD_CORAL,
                         PivotConstants.STRAIGHTOUT),
-                candle.setLights(AnimationTypes.Strobe)));
+                candle.setLights(AnimationTypes.HasAlgea)));
         hasCoral.onTrue(new ParallelCommandGroup(
                 maniuplator.stopIntake(),
-                candle.setLights(AnimationTypes.Strobe)
+                candle.setLights(AnimationTypes.HasCoral)
                 ));
 
         // driver.a().whileTrue(drivetrain.applyRequest(() -> brake));
@@ -129,14 +133,6 @@ public class RobotContainer {
         // reset the field-centric heading on left bumper press
         driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-        // driver.a().whileTrue(new AlignToTag(drivetrain, frontRightCam, frontLeftCam,
-        // ()->driver.getLeftX()));
-
-        driver.povDown().onTrue(candle.runOnce(() -> {
-            candle.clearAllAnims();
-            candle.incrementAnimation();
-        }));
-
         driver.povUp().onTrue(candle.runOnce(() -> {
             candle.clearAllAnims();
             candle.changeAnimation(AnimationTypes.Strobe);
@@ -148,12 +144,14 @@ public class RobotContainer {
                 maniuplator.setPosition(
                         IntakeConstants.HOLD_CORAL,
                         PivotConstants.L4)));
+
         operator.b().onTrue(new ParallelCommandGroup(
                 elevator.setPosition(
                         ElevatorConstants.L3),
                 maniuplator.setPosition(
                         IntakeConstants.HOLD_CORAL,
                         PivotConstants.PLACE_CORAL)));
+
         operator.a().onTrue(new ParallelCommandGroup(
                 elevator.setPosition(
                         ElevatorConstants.L2),
@@ -168,7 +166,8 @@ public class RobotContainer {
                         maniuplator.setPosition(
                                 IntakeConstants.HOLD_CORAL,
                                 PivotConstants.STATION),
-                        maniuplator.setVelocity(() -> 1))));
+                        maniuplator.setVelocity(() -> 1)),
+                candle.setLights(AnimationTypes.Looking)));
 
         // Straightens out intake and position to hold coral
         operator.povLeft().onTrue(
@@ -189,12 +188,16 @@ public class RobotContainer {
 
         // Sucks in piece
         operator.leftTrigger(.01).whileTrue(
-                maniuplator.setVelocity(() -> 1));
+                new ParallelCommandGroup(
+                        maniuplator.setVelocity(() -> 1),
+                        candle.setLights(AnimationTypes.Looking)));
 
         // Repels piece in intake
         operator.rightTrigger(.01).whileTrue(
-                new SequentialCommandGroup(maniuplator.setVelocity(() -> -1),
-                        maniuplator.setClaw(IntakeConstants.HOLD_ALGEA)));
+                new SequentialCommandGroup(
+                        maniuplator.setVelocity(() -> -1),
+                        maniuplator.setClaw(IntakeConstants.HOLD_ALGEA),
+                        candle.setLights(AnimationTypes.Rainbow)));
 
         // Moves Elevator Up to score in barge
         operator.povUp().onTrue(new ParallelCommandGroup(
@@ -223,8 +226,8 @@ public class RobotContainer {
         climber.setDefaultCommand(climber.climb(()->operator.getLeftY()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
-        driver.x().whileTrue(alignAndDriveToReef(Units.inchesToMeters(-3.5)));
-        driver.b().whileTrue(alignAndDriveToReef(Units.inchesToMeters(3.5)));
+        driver.x().whileTrue(alignAndDriveToReef(Units.inchesToMeters(-2)));
+        driver.b().whileTrue(alignAndDriveToReef(Units.inchesToMeters(2)));
         driver.a().whileTrue(alignToSource(Units.inchesToMeters(0)));
 
 

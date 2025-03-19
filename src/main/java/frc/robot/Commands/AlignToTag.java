@@ -1,30 +1,28 @@
 package frc.robot.Commands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
-import java.util.function.DoubleSupplier;
-
 public class AlignToTag extends Command {
-    private CommandSwerveDrivetrain drivetrain;
+    private final CommandSwerveDrivetrain drivetrain;
 
-    private DoubleSupplier xVelocity;
-    private DoubleSupplier yVelocity;
+    private final DoubleSupplier xVelocity;
+    private final DoubleSupplier yVelocity;
 
-    private PIDController thetaController = new PIDController(4, 0, 0);
-    private PIDController yController = new PIDController(6, 0, .2);
-    private Pose2d targetPose;
-    private double offset;
-    private Rotation2d rotationOffset;
+    private final PIDController thetaController = new PIDController(4, 0, 0);
+    private final PIDController yController = new PIDController(6, 0, .2);
+    private final Pose2d targetPose;
+    private final double offset;
+    private final Rotation2d rotationOffset;
 
-    private Timer slewerTimer = new Timer();
 
     public AlignToTag(
             CommandSwerveDrivetrain drivetrain,
@@ -47,7 +45,6 @@ public class AlignToTag extends Command {
         // Camera id
         // tagId
         // Rotation to face the tag
-        slewerTimer.restart();
 
         thetaController.setSetpoint(rotationOffset.getRadians());
         yController.setSetpoint(offset);

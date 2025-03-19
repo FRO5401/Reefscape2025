@@ -29,10 +29,11 @@ public class OnePiece extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
+      
       new ParallelCommandGroup(elevator.setPosition(ElevatorConstants.PROCESSOR),manipulator.setPosition(IntakeConstants.HOLD_CORAL, PivotConstants.BARGE)),
-      RobotContainer.alignAndDriveToReef(21,Units.inchesToMeters(-2.), VisionConstants.AUTO_DISTANCE),
+      RobotContainer.alignAndDriveToReef(21,Units.inchesToMeters(-2), VisionConstants.AUTO_DISTANCE),
       new ParallelCommandGroup(elevator.setPosition(ElevatorConstants.L4), manipulator.setPosition(IntakeConstants.HOLD_CORAL, PivotConstants.L4)),
-      RobotContainer.alignAndDriveToReef(21,Units.inchesToMeters(-2.), VisionConstants.REEF_DISTANCE),
+      RobotContainer.alignAndDriveToReef(21,Units.inchesToMeters(-2), VisionConstants.REEF_DISTANCE),
 
       Commands.waitSeconds(1),
       manipulator.setClaw(IntakeConstants.HOLD_ALGEA),
@@ -60,7 +61,7 @@ public class OnePiece extends SequentialCommandGroup {
                 IntakeConstants.HOLD_ALGEA,
                 PivotConstants.BARGE)
       ),
-      
+
       Commands.waitSeconds(5),
       manipulator.setVelocity(()->-1)
     );         

@@ -14,8 +14,8 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
     private final CommandSwerveDrivetrain drivetrain;
 
     private final PIDController thetaController = new PIDController(4, 0, 0);
-    private final PIDController yController = new PIDController(5, 0, 0);
-    private final PIDController xController = new PIDController(3.2, 0, 0);
+    private final PIDController yController = new PIDController(3.2, 0, 0.1);
+    private final PIDController xController = new PIDController(3.2, 0, 0.1);
     private final Pose2d targetPose;
     private final double offset;
     private final Rotation2d rotationOffset;
@@ -41,7 +41,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
         // Rotation to face the tag
         
 
-        thetaController.setSetpoint(rotationOffset.getDegrees());
+        thetaController.setSetpoint(rotationOffset.getRadians());
         yController.setSetpoint(offset);
         thetaController.enableContinuousInput(0, 2 * Math.PI);
         thetaController.setTolerance(Units.degreesToRadians(2));
@@ -56,7 +56,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 
         poseOffset = currentPose.minus(targetPose);
 
-        double thetaVelocity = thetaController.calculate(poseOffset.getRotation().getDegrees());
+        double thetaVelocity = thetaController.calculate(poseOffset.getRotation().getRadians());
         if (thetaController.atSetpoint()) {
             thetaVelocity = 0;
         }
@@ -91,6 +91,6 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
     @Override
     public boolean isFinished() {
 
-        return Math.abs(poseOffset.getX()) < .1 && Math.abs(poseOffset.getY()) < .1 && Math.abs(poseOffset.getRotation().getDegrees()) < .1;
+        return Math.abs(poseOffset.getX()) < .1 && Math.abs(poseOffset.getY()) < .1 && thetaController.atSetpoint();
     }
 }

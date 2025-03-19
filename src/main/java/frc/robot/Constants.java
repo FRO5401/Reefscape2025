@@ -1,9 +1,5 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
 import java.util.List;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -21,6 +17,9 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import frc.robot.generated.TunerConstants;
 
 public class Constants {
@@ -42,12 +41,12 @@ public class Constants {
             public static AprilTagFieldLayout aprilTagLayout =
             AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
-            public static final double REEF_DISTANCE = Units.feetToMeters(1.4);
-            public static final double ALGEA_DISTANCE = Units.feetToMeters(1);
-            public static final double BARGE_DISTANCE = Units.feetToMeters(6);
+            public static final double REEF_DISTANCE = Units.feetToMeters(1.6);
+            public static final double ALGEA_DISTANCE = Units.feetToMeters(.8);
+            public static final double BARGE_DISTANCE = Units.feetToMeters(5);
 
 
-            public static final double AUTO_DISTANCE = Units.feetToMeters(5);
+            public static final double AUTO_DISTANCE = Units.feetToMeters(4);
 
             public static final Transform3d ROBOT_TO_FRONT_CAM = new Transform3d(new Translation3d(Units.inchesToMeters(13), Units.inchesToMeters(11.5), Units.inchesToMeters(5)), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
             public static final Transform3d ROBOT_TO_RIGHT_CAM = new Transform3d(new Translation3d(Units.inchesToMeters(13), Units.inchesToMeters(-11.5), Units.inchesToMeters(5)), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
@@ -58,12 +57,12 @@ public class Constants {
         public static final int elevatorID = 13;
         public static final double SPEED_MODIFIER = 166;
         public static final double BARGE = 150 ;
-        public static final double L4 = 140-4;
-        public static final double L3 = 82-4;
+        public static final double L4 = 140-6;
+        public static final double L3 = 82-6;
         
 
-        public static final double L2 = 53.91748046875-4;
-        public static final double STATION = 52-4;
+        public static final double L2 = 53.91748046875-6;
+        public static final double STATION = 52-6;
         public static final double PROCESSOR = 5;
         public static final double FLOOR = 1;
 

@@ -24,24 +24,24 @@ import frc.robot.subsystems.Manipulator;
 public class OnePiece extends SequentialCommandGroup {
   /** Creates a new OnePiece. */
   public OnePiece(CommandSwerveDrivetrain drivetrain, Elevator elevator, Manipulator manipulator) {
-    Trigger hasAlgea = new Trigger(manipulator.iscurrentspiked()).debounce(.1);
+    Trigger hasAlgea = new Trigger(manipulator.iscurrentspiked());
 
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      
-      new ParallelCommandGroup(elevator.setPosition(ElevatorConstants.PROCESSOR),manipulator.setPosition(IntakeConstants.HOLD_CORAL, PivotConstants.BARGE)),
-      RobotContainer.alignAndDriveToReef(21,Units.inchesToMeters(-2), VisionConstants.AUTO_DISTANCE),
-      new ParallelCommandGroup(elevator.setPosition(ElevatorConstants.L4), manipulator.setPosition(IntakeConstants.HOLD_CORAL, PivotConstants.L4)),
-      RobotContainer.alignAndDriveToReef(21,Units.inchesToMeters(-2), VisionConstants.REEF_DISTANCE),
 
+      new ParallelCommandGroup(elevator.setPosition(ElevatorConstants.PROCESSOR),manipulator.setPosition(IntakeConstants.HOLD_CORAL, PivotConstants.BARGE)),
+      
+      RobotContainer.alignAndDriveToReef(21,Units.inchesToMeters(-2.2), VisionConstants.AUTO_DISTANCE),
+      new ParallelCommandGroup(elevator.setPosition(ElevatorConstants.L4), manipulator.setPosition(IntakeConstants.HOLD_CORAL, PivotConstants.L4)),
+      RobotContainer.alignAndDriveToReef(21,Units.inchesToMeters(-2.2), VisionConstants.REEF_DISTANCE),
       Commands.waitSeconds(1),
       manipulator.setClaw(IntakeConstants.HOLD_ALGEA),
       manipulator.setVelocity(()->-1),
-      Commands.waitSeconds(.5),
+      Commands.waitSeconds(.2).until(()->!manipulator.getBeamBreak()),
       manipulator.setVelocity(()->0),
 
-      RobotContainer.alignAndDriveToReef(21,Units.inchesToMeters(-2.3), VisionConstants.AUTO_DISTANCE),
+      RobotContainer.alignAndDriveToReef(21,Units.inchesToMeters(-2.2), VisionConstants.AUTO_DISTANCE),
       new ParallelCommandGroup(
                         manipulator.setPosition(
                                 IntakeConstants.HOLD_ALGEA,
@@ -50,11 +50,9 @@ public class OnePiece extends SequentialCommandGroup {
       Commands.waitSeconds(1),
       manipulator.setVelocity(()->1),
       RobotContainer.alignAndDriveToReef(21,Units.inchesToMeters(0), VisionConstants.ALGEA_DISTANCE).until(hasAlgea),
-      RobotContainer.alignAndDriveToReef(21,Units.inchesToMeters(0), VisionConstants.AUTO_DISTANCE),
-
-      Commands.waitSeconds(2),
+      RobotContainer.alignAndDriveToReef(21,Units.inchesToMeters(2.5), VisionConstants.BARGE_DISTANCE),
       RobotContainer.alignAndDriveToReef(14,Units.inchesToMeters(0), VisionConstants.BARGE_DISTANCE),
-      Commands.waitSeconds(1),
+      Commands.waitSeconds(.5).until(()->drivetrain.getPitch()<5),
       new ParallelCommandGroup(
         elevator.setPosition(ElevatorConstants.BARGE),
         manipulator.setPosition(
@@ -62,7 +60,7 @@ public class OnePiece extends SequentialCommandGroup {
                 PivotConstants.BARGE)
       ),
 
-      Commands.waitSeconds(5),
+      Commands.waitSeconds(2),
       manipulator.setVelocity(()->-1)
     );         
   }

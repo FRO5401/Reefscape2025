@@ -80,7 +80,7 @@ public final class RobotContainer {
 
     private void configureBindings() {
         Trigger tiltingElevator = new Trigger(() -> drivetrain.getPitch() > 25);
-        Trigger hasAlgea = new Trigger(maniuplator.iscurrentspiked()).debounce(.1);
+        Trigger hasAlgea = new Trigger(maniuplator.iscurrentspiked());
         Trigger hasCoral = new Trigger(()-> maniuplator.getBeamBreak());
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
@@ -114,10 +114,13 @@ public final class RobotContainer {
                         IntakeConstants.HOLD_CORAL,
                         PivotConstants.STRAIGHTOUT),
                 candle.setLights(AnimationTypes.HasAlgea)));
-        hasCoral.onTrue(new ParallelCommandGroup(
-                maniuplator.stopIntake(),
-                candle.setLights(AnimationTypes.HasCoral)
-                ));
+        hasCoral.onTrue(
+                new SequentialCommandGroup(
+                Commands.waitSeconds(.5),
+                new ParallelCommandGroup(
+                        maniuplator.stopIntake(),
+                        candle.setLights(AnimationTypes.HasCoral)
+                )));
 
         // driver.a().whileTrue(drivetrain.applyRequest(() -> brake));
         driver.b().whileTrue(drivetrain
@@ -173,7 +176,6 @@ public final class RobotContainer {
         operator.povLeft().onTrue(
                 new ParallelCommandGroup(
                         maniuplator.setPosition(
-
                                 IntakeConstants.HOLD_ALGEA,
                                 PivotConstants.STRAIGHTOUT),
                         elevator.setPosition(ElevatorConstants.L2 - 6)));
@@ -226,8 +228,8 @@ public final class RobotContainer {
         climber.setDefaultCommand(climber.climb(()->operator.getLeftY()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
-        driver.x().whileTrue(alignAndDriveToReef(Units.inchesToMeters(-2)));
-        driver.b().whileTrue(alignAndDriveToReef(Units.inchesToMeters(2)));
+        driver.x().whileTrue(alignAndDriveToReef(Units.inchesToMeters(-3.5)));
+        driver.b().whileTrue(alignAndDriveToReef(Units.inchesToMeters(3.5)));
         driver.a().whileTrue(alignToSource(Units.inchesToMeters(0)));
 
 

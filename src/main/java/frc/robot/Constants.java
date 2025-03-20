@@ -58,11 +58,11 @@ public class Constants {
         public static final double SPEED_MODIFIER = 166;
         public static final double BARGE = 150 ;
         public static final double L4 = 140-6;
-        public static final double L3 = 82-6;
+        public static final double L3 = 82-3;
         
 
         public static final double L2 = 53.91748046875-6;
-        public static final double STATION = 52-6;
+        public static final double STATION = 52-3;
         public static final double PROCESSOR = 5;
         public static final double FLOOR = 1;
 
@@ -95,7 +95,7 @@ public class Constants {
 
             /*  Position for each game piece */
             //Closes in to suck in coral
-            public static final double HOLD_CORAL = 38;
+            public static final double HOLD_CORAL = 32;
             //Sides parallel to hold algea
             public static final double HOLD_ALGEA = 6;
             //Place coral 62.49993896484375
@@ -126,7 +126,7 @@ public class Constants {
             public static final double FLOOR_PICKUP =-50*2;
 
             //Gets Coral from station
-            public static final double STATION = -29*2;
+            public static final double STATION = -25*2;
         }
 
 

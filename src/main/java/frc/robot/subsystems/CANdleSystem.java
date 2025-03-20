@@ -96,6 +96,7 @@ import frc.robot.Constants;
          HasAlgea,
          HasCoral,
          Looking,
+         Align,
          Empty
      }
      private AnimationTypes m_currentAnimation;
@@ -183,15 +184,19 @@ import frc.robot.Constants;
                  break;
             
             case HasAlgea:
-                m_toAnimate = new StrobeAnimation(0, 0, 255, 0, 0.1, LEDS_PER_ANIMATION,  8);
+                m_toAnimate = new StrobeAnimation(255, 0, 255, 0, 0.1, LEDS_PER_ANIMATION,  8);
                 break;
 
             case HasCoral:
-                m_toAnimate = new StrobeAnimation(255, 0, 0, 0, 0.1, LEDS_PER_ANIMATION,  8);
+                m_toAnimate = new StrobeAnimation(0, 0, 200, 0, 0.1, LEDS_PER_ANIMATION,  8);
                 break;
 
             case Looking:
-            m_toAnimate = new LarsonAnimation(255, 0, 255, 0, 0.5, LEDS_PER_ANIMATION, BounceMode.Front, 7, 8  );
+            m_toAnimate = new StrobeAnimation(255, 0, 0, 0, 0.1, LEDS_PER_ANIMATION,  8);
+                break;
+            
+            case Align:
+            m_toAnimate = new StrobeAnimation(50, 200, 0, 0, 0, LEDS_PER_ANIMATION,  8);
                 break;
 
              case SetAll:

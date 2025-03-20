@@ -81,7 +81,7 @@ public final class RobotContainer {
 
     private void configureBindings() {
         Trigger tiltingElevator = new Trigger(() -> drivetrain.getPitch() > 25);
-        Trigger hasAlgea = new Trigger(maniuplator.iscurrentspiked());
+        Trigger hasAlgea = new Trigger(maniuplator.iscurrentspiked()).debounce(.05);
         Trigger hasCoral = new Trigger(()-> maniuplator.getBeamBreak());
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
@@ -117,7 +117,7 @@ public final class RobotContainer {
                 candle.setLights(AnimationTypes.HasAlgea)));
         hasCoral.onTrue(
                 new SequentialCommandGroup(
-                Commands.waitSeconds(.5),
+                Commands.waitSeconds(.05),
                 new ParallelCommandGroup(
                         maniuplator.stopIntake(),
                         candle.setLights(AnimationTypes.HasCoral)
@@ -198,9 +198,9 @@ public final class RobotContainer {
         // Repels piece in intake
         operator.rightTrigger(.01).whileTrue(
                 new SequentialCommandGroup(
-                        maniuplator.setVelocity(() -> -1),
+                        maniuplator.setVelocity(() -> -.7),
                         maniuplator.setClaw(IntakeConstants.HOLD_ALGEA),
-                        candle.setLights(AnimationTypes.Rainbow)));
+                        candle.setLights(AnimationTypes.Looking)));
 
         // Moves Elevator Up to score in barge
         operator.povUp().onTrue(new ParallelCommandGroup(
@@ -216,7 +216,7 @@ public final class RobotContainer {
                 maniuplator.setPosition(
                         IntakeConstants.HOLD_CORAL,
                         PivotConstants.CLEAR_ALGEA),
-                candle.setLights(AnimationTypes.SingleFade)));
+                candle.setLights(AnimationTypes.Looking)));
 
         operator.start().onTrue(new ParallelCommandGroup(
                 elevator.setPosition(ElevatorConstants.FLOOR),
@@ -229,8 +229,12 @@ public final class RobotContainer {
         climber.setDefaultCommand(climber.climb(()->operator.getLeftY()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
-        driver.x().whileTrue(alignAndDriveToReef(Units.inchesToMeters(-2.2)));
-        driver.b().whileTrue(alignAndDriveToReef(Units.inchesToMeters(2.2)));
+        driver.x().whileTrue(new SequentialCommandGroup(
+                alignAndDriveToReef(Units.inchesToMeters(-2.2)),
+                candle.setLights(AnimationTypes.Align)));
+        driver.b().whileTrue(new SequentialCommandGroup(
+                alignAndDriveToReef(Units.inchesToMeters(2.2)),
+                candle.setLights(AnimationTypes.Align)));
         driver.a().whileTrue(alignToSource(Units.inchesToMeters(0)));
 
 

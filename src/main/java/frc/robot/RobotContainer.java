@@ -28,7 +28,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.AlignAndDriveToReef;
 import frc.robot.Commands.AlignToTag;
-import frc.robot.Commands.Autos.OnePiece;
+import frc.robot.Commands.Autos.OnePieceBlue;
+import frc.robot.Commands.Autos.OnePieceRed;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.InfeedConstants.IntakeConstants;
 import frc.robot.Constants.InfeedConstants.PivotConstants;
@@ -228,8 +229,8 @@ public final class RobotContainer {
         climber.setDefaultCommand(climber.climb(()->operator.getLeftY()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
-        driver.x().whileTrue(alignAndDriveToReef(Units.inchesToMeters(-3.5)));
-        driver.b().whileTrue(alignAndDriveToReef(Units.inchesToMeters(3.5)));
+        driver.x().whileTrue(alignAndDriveToReef(Units.inchesToMeters(-2.2)));
+        driver.b().whileTrue(alignAndDriveToReef(Units.inchesToMeters(2.2)));
         driver.a().whileTrue(alignToSource(Units.inchesToMeters(0)));
 
 
@@ -303,7 +304,8 @@ public final class RobotContainer {
 
     public void chooseAuto() {
 
-        chooser.setDefaultOption("One Piece", new OnePiece(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        chooser.setDefaultOption("1c1a blue", new OnePieceBlue(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        chooser.setDefaultOption("1c1a red", new OnePieceRed(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
         // chooser.addOption("Move Forward",
         // drivetrain.getAutoCommand(Trajectorys.onePiece));
         chooser.setDefaultOption("Do Nothing", elevator.setPosition(ElevatorConstants.PROCESSOR));

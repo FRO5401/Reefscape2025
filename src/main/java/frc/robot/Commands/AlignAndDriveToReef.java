@@ -1,21 +1,25 @@
 package frc.robot.Commands;
 
+
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
     public class AlignAndDriveToReef extends Command {
     private final CommandSwerveDrivetrain drivetrain;
 
     private final PIDController thetaController = new PIDController(4, 0, 0);
-    private final PIDController yController = new PIDController(3.2, 0, 0.1);
-    private final PIDController xController = new PIDController(3.2, 0, 0.1);
+    private final ProfiledPIDController yController = new ProfiledPIDController(3, 0, 0,new TrapezoidProfile.Constraints(Constants.Swerve.MaxSpeed, .5));
+    private final ProfiledPIDController xController = new ProfiledPIDController(3, 0, 0,new TrapezoidProfile.Constraints(Constants.Swerve.MaxSpeed, .5));
     private final Pose2d targetPose;
     private final double offset;
     private final Rotation2d rotationOffset;
@@ -42,7 +46,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
         
 
         thetaController.setSetpoint(rotationOffset.getRadians());
-        yController.setSetpoint(offset);
+        yController.setGoal(offset);
         thetaController.enableContinuousInput(0, 2 * Math.PI);
         thetaController.setTolerance(Units.degreesToRadians(2));
         yController.setTolerance(Units.inchesToMeters(-0.15));
@@ -83,8 +87,9 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
         // System.out.println(offset.getRotation().getRadians());
         drivetrain.setControl(drivetrain.driveFieldRelative(fieldRelativeSpeeds));
         
-        SmartDashboard.putNumber("x Offset", xController.getError());
-        SmartDashboard.putNumber("y Offset", yController.getError());
+        SmartDashboard.putNumber("x Offset", xController.getPositionError());
+        SmartDashboard.putNumber("y Offset", yController.getPositionError());
+        SmartDashboard.putBoolean("theta", thetaController.atSetpoint());
 
     }
 

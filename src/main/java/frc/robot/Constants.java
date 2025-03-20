@@ -41,12 +41,12 @@ public class Constants {
             public static AprilTagFieldLayout aprilTagLayout =
             AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
-            public static final double REEF_DISTANCE = Units.feetToMeters(1.6);
+            public static final double REEF_DISTANCE = Units.feetToMeters(1.8);
             public static final double ALGEA_DISTANCE = Units.feetToMeters(.8);
-            public static final double BARGE_DISTANCE = Units.feetToMeters(5);
+            public static final double BARGE_DISTANCE = Units.feetToMeters(5.5);
 
 
-            public static final double AUTO_DISTANCE = Units.feetToMeters(4);
+            public static final double AUTO_DISTANCE = Units.feetToMeters(3);
 
             public static final Transform3d ROBOT_TO_FRONT_CAM = new Transform3d(new Translation3d(Units.inchesToMeters(13), Units.inchesToMeters(11.5), Units.inchesToMeters(5)), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
             public static final Transform3d ROBOT_TO_RIGHT_CAM = new Transform3d(new Translation3d(Units.inchesToMeters(13), Units.inchesToMeters(-11.5), Units.inchesToMeters(5)), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
@@ -95,7 +95,7 @@ public class Constants {
 
             /*  Position for each game piece */
             //Closes in to suck in coral
-            public static final double HOLD_CORAL = 40;
+            public static final double HOLD_CORAL = 38;
             //Sides parallel to hold algea
             public static final double HOLD_ALGEA = 6;
             //Place coral 62.49993896484375

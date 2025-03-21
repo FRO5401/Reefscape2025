@@ -100,7 +100,7 @@ public class Manipulator extends SubsystemBase {
     .disableFollowerMode()
 
     .encoder
-      .positionConversionFactor(28.8);
+      .positionConversionFactor(16);
       
 
     pivotConfig
@@ -109,7 +109,7 @@ public class Manipulator extends SubsystemBase {
       .smartCurrentLimit(70)
       .idleMode(IdleMode.kBrake)
       .encoder
-        .positionConversionFactor(25);
+        .positionConversionFactor(45);
       
       
     rotateLeftConfig.closedLoop

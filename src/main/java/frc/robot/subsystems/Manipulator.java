@@ -106,7 +106,7 @@ public class Manipulator extends SubsystemBase {
     pivotConfig
       .apply(globalConfig)
       .inverted(true)
-      .smartCurrentLimit(70)
+      .smartCurrentLimit(80)
       .idleMode(IdleMode.kBrake)
       .encoder
         .positionConversionFactor(45);

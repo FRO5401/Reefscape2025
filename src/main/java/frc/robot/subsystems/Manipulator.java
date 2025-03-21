@@ -100,7 +100,7 @@ public class Manipulator extends SubsystemBase {
     .disableFollowerMode()
 
     .encoder
-      .positionConversionFactor(16);
+      .positionConversionFactor(28.8);
       
 
     pivotConfig

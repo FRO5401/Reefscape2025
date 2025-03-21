@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Amps;
-
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -16,6 +14,7 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import static edu.wpi.first.units.Units.Amps;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -76,6 +75,7 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putNumber("Elevator Position", elevator.getPosition().getValueAsDouble());
     SmartDashboard.putNumber("Elevator Temp", elevator.getDeviceTemp().getValueAsDouble());
     // This method will be called once per scheduler run
+
   }
 
   public Command setPosition(double pose) {

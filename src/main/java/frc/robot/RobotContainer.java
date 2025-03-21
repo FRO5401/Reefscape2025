@@ -248,7 +248,7 @@ public final class RobotContainer {
                     Pose2d alignmentPose = drivetrain.findNearestReefTagPose()
                             .plus(
                                     new Transform2d(
-                                            new Translation2d(VisionConstants.REEF_DISTANCE, offset),
+                                            new Translation2d(VisionConstants.REEF_DISTANCE , offset),
                                             new Rotation2d()));
                     return new AlignAndDriveToReef(
                             drivetrain,
@@ -308,8 +308,8 @@ public final class RobotContainer {
 
     public void chooseAuto() {
 
-        chooser.setDefaultOption("1c1a blue", new OnePieceBlue(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-        chooser.setDefaultOption("1c1a red", new OnePieceRed(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        chooser.addOption("1c1a blue", new OnePieceBlue(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        chooser.addOption("1c1a red", new OnePieceRed(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
         // chooser.addOption("Move Forward",
         // drivetrain.getAutoCommand(Trajectorys.onePiece));
         chooser.setDefaultOption("Do Nothing", elevator.setPosition(ElevatorConstants.PROCESSOR));

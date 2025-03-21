@@ -34,6 +34,9 @@ public class Manipulator extends SubsystemBase {
 
   SparkMax pivot = new SparkMax(InfeedConstants.PivotConstants.PIVOT_ID, MotorType.kBrushless);
 
+
+  
+
   RelativeEncoder rotateLeftEncoder = rotateLeft.getEncoder();
   RelativeEncoder rotateRightEncoder = rotateRight.getEncoder();
 
@@ -58,6 +61,8 @@ public class Manipulator extends SubsystemBase {
 
   /** Creates a new Maniuplator. */
   public Manipulator() {
+
+    
 
     globalConfig = new SparkMaxConfig();
     intakeLeftConfig = new SparkMaxConfig();
@@ -198,7 +203,7 @@ public class Manipulator extends SubsystemBase {
  }
 
  public BooleanSupplier iscurrentspiked(){
-  return ()->leftIntakeCurrent()>35;
+  return ()->leftIntakeCurrent()>40;
  }
 
   @Override
@@ -211,6 +216,7 @@ public class Manipulator extends SubsystemBase {
     SmartDashboard.putBoolean("HasCoral", getBeamBreak());
     SmartDashboard.putNumber("right Intake Current", rightIntakeCurrent());
     SmartDashboard.putNumber("Left Intake Current", leftIntakeCurrent());
+
 
   }
 }

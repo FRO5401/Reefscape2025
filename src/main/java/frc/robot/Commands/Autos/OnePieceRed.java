@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.InfeedConstants;
 import frc.robot.Constants.InfeedConstants.IntakeConstants;
 import frc.robot.Constants.InfeedConstants.PivotConstants;
 import frc.robot.Constants.VisionConstants;
@@ -60,7 +61,7 @@ public class OnePieceRed extends SequentialCommandGroup {
                 PivotConstants.BARGE)),
 
       Commands.waitSeconds(2),
-      manipulator.setVelocity(()->-1),
+      manipulator.setVelocity(()->IntakeConstants.AUTO_REPEL_ALGEA),
       Commands.waitSeconds(.2),
       elevator.setPosition(ElevatorConstants.L2) 
     );   

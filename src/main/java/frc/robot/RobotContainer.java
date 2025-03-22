@@ -31,6 +31,7 @@ import frc.robot.Commands.AlignToTag;
 import frc.robot.Commands.Autos.OnePieceBlue;
 import frc.robot.Commands.Autos.OnePieceRed;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.InfeedConstants;
 import frc.robot.Constants.InfeedConstants.IntakeConstants;
 import frc.robot.Constants.InfeedConstants.PivotConstants;
 import frc.robot.Constants.VisionConstants;
@@ -170,7 +171,7 @@ public final class RobotContainer {
                         maniuplator.setPosition(
                                 IntakeConstants.HOLD_CORAL,
                                 PivotConstants.STATION),
-                        maniuplator.setVelocity(() -> 1)),
+                        maniuplator.setVelocity(() -> IntakeConstants.INTAKE_SPEED)),
                 candle.setLights(AnimationTypes.Looking)));
 
         // Straightens out intake and position to hold coral
@@ -192,13 +193,13 @@ public final class RobotContainer {
         // Sucks in piece
         operator.leftTrigger(.01).whileTrue(
                 new ParallelCommandGroup(
-                        maniuplator.setVelocity(() -> 1),
+                        maniuplator.setVelocity(() -> IntakeConstants.INTAKE_SPEED),
                         candle.setLights(AnimationTypes.Looking)));
 
         // Repels piece in intake
         operator.rightTrigger(.01).whileTrue(
                 new SequentialCommandGroup(
-                        maniuplator.setVelocity(() -> -.7),
+                        maniuplator.setVelocity(() -> IntakeConstants.TELEOP_REPEL_ALGEA),
                         maniuplator.setClaw(IntakeConstants.HOLD_ALGEA),
                         candle.setLights(AnimationTypes.Looking)));
 

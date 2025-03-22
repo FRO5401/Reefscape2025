@@ -99,7 +99,9 @@ public class Constants {
             //Sides parallel to hold algea
             public static final double HOLD_ALGEA = 6;
             //Place coral 62.49993896484375
-
+            public static final double TELEOP_REPEL_ALGEA = -0.55;
+            public static final double AUTO_REPEL_ALGEA = -0.82;
+            public static final double INTAKE_SPEED = 1;
             
         }
 

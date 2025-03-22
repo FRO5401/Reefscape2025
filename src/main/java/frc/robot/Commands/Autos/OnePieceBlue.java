@@ -60,7 +60,7 @@ public class OnePieceBlue extends SequentialCommandGroup {
                 PivotConstants.BARGE)),
 
       Commands.waitSeconds(2),
-      manipulator.setVelocity(()->-1),
+      manipulator.setVelocity(()->IntakeConstants.AUTO_REPEL_ALGEA),
       Commands.waitSeconds(.2),
       elevator.setPosition(ElevatorConstants.L2) 
     );   

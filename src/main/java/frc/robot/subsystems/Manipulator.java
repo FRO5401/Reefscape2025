@@ -175,7 +175,7 @@ public class Manipulator extends SubsystemBase {
 }
 
 
-
+//overloaded to make it so that we can add backspin to the algea if needed
  public Command setVelocity(double leftVelocity, double rightVelocity){
   return runOnce(()->{
     intakeLeft.set(leftVelocity);

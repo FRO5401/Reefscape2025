@@ -42,6 +42,7 @@ public class Constants {
             AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
             public static final double REEF_DISTANCE = Units.feetToMeters(1.8);
+            public static final double TELEOP_REEF_DISTANCE = Units.feetToMeters(1.6);
             public static final double ALGEA_DISTANCE = Units.feetToMeters(.8);
             public static final double BARGE_DISTANCE = Units.feetToMeters(5.5);
 
@@ -56,7 +57,7 @@ public class Constants {
     public class ElevatorConstants{ 
         public static final int elevatorID = 13;
         public static final double SPEED_MODIFIER = 166;
-        public static final double BARGE = 150-10 ;
+        public static final double BARGE = 150-5 ;
         public static final double L4 = 140-9;//-6
         public static final double L3 = 82-5;//-3
         
@@ -99,8 +100,9 @@ public class Constants {
             //Sides parallel to hold algea
             public static final double HOLD_ALGEA = 6;
             //Place coral 62.49993896484375
-            public static final double TELEOP_REPEL_ALGEA = -0.55; //-0.7
-            public static final double AUTO_REPEL_ALGEA = -0.82;
+            public static final double TELEOP_REPEL_ALGEA = -0.58; //-0.7
+            public static final double TELEOP_REPEL_CORAL = -.8; //-0.7
+            public static final double AUTO_REPEL_ALGEA = -.88;
             public static final double INTAKE_SPEED = 1;
             
         }

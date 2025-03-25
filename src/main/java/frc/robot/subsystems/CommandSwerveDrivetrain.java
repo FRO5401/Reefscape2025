@@ -318,6 +318,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     @Override
     public void periodic() {
         frontResults = frontCamera.getAllUnreadResults();
+        rightResults = rightCamera.getAllUnreadResults();
+
         /*
          * Periodically try to apply the operator perspective.
          * If we haven't applied the operator perspective before, then we should apply it regardless of DS state.
@@ -347,7 +349,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             addVisionMeasurement(frontPose.get().estimatedPose.toPose2d(), frontPose.get().timestampSeconds);
         }
 
-        Optional<EstimatedRobotPose> rightPose = getEstimatedGlobalPose(frontPoseEstimator, frontCamera, frontResults);
+        Optional<EstimatedRobotPose> rightPose = getEstimatedGlobalPose(rightPoseEstimator, rightCamera, rightResults);
 
         if (rightPose.isPresent()){
             addVisionMeasurement(rightPose.get().estimatedPose.toPose2d(), rightPose.get().timestampSeconds);

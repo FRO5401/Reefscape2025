@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.InfeedConstants;
 import frc.robot.Constants.InfeedConstants.IntakeConstants;
 import frc.robot.Constants.InfeedConstants.PivotConstants;
 import frc.robot.Constants.VisionConstants;
@@ -25,7 +24,7 @@ import frc.robot.subsystems.Manipulator;
 public class OnePieceRed extends SequentialCommandGroup {
   /** Creates a new OnePiece. */
   public OnePieceRed(CommandSwerveDrivetrain drivetrain, Elevator elevator, Manipulator manipulator) {
-    Trigger hasAlgea = new Trigger(manipulator.iscurrentspiked());
+    Trigger hasAlgea = new Trigger(manipulator.isCurrentSpiked());
 
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());

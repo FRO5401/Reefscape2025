@@ -18,6 +18,8 @@ import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -33,6 +35,9 @@ public class Manipulator extends SubsystemBase {
   SparkMax rotateRight = new SparkMax(InfeedConstants.IntakeConstants.ROTATE_MOTOR_RIGHT, MotorType.kBrushless);
 
   SparkMax pivot = new SparkMax(InfeedConstants.PivotConstants.PIVOT_ID, MotorType.kBrushless);
+
+  //.02 is the schedular cycle time, 
+  Debouncer currentFilter = new Debouncer(.1, DebounceType.kBoth);
 
 
   
@@ -84,7 +89,7 @@ public class Manipulator extends SubsystemBase {
     
     intakeRightConfig
       .apply(globalConfig)
-      .follow(intakeLeft, true);
+      .inverted(true);
 
     rotateLeftConfig
       .apply(globalConfig)
@@ -169,12 +174,23 @@ public class Manipulator extends SubsystemBase {
   });
 }
 
+
+
+ public Command setVelocity(double leftVelocity, double rightVelocity){
+  return runOnce(()->{
+    intakeLeft.set(leftVelocity);
+    intakeRight.set(rightVelocity);
+  });
+ }
+
  public Command setVelocity(DoubleSupplier velocity){
   return runOnce(()->{
     intakeLeft.set(velocity.getAsDouble());
+    intakeRight.set(velocity.getAsDouble());
   });
-  
  }
+
+
 
  public Command stopIntake(){
   return run(()->{
@@ -201,8 +217,8 @@ public class Manipulator extends SubsystemBase {
   return intakeLeft.getOutputCurrent();
  }
 
- public BooleanSupplier iscurrentspiked(){
-  return ()->leftIntakeCurrent()>40;
+ public BooleanSupplier isCurrentSpiked(){
+  return ()->currentFilter.calculate((leftIntakeCurrent()>20));
  }
 
   @Override
@@ -212,7 +228,7 @@ public class Manipulator extends SubsystemBase {
     SmartDashboard.putNumber("Pinch Position", rotateLeftEncoder.getPosition());
     SmartDashboard.putNumber("Pinch right Position", rotateRightEncoder.getPosition());
 
-    SmartDashboard.putBoolean("HasCoral", getBeamBreak());
+    SmartDashboard.putBoolean("HasAlgea", isCurrentSpiked().getAsBoolean());
     SmartDashboard.putNumber("right Intake Current", rightIntakeCurrent());
     SmartDashboard.putNumber("Left Intake Current", leftIntakeCurrent());
 

@@ -5,20 +5,57 @@
 package frc.robot;
 
 import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.opencv.core.Mat;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends LoggedRobot {
+  Thread streamThread;
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
 
   public Robot() {
     m_robotContainer = new RobotContainer();
-    CameraServer.startAutomaticCapture();
+    streamThread = new Thread(
+      () -> {
+        var camera = CameraServer.startAutomaticCapture();
+        var cameraWidth = 320;
+        var cameraHeight = 240;
+        //camera.setPixelFormat(PixelFormat.kGray);
+
+        camera.setResolution(cameraWidth, cameraHeight);
+        camera.setFPS(60);
+
+        var cvSink = CameraServer.getVideo();
+        var outputStream = CameraServer.putVideo("Driver Station",
+         cameraWidth, cameraHeight);
+        
+         // mats are memory expensive, it's best to just use one
+        var mat = new Mat();
+        // this can never be true the robot must be off for this to be true
+        while (!Thread.interrupted()) {
+          if (cvSink.grabFrame(mat) == 0) {
+            outputStream.notifyError(cvSink.getError());
+            continue;
+          }
+          long deltaTime = camera.getLastFrameTime();
+          SmartDashboard.putNumber("DriverStation Camera delay", deltaTime);
+          outputStream.putFrame(mat);
+        }
+
+      });
+
+      Logger.start();
+      //streamThread.setDaemon(true);
+      //streamThread.start();
   }
+
+  
 
   @Override
   public void robotPeriodic() {

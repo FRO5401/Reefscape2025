@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import java.util.Map;
 import java.util.Set;
 
 import org.photonvision.PhotonCamera;
@@ -24,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -77,17 +75,7 @@ public final class RobotContainer {
     public final Telemetry logger = new Telemetry(Constants.Swerve.MaxSpeed);
 
 
-    //selects the command based off of elevator pose
-    private final Command expelCommand =
-      new SelectCommand<>(
-          // Maps elevator state to different manipulator speeds
-          Map.ofEntries(
-              Map.entry(ElevatorConstants.BARGE, maniuplator.setVelocity(IntakeConstants.TELEOP_REPEL_ALGEA, 0)),
-              Map.entry(ElevatorConstants.L4, maniuplator.setVelocity(()->IntakeConstants.TELEOP_REPEL_CORAL)),
-              Map.entry(ElevatorConstants.L3, maniuplator.setVelocity(()->IntakeConstants.TELEOP_REPEL_CORAL)),
-              Map.entry(ElevatorConstants.L2, maniuplator.setVelocity(()->IntakeConstants.TELEOP_REPEL_CORAL)),
-              Map.entry(ElevatorConstants.PROCESSOR, maniuplator.setVelocity(()->IntakeConstants.TELEOP_REPEL_ALGEA))),
-          elevator::getElevatorState);
+
 
     public RobotContainer() {
         configureBindings();
@@ -207,13 +195,13 @@ public final class RobotContainer {
         // Sucks in piece
         operator.leftTrigger(.01).whileTrue(
                 new ParallelCommandGroup(
-                        expelCommand,
+                        maniuplator.expelCommand(elevator),
                         candle.setLights(AnimationTypes.Looking)));
 
         // Repels piece in intake
         operator.rightTrigger(.01).whileTrue(
                 new SequentialCommandGroup(
-                        expelCommand,
+                        maniuplator.expelCommand(elevator),
                         maniuplator.setClaw(IntakeConstants.HOLD_ALGEA),
                         candle.setLights(AnimationTypes.Looking)));
 

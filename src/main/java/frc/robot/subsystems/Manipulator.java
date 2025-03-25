@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -23,8 +24,11 @@ import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.InfeedConstants;
+import frc.robot.Constants.InfeedConstants.IntakeConstants;
 
 
 public class Manipulator extends SubsystemBase {
@@ -189,6 +193,19 @@ public class Manipulator extends SubsystemBase {
     intakeRight.set(velocity.getAsDouble());
   });
  }
+
+     //selects the command based off of elevator pose
+public Command expelCommand(Elevator elevator){
+      return new SelectCommand<>(
+          // Maps elevator state to different manipulator speeds
+          Map.ofEntries(
+              Map.entry(ElevatorConstants.BARGE, setVelocity(IntakeConstants.TELEOP_REPEL_ALGEA, 0)),
+              Map.entry(ElevatorConstants.L4, setVelocity(()->IntakeConstants.TELEOP_REPEL_CORAL)),
+              Map.entry(ElevatorConstants.L3, setVelocity(()->IntakeConstants.TELEOP_REPEL_CORAL)),
+              Map.entry(ElevatorConstants.L2, setVelocity(()->IntakeConstants.TELEOP_REPEL_CORAL)),
+              Map.entry(ElevatorConstants.PROCESSOR, setVelocity(()->IntakeConstants.TELEOP_REPEL_ALGEA))),
+          elevator::getElevatorState);
+}
 
 
 

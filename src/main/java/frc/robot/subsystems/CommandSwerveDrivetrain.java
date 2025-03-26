@@ -57,6 +57,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     PhotonCamera frontCamera;
     PhotonPoseEstimator frontPoseEstimator;
 
+    
     PhotonCamera rightCamera;
     PhotonPoseEstimator rightPoseEstimator;
 
@@ -171,10 +172,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         frontCamera = m_frontcamera;
-        frontPoseEstimator = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.AVERAGE_BEST_TARGETS, VisionConstants.ROBOT_TO_FRONT_CAM);
+        frontPoseEstimator = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConstants.ROBOT_TO_FRONT_CAM);
 
         rightCamera = m_rightcamera;
-        rightPoseEstimator = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.AVERAGE_BEST_TARGETS, VisionConstants.ROBOT_TO_RIGHT_CAM);
+        rightPoseEstimator = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConstants.ROBOT_TO_RIGHT_CAM);
+
 
         pigeon2 = new Pigeon2(0, "Drivebase");
     }

@@ -28,6 +28,7 @@ public class Constants {
         public static final int XBOX_CONTROLLER_DRIVER = 0;
         public static final int XBOX_CONTROLLER_OPERATOR = 1;
         public static final double CONTROLLER_SENSITIVITY = 0.05;
+        
     }
 
     public static final class VisionConstants{

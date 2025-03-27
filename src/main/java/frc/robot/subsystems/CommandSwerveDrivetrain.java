@@ -103,7 +103,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             null,
             this
         )
-    );
+  );
 
     /* SysId routine for characterizing steer. This is used to find PID gains for the steer motors. */
     private final SysIdRoutine m_sysIdRoutineSteer = new SysIdRoutine(
@@ -176,7 +176,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         rightCamera = m_rightcamera;
         rightPoseEstimator = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConstants.ROBOT_TO_RIGHT_CAM);
-
+        
 
         pigeon2 = new Pigeon2(0, "Drivebase");
     }

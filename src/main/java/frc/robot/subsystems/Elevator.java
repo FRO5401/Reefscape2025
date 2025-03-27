@@ -15,6 +15,9 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import static edu.wpi.first.units.Units.Amps;
+
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -31,13 +34,18 @@ public class Elevator extends SubsystemBase {
   double kI;
   PositionVoltage PositionPID;
 
+  
+  
+  //Used because PID controllers arent perfect, therefore just saves the ideal value of the pose, which is then passed to change in feed speed;
+  double state = 0;
+
   /** Creates a new Elevator. */
   public Elevator() {
     elevator = new TalonFX(ElevatorConstants.elevatorID);
     elevator.setNeutralMode(NeutralModeValue.Brake);
 
 
-    Slot0Configs slot0Configs = new Slot0Configs();
+    slot0Configs = new Slot0Configs();
     TalonFXConfiguration config = new TalonFXConfiguration();
     config.withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimit(Amps.of(120)).withSupplyCurrentLimit(Amps.of(80)));
     config.withMotorOutput(new MotorOutputConfigs().withInverted(InvertedValue.CounterClockwise_Positive));
@@ -70,6 +78,11 @@ public class Elevator extends SubsystemBase {
     return (Math.pow(Math.E, -3*(elevator.getPosition().getValueAsDouble()/ElevatorConstants.SPEED_MODIFIER)));
   }
 
+  public double getElevatorState(){
+    Logger.recordOutput("Elevator state", state);
+    return state;
+  }
+
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Elevator Position", elevator.getPosition().getValueAsDouble());
@@ -84,6 +97,7 @@ public class Elevator extends SubsystemBase {
     return runOnce(
         () -> {
           elevator.setControl(PositionPID.withPosition(pose));
+          state = pose;
         });
   }
 

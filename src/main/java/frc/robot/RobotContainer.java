@@ -74,6 +74,9 @@ public final class RobotContainer {
 
     public final Telemetry logger = new Telemetry(Constants.Swerve.MaxSpeed);
 
+
+
+
     public RobotContainer() {
         configureBindings();
         chooseAuto();
@@ -81,7 +84,8 @@ public final class RobotContainer {
 
     private void configureBindings() {
         Trigger tiltingElevator = new Trigger(() -> drivetrain.getPitch() > 25);
-        Trigger hasAlgea = new Trigger(maniuplator.iscurrentspiked()).debounce(.05);
+        Trigger hasAlgea = new Trigger(maniuplator.isCurrentSpiked());
+
         Trigger hasCoral = new Trigger(()-> maniuplator.getBeamBreak());
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
@@ -124,8 +128,7 @@ public final class RobotContainer {
                 )));
 
         // driver.a().whileTrue(drivetrain.applyRequest(() -> brake));
-        driver.b().whileTrue(drivetrain
-                .applyRequest(() -> point.withModuleDirection(new Rotation2d(-driver.getLeftY(), -driver.getLeftX()))));
+
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -170,7 +173,7 @@ public final class RobotContainer {
                         maniuplator.setPosition(
                                 IntakeConstants.HOLD_CORAL,
                                 PivotConstants.STATION),
-                        maniuplator.setVelocity(() -> 1)),
+                        maniuplator.setVelocity(() -> IntakeConstants.INTAKE_SPEED)),
                 candle.setLights(AnimationTypes.Looking)));
 
         // Straightens out intake and position to hold coral
@@ -187,18 +190,18 @@ public final class RobotContainer {
                         maniuplator.setPosition(
                                 IntakeConstants.HOLD_ALGEA,
                                 PivotConstants.STRAIGHTOUT),
-                        elevator.setPosition(ElevatorConstants.L3 - 6)));
+                        elevator.setPosition(ElevatorConstants.L3 - 7)));
 
         // Sucks in piece
         operator.leftTrigger(.01).whileTrue(
                 new ParallelCommandGroup(
-                        maniuplator.setVelocity(() -> 1),
+                        maniuplator.setVelocity(()->IntakeConstants.INTAKE_SPEED),
                         candle.setLights(AnimationTypes.Looking)));
 
         // Repels piece in intake
         operator.rightTrigger(.01).whileTrue(
                 new SequentialCommandGroup(
-                        maniuplator.setVelocity(() -> -.7),
+                        maniuplator.expelCommand(elevator),
                         maniuplator.setClaw(IntakeConstants.HOLD_ALGEA),
                         candle.setLights(AnimationTypes.Looking)));
 
@@ -215,8 +218,8 @@ public final class RobotContainer {
                 elevator.setPosition(ElevatorConstants.PROCESSOR),
                 maniuplator.setPosition(
                         IntakeConstants.HOLD_CORAL,
-                        PivotConstants.CLEAR_ALGEA),
-                candle.setLights(AnimationTypes.Looking)));
+                        PivotConstants.STRAIGHTOUT)
+        ));
 
         operator.start().onTrue(new ParallelCommandGroup(
                 elevator.setPosition(ElevatorConstants.FLOOR),
@@ -230,9 +233,11 @@ public final class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
         driver.x().whileTrue(new SequentialCommandGroup(
+                candle.setLights(AnimationTypes.SingleFade),
                 alignAndDriveToReef(Units.inchesToMeters(-2.2)),
                 candle.setLights(AnimationTypes.Align)));
         driver.b().whileTrue(new SequentialCommandGroup(
+                candle.setLights(AnimationTypes.SingleFade),
                 alignAndDriveToReef(Units.inchesToMeters(2.2)),
                 candle.setLights(AnimationTypes.Align)));
         driver.a().whileTrue(alignToSource(Units.inchesToMeters(0)));
@@ -248,7 +253,7 @@ public final class RobotContainer {
                     Pose2d alignmentPose = drivetrain.findNearestReefTagPose()
                             .plus(
                                     new Transform2d(
-                                            new Translation2d(VisionConstants.REEF_DISTANCE , offset),
+                                            new Translation2d(VisionConstants.TELEOP_REEF_DISTANCE , offset),
                                             new Rotation2d()));
                     return new AlignAndDriveToReef(
                             drivetrain,

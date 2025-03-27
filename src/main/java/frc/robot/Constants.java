@@ -28,6 +28,7 @@ public class Constants {
         public static final int XBOX_CONTROLLER_DRIVER = 0;
         public static final int XBOX_CONTROLLER_OPERATOR = 1;
         public static final double CONTROLLER_SENSITIVITY = 0.05;
+        
     }
 
     public static final class VisionConstants{
@@ -42,6 +43,7 @@ public class Constants {
             AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
             public static final double REEF_DISTANCE = Units.feetToMeters(1.8);
+            public static final double TELEOP_REEF_DISTANCE = Units.feetToMeters(1.6);
             public static final double ALGEA_DISTANCE = Units.feetToMeters(.8);
             public static final double BARGE_DISTANCE = Units.feetToMeters(5.5);
 
@@ -56,13 +58,13 @@ public class Constants {
     public class ElevatorConstants{ 
         public static final int elevatorID = 13;
         public static final double SPEED_MODIFIER = 166;
-        public static final double BARGE = 150 ;
-        public static final double L4 = 140-6;
-        public static final double L3 = 82-3;
+        public static final double BARGE = 150-5 ;
+        public static final double L4 = 140-9;//-6
+        public static final double L3 = 82-5;//-3
         
 
         public static final double L2 = 53.91748046875-6;
-        public static final double STATION = 52-3;
+        public static final double STATION = 52-7;//-3
         public static final double PROCESSOR = 5;
         public static final double FLOOR = 1;
 
@@ -99,7 +101,10 @@ public class Constants {
             //Sides parallel to hold algea
             public static final double HOLD_ALGEA = 6;
             //Place coral 62.49993896484375
-
+            public static final double TELEOP_REPEL_ALGEA = -0.58; //-0.7
+            public static final double TELEOP_REPEL_CORAL = -.8; //-0.7
+            public static final double AUTO_REPEL_ALGEA = -.88;
+            public static final double INTAKE_SPEED = 1;
             
         }
 
@@ -117,7 +122,7 @@ public class Constants {
             public static final double STRAIGHTOUT = -31*2;
             //public static final double PROCESSOR = 53; //Will replace straight out most likely
             //aimed up to shoot into the barge
-            public static final double BARGE = -13*2;
+            public static final double BARGE = -16;//-13*2
             //Scoring on top of barge
             public static final double L4 = -82*2;
             //takes algea out and possibly place on L2 and L3

@@ -57,6 +57,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     PhotonCamera frontCamera;
     PhotonPoseEstimator frontPoseEstimator;
 
+    
     PhotonCamera rightCamera;
     PhotonPoseEstimator rightPoseEstimator;
 
@@ -102,7 +103,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             null,
             this
         )
-    );
+  );
 
     /* SysId routine for characterizing steer. This is used to find PID gains for the steer motors. */
     private final SysIdRoutine m_sysIdRoutineSteer = new SysIdRoutine(
@@ -171,10 +172,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         frontCamera = m_frontcamera;
-        frontPoseEstimator = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.AVERAGE_BEST_TARGETS, VisionConstants.ROBOT_TO_FRONT_CAM);
+        frontPoseEstimator = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConstants.ROBOT_TO_FRONT_CAM);
 
         rightCamera = m_rightcamera;
-        rightPoseEstimator = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.AVERAGE_BEST_TARGETS, VisionConstants.ROBOT_TO_RIGHT_CAM);
+        rightPoseEstimator = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConstants.ROBOT_TO_RIGHT_CAM);
+        
 
         pigeon2 = new Pigeon2(0, "Drivebase");
     }
@@ -318,6 +320,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     @Override
     public void periodic() {
         frontResults = frontCamera.getAllUnreadResults();
+        rightResults = rightCamera.getAllUnreadResults();
+
         /*
          * Periodically try to apply the operator perspective.
          * If we haven't applied the operator perspective before, then we should apply it regardless of DS state.
@@ -347,7 +351,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             addVisionMeasurement(frontPose.get().estimatedPose.toPose2d(), frontPose.get().timestampSeconds);
         }
 
-        Optional<EstimatedRobotPose> rightPose = getEstimatedGlobalPose(frontPoseEstimator, frontCamera, frontResults);
+        Optional<EstimatedRobotPose> rightPose = getEstimatedGlobalPose(rightPoseEstimator, rightCamera, rightResults);
 
         if (rightPose.isPresent()){
             addVisionMeasurement(rightPose.get().estimatedPose.toPose2d(), rightPose.get().timestampSeconds);

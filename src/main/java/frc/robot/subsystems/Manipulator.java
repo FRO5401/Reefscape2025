@@ -4,8 +4,12 @@
 
 package frc.robot.subsystems;
 
+import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -18,11 +22,16 @@ import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.InfeedConstants;
+import frc.robot.Constants.InfeedConstants.IntakeConstants;
 
 
 public class Manipulator extends SubsystemBase {
@@ -33,6 +42,9 @@ public class Manipulator extends SubsystemBase {
   SparkMax rotateRight = new SparkMax(InfeedConstants.IntakeConstants.ROTATE_MOTOR_RIGHT, MotorType.kBrushless);
 
   SparkMax pivot = new SparkMax(InfeedConstants.PivotConstants.PIVOT_ID, MotorType.kBrushless);
+
+  //.02 is the schedular cycle time, 
+  Debouncer currentFilter = new Debouncer(.1, DebounceType.kBoth);
 
 
   
@@ -84,7 +96,7 @@ public class Manipulator extends SubsystemBase {
     
     intakeRightConfig
       .apply(globalConfig)
-      .follow(intakeLeft, true);
+      .inverted(true);
 
     rotateLeftConfig
       .apply(globalConfig)
@@ -169,16 +181,41 @@ public class Manipulator extends SubsystemBase {
   });
 }
 
+
+//overloaded to make it so that we can add backspin to the algea if needed
+ public Command setVelocity(double leftVelocity, double rightVelocity){
+  return runOnce(()->{
+    intakeLeft.set(leftVelocity);
+    intakeRight.set(rightVelocity);
+  });
+ }
+
  public Command setVelocity(DoubleSupplier velocity){
   return runOnce(()->{
     intakeLeft.set(velocity.getAsDouble());
+    intakeRight.set(velocity.getAsDouble());
   });
-  
  }
+
+     //selects the command based off of elevator pose
+public Command expelCommand(Elevator elevator){
+      return new SelectCommand<>(
+          // Maps elevator state to different manipulator speeds
+          Map.ofEntries(
+              Map.entry(ElevatorConstants.BARGE, setVelocity(IntakeConstants.TELEOP_REPEL_ALGEA, 0)),
+              Map.entry(ElevatorConstants.L4, setVelocity(()->IntakeConstants.TELEOP_REPEL_CORAL)),
+              Map.entry(ElevatorConstants.L3, setVelocity(()->IntakeConstants.TELEOP_REPEL_CORAL)),
+              Map.entry(ElevatorConstants.L2, setVelocity(()->IntakeConstants.TELEOP_REPEL_CORAL)),
+              Map.entry(ElevatorConstants.PROCESSOR, setVelocity(()->IntakeConstants.TELEOP_REPEL_ALGEA))),
+          elevator::getElevatorState);
+}
+
+
 
  public Command stopIntake(){
   return run(()->{
     intakeLeft.set(0);
+    intakeRight.set(0);
   });
  }
 
@@ -201,18 +238,17 @@ public class Manipulator extends SubsystemBase {
   return intakeLeft.getOutputCurrent();
  }
 
- public BooleanSupplier iscurrentspiked(){
-  return ()->leftIntakeCurrent()>40;
+ public BooleanSupplier isCurrentSpiked(){
+  return ()->currentFilter.calculate((leftIntakeCurrent()>20));
  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Pivot Position", pivotEncoeer.getPosition());
     SmartDashboard.putNumber("Pinch Position", rotateLeftEncoder.getPosition());
     SmartDashboard.putNumber("Pinch right Position", rotateRightEncoder.getPosition());
 
-    SmartDashboard.putBoolean("HasCoral", getBeamBreak());
+    SmartDashboard.putBoolean("HasAlgea", isCurrentSpiked().getAsBoolean());
     SmartDashboard.putNumber("right Intake Current", rightIntakeCurrent());
     SmartDashboard.putNumber("Left Intake Current", leftIntakeCurrent());
 

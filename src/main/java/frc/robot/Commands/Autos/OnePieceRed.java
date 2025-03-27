@@ -24,7 +24,7 @@ import frc.robot.subsystems.Manipulator;
 public class OnePieceRed extends SequentialCommandGroup {
   /** Creates a new OnePiece. */
   public OnePieceRed(CommandSwerveDrivetrain drivetrain, Elevator elevator, Manipulator manipulator) {
-    Trigger hasAlgea = new Trigger(manipulator.iscurrentspiked());
+    Trigger hasAlgea = new Trigger(manipulator.isCurrentSpiked());
 
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
@@ -60,7 +60,7 @@ public class OnePieceRed extends SequentialCommandGroup {
                 PivotConstants.BARGE)),
 
       Commands.waitSeconds(2),
-      manipulator.setVelocity(()->-1),
+      manipulator.setVelocity(()->IntakeConstants.AUTO_REPEL_ALGEA),
       Commands.waitSeconds(.2),
       elevator.setPosition(ElevatorConstants.L2) 
     );   

@@ -24,12 +24,12 @@ import frc.robot.subsystems.Manipulator;
 public class OnePieceBlue extends SequentialCommandGroup {
   /** Creates a new OnePiece. */
   public OnePieceBlue(CommandSwerveDrivetrain drivetrain, Elevator elevator, Manipulator manipulator) {
-    Trigger hasAlgea = new Trigger(manipulator.iscurrentspiked());
+    Trigger hasAlgea = new Trigger(manipulator.isCurrentSpiked());
 
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-
+      
       new ParallelCommandGroup(elevator.setPosition(ElevatorConstants.PROCESSOR),manipulator.setPosition(IntakeConstants.HOLD_CORAL, PivotConstants.BARGE)),
       
       RobotContainer.alignAndDriveToReef(21,Units.inchesToMeters(-2.2), VisionConstants.AUTO_DISTANCE),
@@ -60,7 +60,7 @@ public class OnePieceBlue extends SequentialCommandGroup {
                 PivotConstants.BARGE)),
 
       Commands.waitSeconds(2),
-      manipulator.setVelocity(()->-1),
+      manipulator.setVelocity(()->IntakeConstants.AUTO_REPEL_ALGEA),
       Commands.waitSeconds(.2),
       elevator.setPosition(ElevatorConstants.L2) 
     );   

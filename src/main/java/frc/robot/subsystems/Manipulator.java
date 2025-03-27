@@ -8,6 +8,9 @@ import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -242,7 +245,6 @@ public Command expelCommand(Elevator elevator){
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Pivot Position", pivotEncoeer.getPosition());
     SmartDashboard.putNumber("Pinch Position", rotateLeftEncoder.getPosition());
     SmartDashboard.putNumber("Pinch right Position", rotateRightEncoder.getPosition());
 

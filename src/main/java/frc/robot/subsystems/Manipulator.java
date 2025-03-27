@@ -108,7 +108,7 @@ public class Manipulator extends SubsystemBase {
       .smartCurrentLimit(80)
       .idleMode(IdleMode.kBrake)
       .encoder
-        .positionConversionFactor(25);
+        .positionConversionFactor(45);
       
       
     rotateLeftConfig.closedLoop

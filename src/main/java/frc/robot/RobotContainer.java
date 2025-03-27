@@ -195,7 +195,7 @@ public final class RobotContainer {
         // Sucks in piece
         operator.leftTrigger(.01).whileTrue(
                 new ParallelCommandGroup(
-                        maniuplator.expelCommand(elevator),
+                        maniuplator.setVelocity(()->IntakeConstants.INTAKE_SPEED),
                         candle.setLights(AnimationTypes.Looking)));
 
         // Repels piece in intake

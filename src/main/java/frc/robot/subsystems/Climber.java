@@ -29,7 +29,6 @@ public class Climber extends SubsystemBase {
 
   public Climber() {
     climberLeft = new SparkMax(ClimberConstants.LEFT_SPARK_ID, MotorType.kBrushless);
-    climberLeft = new SparkMax(ClimberConstants.RIGHT_SPARK_ID, MotorType.kBrushless);
 
     
 
@@ -44,7 +43,7 @@ public class Climber extends SubsystemBase {
 
     climberLeftConfig
       .apply(climberGlobal)
-      .inverted(false)
+      .inverted(true)
       .smartCurrentLimit(80)
       .encoder
       .positionConversionFactor(225);

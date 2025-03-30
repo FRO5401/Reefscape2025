@@ -41,7 +41,7 @@ public class Manipulator extends SubsystemBase {
   SparkMax pivot = new SparkMax(InfeedConstants.PivotConstants.PIVOT_ID, MotorType.kBrushless);
 
   //.02 is the schedular cycle time, 
-  Debouncer currentFilter = new Debouncer(.1, DebounceType.kBoth);
+  Debouncer currentFilter = new Debouncer(.15, DebounceType.kBoth);
 
 
   

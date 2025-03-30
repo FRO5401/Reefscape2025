@@ -49,8 +49,8 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
         yController.setGoal(offset);
         thetaController.enableContinuousInput(0, 2 * Math.PI);
         thetaController.setTolerance(Units.degreesToRadians(2));
-        yController.setTolerance(Units.inchesToMeters(-0.15));
-        xController.setTolerance(Units.inchesToMeters(0.15));
+        yController.setTolerance(Units.inchesToMeters(0.2));
+        xController.setTolerance(Units.inchesToMeters(0.2));
     }
 
     @Override

@@ -8,9 +8,6 @@ import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
-
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -120,7 +117,7 @@ public class Manipulator extends SubsystemBase {
       .smartCurrentLimit(80)
       .idleMode(IdleMode.kBrake)
       .encoder
-        .positionConversionFactor(45);
+        .positionConversionFactor(13.8);
       
       
     rotateLeftConfig.closedLoop
@@ -139,7 +136,7 @@ public class Manipulator extends SubsystemBase {
 
     pivotConfig.closedLoop
       .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-      .iZone(.2)
+      .iZone(5)
       .p(InfeedConstants.PivotConstants.PIVOT_KP)
       .i(InfeedConstants.PivotConstants.PIVOT_KI)
       .d(InfeedConstants.PivotConstants.PIVOT_KD);
@@ -239,7 +236,7 @@ public Command expelCommand(Elevator elevator){
  }
 
  public BooleanSupplier isCurrentSpiked(){
-  return ()->currentFilter.calculate((leftIntakeCurrent()>20));
+  return ()->currentFilter.calculate((leftIntakeCurrent()>21));
  }
 
   @Override
@@ -247,6 +244,8 @@ public Command expelCommand(Elevator elevator){
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Pinch Position", rotateLeftEncoder.getPosition());
     SmartDashboard.putNumber("Pinch right Position", rotateRightEncoder.getPosition());
+
+    SmartDashboard.putBoolean("HasCoral", getBeamBreak());
 
     SmartDashboard.putBoolean("HasAlgea", isCurrentSpiked().getAsBoolean());
     SmartDashboard.putNumber("right Intake Current", rightIntakeCurrent());

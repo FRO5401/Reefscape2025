@@ -71,8 +71,8 @@ public class Constants {
         public static final double KP = 4; // An error of 1 rotation results in 2.4 V output
         public static final double KI = 3; // no output for integrated error
         public static final double KD = .4; // A velocity of 1 rps results in 0.1 V output
-        public static final double KA=.1;
-        public static final double KV=.1;
+        public static final double KA=.5;
+        public static final double KV=.5;
         public static final double KG=2.4;
     }
 
@@ -90,9 +90,9 @@ public class Constants {
             public static final int ROTATE_MOTOR_RIGHT=15;
 
             /*  PIDF Values */
-            public static final double ROTATE_KP = .5;
+            public static final double ROTATE_KP = .1;
             public static final double ROTATE_kI = 0;
-            public static final double ROTATE_kD = .1;
+            public static final double ROTATE_kD = 0;
             public static final double ROTATE_KF = 10;
 
             /*  Position for each game piece */
@@ -113,9 +113,9 @@ public class Constants {
             public static final int PIVOT_ID=14;
 
             /*  PID values */
-            public static final double PIVOT_KP=.5;
+            public static final double PIVOT_KP=1;
             public static final double PIVOT_KI=0;
-            public static final double PIVOT_KD=0.1;
+            public static final double PIVOT_KD=0;
 
             /*  Positon Values */
             //90 degree angle on the intake

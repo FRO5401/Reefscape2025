@@ -61,7 +61,7 @@ public class Climber extends SubsystemBase {
   }
 
   public Command climb(DoubleSupplier velocity){
-    return runOnce(()->{
+    return run(()->{
       climberLeft.setVoltage(velocity.getAsDouble()*14);
     });
   }

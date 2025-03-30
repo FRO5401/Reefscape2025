@@ -28,8 +28,10 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.AlignAndDriveToReef;
 import frc.robot.Commands.AlignToTag;
-import frc.robot.Commands.Autos.OnePieceBlue;
-import frc.robot.Commands.Autos.OnePieceRed;
+import frc.robot.Commands.Autos.MiddleOnePieceBlue;
+import frc.robot.Commands.Autos.MiddleOnePieceRed;
+import frc.robot.Commands.Autos.SideOnePieceBlue;
+import frc.robot.Commands.Autos.SideOnePieceRed;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.InfeedConstants.IntakeConstants;
 import frc.robot.Constants.InfeedConstants.PivotConstants;
@@ -142,7 +144,7 @@ public final class RobotContainer {
 
         driver.povUp().onTrue(candle.runOnce(() -> {
             candle.clearAllAnims();
-            candle.changeAnimation(AnimationTypes.Strobe);
+            candle.changeAnimation(AnimationTypes.Climb);
         }));
 
         operator.y().onTrue(new ParallelCommandGroup(
@@ -242,6 +244,7 @@ public final class RobotContainer {
                 candle.setLights(AnimationTypes.Align)));
         driver.a().whileTrue(alignToSource(Units.inchesToMeters(0)));
 
+        operator.rightStick().whileTrue(climber.climb(()-> 1).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
 
     }
@@ -313,8 +316,10 @@ public final class RobotContainer {
 
     public void chooseAuto() {
 
-        chooser.addOption("1c1a blue", new OnePieceBlue(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-        chooser.addOption("1c1a red", new OnePieceRed(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        chooser.addOption("1c1a blue mid", new MiddleOnePieceBlue(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        chooser.addOption("1c1a red mid", new MiddleOnePieceRed(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        chooser.addOption("1c1a blue side", new SideOnePieceBlue(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        chooser.addOption("1c1a red side", new SideOnePieceRed(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
         // chooser.addOption("Move Forward",
         // drivetrain.getAutoCommand(Trajectorys.onePiece));
         chooser.setDefaultOption("Do Nothing", elevator.setPosition(ElevatorConstants.PROCESSOR));

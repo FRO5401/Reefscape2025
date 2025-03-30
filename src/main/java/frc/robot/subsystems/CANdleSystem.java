@@ -97,7 +97,7 @@ import frc.robot.Constants;
          HasCoral,
          Looking,
          Align,
-         Empty
+         Climb
      }
      private AnimationTypes m_currentAnimation;
  
@@ -156,7 +156,7 @@ import frc.robot.Constants;
                  break;
 
              case Rainbow:
-                 m_toAnimate = new RainbowAnimation(1, 0.1, LEDS_PER_ANIMATION, m_animDirection,8);
+                 m_toAnimate = new RainbowAnimation(1, .4, LEDS_PER_ANIMATION, m_animDirection,8);
                  break;
 
              case RgbFade:
@@ -179,8 +179,8 @@ import frc.robot.Constants;
                  m_toAnimate = new TwinkleOffAnimation(70, 90, 175, 0, 0.2, LEDS_PER_ANIMATION, TwinkleOffPercent.Percent76, 8 );
                  break;
 
-             case Empty:
-                 m_toAnimate = new RainbowAnimation(1, 0.7, LEDS_PER_ANIMATION, m_animDirection, 8 );
+             case Climb:
+                 m_toAnimate = new RainbowAnimation(1, 0.8, LEDS_PER_ANIMATION, m_animDirection, 8 );
                  break;
             
             case HasAlgea:
@@ -188,15 +188,15 @@ import frc.robot.Constants;
                 break;
 
             case HasCoral:
-                m_toAnimate = new StrobeAnimation(0, 0, 200, 0, 0.1, LEDS_PER_ANIMATION,  8);
+                m_toAnimate = new StrobeAnimation(0, 0, 200, 0, 0.001, LEDS_PER_ANIMATION,  8);
                 break;
 
             case Looking:
-            m_toAnimate = new StrobeAnimation(255, 0, 0, 0, 0.1, LEDS_PER_ANIMATION,  8);
+            m_toAnimate = new SingleFadeAnimation(255, 0, 0, 0, 0.1, LEDS_PER_ANIMATION,  8);
                 break;
             
             case Align:
-            m_toAnimate = new StrobeAnimation(50, 200, 0, 0, 0, LEDS_PER_ANIMATION,  8);
+            m_toAnimate = new SingleFadeAnimation(50, 200, 0, 0, 0.1, LEDS_PER_ANIMATION,  8);
                 break;
 
              case SetAll:

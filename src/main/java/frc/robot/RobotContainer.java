@@ -85,7 +85,7 @@ public final class RobotContainer {
     }
 
     private void configureBindings() {
-        Trigger tiltingElevator = new Trigger(() -> drivetrain.getPitch() > 25);
+        Trigger tiltingElevator = new Trigger(() -> Math.abs(drivetrain.getPitch()) > 25);
         Trigger hasAlgea = new Trigger(maniuplator.isCurrentSpiked());
 
         Trigger hasCoral = new Trigger(()-> maniuplator.getBeamBreak());

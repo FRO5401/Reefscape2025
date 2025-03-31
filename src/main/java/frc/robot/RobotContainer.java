@@ -234,14 +234,17 @@ public final class RobotContainer {
         climber.setDefaultCommand(climber.climb(()->operator.getLeftY()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
+
         driver.x().whileTrue(new SequentialCommandGroup(
                 candle.setLights(AnimationTypes.SingleFade),
                 alignAndDriveToReef(Units.inchesToMeters(-2.2)),
                 candle.setLights(AnimationTypes.Align)));
+
         driver.b().whileTrue(new SequentialCommandGroup(
                 candle.setLights(AnimationTypes.SingleFade),
                 alignAndDriveToReef(Units.inchesToMeters(2.2)),
                 candle.setLights(AnimationTypes.Align)));
+
         driver.a().whileTrue(alignAndDriveToSource(Units.inchesToMeters(0)));
 
         operator.rightStick().whileTrue(climber.climb(()-> 1).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));

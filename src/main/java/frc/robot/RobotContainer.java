@@ -242,7 +242,7 @@ public final class RobotContainer {
                 candle.setLights(AnimationTypes.SingleFade),
                 alignAndDriveToReef(Units.inchesToMeters(2.2)),
                 candle.setLights(AnimationTypes.Align)));
-        driver.a().whileTrue(alignToSource(Units.inchesToMeters(0)));
+        driver.a().whileTrue(alignAndDriveToSource(Units.inchesToMeters(0)));
 
         operator.rightStick().whileTrue(climber.climb(()-> 1).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
@@ -266,6 +266,26 @@ public final class RobotContainer {
                 },
                 Set.of(drivetrain));
     }
+
+
+    // Automatically chooses closest source
+    public static Command alignAndDriveToSource(double offset) {
+        return Commands.defer(
+                () -> {
+                    Pose2d alignmentPose = drivetrain.findNearestSourceTagPose()
+                            .plus(
+                                    new Transform2d(
+                                            new Translation2d(VisionConstants.TELEOP_REEF_DISTANCE , offset),
+                                            new Rotation2d()));
+                    return new AlignAndDriveToReef(
+                            drivetrain,
+                            offset,
+                            alignmentPose,
+                            Rotation2d.kPi);
+                },
+                Set.of(drivetrain));
+    }
+
 
     public static Command alignAndDriveToReef(int tag, double offset, double distanceOffset) {
         return Commands.defer(

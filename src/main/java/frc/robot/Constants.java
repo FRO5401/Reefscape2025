@@ -71,8 +71,8 @@ public class Constants {
         public static final double KP = 4; // An error of 1 rotation results in 2.4 V output
         public static final double KI = 3; // no output for integrated error
         public static final double KD = .4; // A velocity of 1 rps results in 0.1 V output
-        public static final double KA=.5;
-        public static final double KV=.5;
+        public static final double KA=.1;
+        public static final double KV=.1;
         public static final double KG=2.4;
     }
 

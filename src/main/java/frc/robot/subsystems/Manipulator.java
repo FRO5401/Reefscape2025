@@ -210,7 +210,7 @@ public Command expelCommand(Elevator elevator){
 
 
  public Command stopIntake(){
-  return run(()->{
+  return runOnce(()->{
     intakeLeft.set(0);
     intakeRight.set(0);
   });

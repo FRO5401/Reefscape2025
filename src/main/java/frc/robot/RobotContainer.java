@@ -116,18 +116,20 @@ public final class RobotContainer {
                 ));
 
         tiltingElevator.onTrue(elevator.setPosition(ElevatorConstants.PROCESSOR));
+
         hasAlgea.onTrue(new ParallelCommandGroup(
                 maniuplator.setPosition(
                         IntakeConstants.HOLD_CORAL,
                         PivotConstants.STRAIGHTOUT),
                 candle.setLights(AnimationTypes.HasAlgea)));
+
         hasCoral.onTrue(
                 new SequentialCommandGroup(
                 Commands.waitSeconds(.05),
                 new ParallelCommandGroup(
                         maniuplator.stopIntake(),
                         candle.setLights(AnimationTypes.HasCoral)
-                )));
+                )).unless(hasAlgea));
 
         // driver.a().whileTrue(drivetrain.applyRequest(() -> brake));
 

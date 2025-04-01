@@ -32,16 +32,16 @@ public class MiddleOnePieceBlue extends SequentialCommandGroup {
       
       new ParallelCommandGroup(elevator.setPosition(ElevatorConstants.PROCESSOR),manipulator.setPosition(IntakeConstants.HOLD_CORAL, PivotConstants.BARGE)),
       
-      RobotContainer.alignAndDriveToReef(21,Units.inchesToMeters(-2), VisionConstants.AUTO_DISTANCE),
+      RobotContainer.alignAndDriveToReef(21,Units.inchesToMeters(-2.2), VisionConstants.AUTO_DISTANCE),
       new ParallelCommandGroup(elevator.setPosition(ElevatorConstants.L4), manipulator.setPosition(IntakeConstants.HOLD_CORAL, PivotConstants.L4)),
-      RobotContainer.alignAndDriveToReef(21,Units.inchesToMeters(-2), VisionConstants.REEF_DISTANCE),
+      RobotContainer.alignAndDriveToReef(21,Units.inchesToMeters(-2.2), VisionConstants.REEF_DISTANCE),
       Commands.waitSeconds(1.2),
       manipulator.setClaw(IntakeConstants.HOLD_ALGEA),
       manipulator.setVelocity(()->-1),
       Commands.waitSeconds(.2),
       manipulator.setVelocity(()->0),
 
-      RobotContainer.alignAndDriveToReef(21,Units.inchesToMeters(-2), VisionConstants.AUTO_DISTANCE),
+      RobotContainer.alignAndDriveToReef(21,Units.inchesToMeters(-2.2), VisionConstants.AUTO_DISTANCE),
       new ParallelCommandGroup(
                         manipulator.setPosition(
                                 IntakeConstants.HOLD_ALGEA,
@@ -62,6 +62,7 @@ public class MiddleOnePieceBlue extends SequentialCommandGroup {
       Commands.waitSeconds(2),
       manipulator.setVelocity(()->IntakeConstants.AUTO_REPEL_ALGEA),
       Commands.waitSeconds(.2),
+      
       elevator.setPosition(ElevatorConstants.L2) 
     );   
   }

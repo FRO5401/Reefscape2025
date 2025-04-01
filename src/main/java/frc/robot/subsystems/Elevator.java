@@ -16,7 +16,11 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.util.Units;
 import static edu.wpi.first.units.Units.Amps;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -24,19 +28,22 @@ import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
 
 public class Elevator extends SubsystemBase {
-  private TalonFX elevator;
+  private final TalonFX elevator;
   Slot0Configs slot0Configs;
-  double kS;
-  double kP;
-  double kV;
-  double kD;
-  double kI;
+
   PositionVoltage PositionPID;
+  
 
   
   
   //Used because PID controllers arent perfect, therefore just saves the ideal value of the pose, which is then passed to change in feed speed;
   double state = 0;
+
+      Mechanism2d mech = new Mechanism2d(3, 3);
+    // the mechanism root node
+    MechanismRoot2d root = mech.getRoot("root", 2.2,0);
+
+    MechanismLigament2d m_elevator = root.append(new MechanismLigament2d("Elevator", 0.1, 90));
 
   /** Creates a new Elevator. */
   public Elevator() {
@@ -84,7 +91,7 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Elevator State", state);
+    SmartDashboard.putData("Elevator State", mech);
 
     SmartDashboard.putNumber("Elevator current", elevator.getSupplyCurrent().getValueAsDouble());
     SmartDashboard.putNumber("Stator current", elevator.getStatorCurrent().getValueAsDouble());
@@ -100,6 +107,7 @@ public class Elevator extends SubsystemBase {
         () -> {
           elevator.setControl(PositionPID.withPosition(pose));
           state = pose;
+          m_elevator.setLength(((Units.inchesToMeters(state*(.75*Math.PI)))/4+.25));
         });
   }
 

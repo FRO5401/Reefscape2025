@@ -45,7 +45,7 @@ public class Constants {
             public static final double REEF_DISTANCE = Units.feetToMeters(1.8);
             public static final double TELEOP_REEF_DISTANCE = Units.feetToMeters(1.6);
             public static final double ALGEA_DISTANCE = Units.feetToMeters(.8);
-            public static final double BARGE_DISTANCE = Units.feetToMeters(5.5);
+            public static final double BARGE_DISTANCE = Units.feetToMeters(4.1);
 
 
             public static final double AUTO_DISTANCE = Units.feetToMeters(3);
@@ -104,7 +104,7 @@ public class Constants {
             //Place coral 62.49993896484375
             public static final double TELEOP_REPEL_ALGEA = -0.58; //-0.7
             public static final double TELEOP_REPEL_CORAL = -.8; //-0.7
-            public static final double AUTO_REPEL_ALGEA = -.88;
+            public static final double AUTO_REPEL_ALGEA = -.58;
             public static final double INTAKE_SPEED = 1;
             
         }

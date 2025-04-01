@@ -1,5 +1,7 @@
 package frc.robot;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
@@ -103,10 +105,10 @@ public class Telemetry {
             m_moduleTargetsArray[i*2 + 1] = state.ModuleTargets[i].speedMetersPerSecond;
         }
 
-        SignalLogger.writeDoubleArray("DriveState/Pose", m_poseArray);
-        SignalLogger.writeDoubleArray("DriveState/ModuleStates", m_moduleStatesArray);
-        SignalLogger.writeDoubleArray("DriveState/ModuleTargets", m_moduleTargetsArray);
-        SignalLogger.writeDouble("DriveState/OdometryPeriod", state.OdometryPeriod, "seconds");
+        Logger.recordOutput("DriveState/Pose", m_poseArray);
+        Logger.recordOutput("DriveState/ModuleStates", m_moduleStatesArray);
+        Logger.recordOutput("DriveState/ModuleTargets", m_moduleTargetsArray);
+        Logger.recordOutput("DriveState/OdometryPeriod", state.OdometryPeriod);
 
         /* Telemeterize the pose to a Field2d */
         fieldTypePub.set("Field2d");

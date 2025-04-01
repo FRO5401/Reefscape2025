@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -39,7 +38,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 
     @Override
     public void initialize() {
-        
+
 
         // Camera id
         // tagId
@@ -50,8 +49,8 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
         yController.setGoal(offset);
         thetaController.enableContinuousInput(0, 2 * Math.PI);
         thetaController.setTolerance(Units.degreesToRadians(2));
-        yController.setTolerance(Units.inchesToMeters(-0.2));
-        xController.setTolerance(Units.inchesToMeters(0.2));
+        yController.setTolerance(Units.inchesToMeters(-0.15));
+        xController.setTolerance(Units.inchesToMeters(0.15));
     }
 
     @Override
@@ -88,9 +87,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
         // System.out.println(offset.getRotation().getRadians());
         drivetrain.setControl(drivetrain.driveFieldRelative(fieldRelativeSpeeds));
         
-        SmartDashboard.putNumber("x Offset", xController.getPositionError());
-        SmartDashboard.putNumber("y Offset", yController.getPositionError());
-        SmartDashboard.putBoolean("theta", thetaController.atSetpoint());
+        
 
     }
 

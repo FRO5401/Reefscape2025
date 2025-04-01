@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -45,6 +46,7 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.Utils.VisionHelper;
 import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
@@ -171,9 +173,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         frontCamera = m_frontcamera;
+        frontCamera.setPipelineIndex(0);
         frontPoseEstimator = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConstants.ROBOT_TO_FRONT_CAM);
 
         rightCamera = m_rightcamera;
+
+        rightCamera.setPipelineIndex(0);
         rightPoseEstimator = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConstants.ROBOT_TO_RIGHT_CAM);
         
 
@@ -338,6 +343,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+
+        
         
         Optional<EstimatedRobotPose> frontPose = getEstimatedGlobalPose(frontPoseEstimator, frontCamera, frontResults);
 
@@ -409,6 +416,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(PhotonPoseEstimator poseEstimator, PhotonCamera camera, List<PhotonPipelineResult> results) {
         camera.setPipelineIndex(0);
         if(!results.isEmpty()){
+            Logger.recordOutput
+            (camera.getName() + "targets ",VisionHelper.getTagPoses(rightResults.get(0)));
+
             return poseEstimator.update(results.get(0));
         }
         return Optional.empty();

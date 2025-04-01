@@ -243,7 +243,7 @@ public class Constants {
     public class ClimberConstants {
         public static final int LEFT_SPARK_ID = 24;
         public static final int RIGHT_SPARK_ID = 23;
-        public static final int CLIMBER_ENCODER = 0;
+        public static final int CLIMBER_ENCODER = 1;
     }
  
     public static final int CANdleID = 19;

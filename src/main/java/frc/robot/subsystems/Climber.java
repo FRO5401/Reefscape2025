@@ -70,7 +70,7 @@ public class Climber extends SubsystemBase {
       if(getREVEncoderValue()<0 && velocity > 0){
         climberLeft.set(0);
       } else {
-        climberLeft.set(velocity.getAsDouble());
+        climberLeft.set(velocity.getAsDouble()*14);
       }
        */
       climberLeft.setVoltage(velocity.getAsDouble()*14);

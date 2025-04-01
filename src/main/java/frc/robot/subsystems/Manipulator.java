@@ -114,7 +114,7 @@ public class Manipulator extends SubsystemBase {
     pivotConfig
       .apply(globalConfig)
       .inverted(true)
-      .smartCurrentLimit(80)
+      .smartCurrentLimit(50)
       .idleMode(IdleMode.kBrake)
       .encoder
         .positionConversionFactor(13.8);
@@ -136,7 +136,6 @@ public class Manipulator extends SubsystemBase {
 
     pivotConfig.closedLoop
       .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-      .iZone(5)
       .p(InfeedConstants.PivotConstants.PIVOT_KP)
       .i(InfeedConstants.PivotConstants.PIVOT_KI)
       .d(InfeedConstants.PivotConstants.PIVOT_KD);
@@ -242,15 +241,9 @@ public Command expelCommand(Elevator elevator){
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Pinch Position", rotateLeftEncoder.getPosition());
-    SmartDashboard.putNumber("Pinch right Position", rotateRightEncoder.getPosition());
-
     SmartDashboard.putBoolean("HasCoral", getBeamBreak());
-
     SmartDashboard.putBoolean("HasAlgea", isCurrentSpiked().getAsBoolean());
-    SmartDashboard.putNumber("right Intake Current", rightIntakeCurrent());
-    SmartDashboard.putNumber("Left Intake Current", leftIntakeCurrent());
-
+    SmartDashboard.putNumber("Pivot Current", pivot.getOutputCurrent());
 
   }
 }

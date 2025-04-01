@@ -84,8 +84,10 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Elevator Position", elevator.getPosition().getValueAsDouble());
-    SmartDashboard.putNumber("Elevator Temp", elevator.getDeviceTemp().getValueAsDouble());
+    SmartDashboard.putNumber("Elevator State", state);
+
+    SmartDashboard.putNumber("Elevator current", elevator.getSupplyCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Stator current", elevator.getStatorCurrent().getValueAsDouble());
     // This method will be called once per scheduler run
 
   }
@@ -93,11 +95,11 @@ public class Elevator extends SubsystemBase {
   public Command setPosition(double pose) {
     // Inline construction of command goes here.
     // Subsystem::RunOnce implicitly requires `this` subsystem.
-    state = pose;
+
     return runOnce(
         () -> {
           elevator.setControl(PositionPID.withPosition(pose));
-          
+          state = pose;
         });
   }
 

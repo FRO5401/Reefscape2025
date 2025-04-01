@@ -51,7 +51,7 @@ public class MiddleOnePieceRed extends SequentialCommandGroup {
       manipulator.setVelocity(()->1),
       RobotContainer.alignAndDriveToReef(10,Units.inchesToMeters(0), VisionConstants.ALGEA_DISTANCE).until(hasAlgea),
       RobotContainer.alignAndDriveToReef(10,Units.inchesToMeters(2.5), VisionConstants.BARGE_DISTANCE),
-      RobotContainer.alignAndDriveToReef(5,Units.inchesToMeters(12), VisionConstants.BARGE_DISTANCE),
+      RobotContainer.alignAndDriveToReef(5,Units.inchesToMeters(2.5), VisionConstants.BARGE_DISTANCE),
 
       new ParallelCommandGroup(
         elevator.setPosition(ElevatorConstants.BARGE),

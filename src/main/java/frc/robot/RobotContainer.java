@@ -88,7 +88,7 @@ public final class RobotContainer {
         Trigger tiltingElevator = new Trigger(() -> Math.abs(drivetrain.getPitch()) > 25);
         Trigger hasAlgea = new Trigger(maniuplator.isCurrentSpiked());
 
-        Trigger hasCoral = new Trigger(()-> maniuplator.getBeamBreak());
+        Trigger hasCoral = new Trigger(()-> maniuplator.getBeamBreak()).debounce(.1);
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
@@ -122,7 +122,7 @@ public final class RobotContainer {
                         IntakeConstants.HOLD_CORAL,
                         PivotConstants.STRAIGHTOUT),
                 candle.setLights(AnimationTypes.HasAlgea)));
-
+/* 
         hasCoral.onTrue(
                 new SequentialCommandGroup(
                 Commands.waitSeconds(.05),
@@ -130,6 +130,8 @@ public final class RobotContainer {
                         maniuplator.stopIntake(),
                         candle.setLights(AnimationTypes.HasCoral)
                 )).unless(hasAlgea));
+
+*/
 
         // driver.a().whileTrue(drivetrain.applyRequest(() -> brake));
 

@@ -64,7 +64,8 @@ public class Constants {
         
 
         public static final double L2 = 53.91748046875-6;
-        public static final double STATION = 52-7;//-3
+        //TODO Fix this pls
+        public static final double STATION = 52-2;//-7 at competition field
         public static final double PROCESSOR = 5;
         public static final double FLOOR = 1;
 

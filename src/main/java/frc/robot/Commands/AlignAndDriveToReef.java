@@ -17,7 +17,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
     public class AlignAndDriveToReef extends Command {
     private final CommandSwerveDrivetrain drivetrain;
 
-    private final PIDController thetaController = new PIDController(4, 0, 0);
+    private final PIDController thetaController = new PIDController(3, 0, 0);
     private final ProfiledPIDController yController = new ProfiledPIDController(3, 0, 0,new TrapezoidProfile.Constraints(Constants.Swerve.MaxSpeed, .5));
     private final ProfiledPIDController xController = new ProfiledPIDController(3, 0, 0,new TrapezoidProfile.Constraints(Constants.Swerve.MaxSpeed, .5));
     private final Pose2d targetPose;
@@ -49,7 +49,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
         yController.setGoal(offset);
         thetaController.enableContinuousInput(0, 2 * Math.PI);
         thetaController.setTolerance(Units.degreesToRadians(2));
-        yController.setTolerance(Units.inchesToMeters(0.2));
+        yController.setTolerance(Units.inchesToMeters(-0.2));
         xController.setTolerance(Units.inchesToMeters(0.2));
     }
 

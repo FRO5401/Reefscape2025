@@ -416,8 +416,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(PhotonPoseEstimator poseEstimator, PhotonCamera camera, List<PhotonPipelineResult> results) {
         camera.setPipelineIndex(0);
         if(!results.isEmpty()){
-            Logger.recordOutput
-            (camera.getName() + "targets ",VisionHelper.getTagPoses(rightResults.get(0)));
+            //Logger.recordOutput
+            //(camera.getName() + "targets ",VisionHelper.getTagPoses(rightResults.get(0)));
 
             return poseEstimator.update(results.get(0));
         }

@@ -10,10 +10,13 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
@@ -26,12 +29,11 @@ public class Climber extends SubsystemBase {
   SparkMaxConfig climberLeftConfig;
   SparkMaxConfig climberRightConfig;
   RelativeEncoder climberEncoder;
+  DutyCycleEncoder REVEncoder;
 
   public Climber() {
     climberLeft = new SparkMax(ClimberConstants.LEFT_SPARK_ID, MotorType.kBrushless);
-
-    
-
+    REVEncoder = new DutyCycleEncoder(ClimberConstants.CLIMBER_ENCODER);
     
     climberGlobal = new SparkMaxConfig();
     climberLeftConfig = new SparkMaxConfig();
@@ -45,8 +47,10 @@ public class Climber extends SubsystemBase {
       .apply(climberGlobal)
       .inverted(true)
       .smartCurrentLimit(80)
+      
       .encoder
       .positionConversionFactor(225);
+
 
     climberRightConfig
       .apply(climberGlobal)
@@ -57,11 +61,18 @@ public class Climber extends SubsystemBase {
 
 
     climberLeft.configure(climberLeftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
+    
   }
 
   public Command climb(DoubleSupplier velocity){
     return run(()->{
+      /* 
+      if(getREVEncoderValue()<0 && velocity > 0){
+        climberLeft.set(0);
+      } else {
+        climberLeft.set(velocity.getAsDouble());
+      }
+       */
       climberLeft.setVoltage(velocity.getAsDouble()*14);
     });
   }
@@ -73,10 +84,13 @@ public class Climber extends SubsystemBase {
   public double getEncoderValue() {
     return climberEncoder.getPosition();
   }
-
+  public double getREVEncoderValue(){
+    return REVEncoder.get();
+  }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Rev Encoder", getREVEncoderValue());
     //SmartDashboard.putNumber("Climber Rotate Position", climberEncoder.getPosition());
   }
 }

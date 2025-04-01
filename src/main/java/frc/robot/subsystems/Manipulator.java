@@ -202,7 +202,7 @@ public Command expelCommand(Elevator elevator){
               Map.entry(ElevatorConstants.L4, setVelocity(()->IntakeConstants.TELEOP_REPEL_CORAL)),
               Map.entry(ElevatorConstants.L3, setVelocity(()->IntakeConstants.TELEOP_REPEL_CORAL)),
               Map.entry(ElevatorConstants.L2, setVelocity(()->IntakeConstants.TELEOP_REPEL_CORAL)),
-              Map.entry(ElevatorConstants.PROCESSOR, setVelocity(()->IntakeConstants.TELEOP_REPEL_ALGEA))),
+              Map.entry(ElevatorConstants.PROCESSOR, setVelocity(-0.3, -0.6))),
           elevator::getElevatorState);
 }
 

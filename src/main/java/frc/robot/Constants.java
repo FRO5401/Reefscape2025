@@ -58,12 +58,12 @@ public class Constants {
     public class ElevatorConstants{ 
         public static final int elevatorID = 13;
         public static final double SPEED_MODIFIER = 166;
-        public static final double BARGE = 150-5 ;
-        public static final double L4 = 140-9;//-6
-        public static final double L3 = 82-5;//-3
+        public static final double BARGE = 150-5;//-5
+        public static final double L4 = 140-6;//-6 + -9
+        public static final double L3 = 82-4;//-3 + -5
         
 
-        public static final double L2 = 53.91748046875-6;
+        public static final double L2 = 53.91748046875-4;//-6
         //TODO Fix this pls
         public static final double STATION = 52-2;//-7 at competition field
         public static final double PROCESSOR = 5;
@@ -243,6 +243,7 @@ public class Constants {
     public class ClimberConstants {
         public static final int LEFT_SPARK_ID = 24;
         public static final int RIGHT_SPARK_ID = 23;
+        public static final int CLIMBER_ENCODER = 0;
     }
  
     public static final int CANdleID = 19;

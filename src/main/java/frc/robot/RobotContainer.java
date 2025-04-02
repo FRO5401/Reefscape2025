@@ -241,12 +241,12 @@ public final class RobotContainer {
 
         driver.x().whileTrue(new SequentialCommandGroup(
                 candle.setLights(AnimationTypes.SingleFade),
-                alignAndDriveToReef(Units.inchesToMeters(-2)),
+                alignAndDriveToReef(Units.inchesToMeters(-4)),
                 candle.setLights(AnimationTypes.Align)));
 
         driver.b().whileTrue(new SequentialCommandGroup(
                 candle.setLights(AnimationTypes.SingleFade),
-                alignAndDriveToReef(Units.inchesToMeters(2)),
+                alignAndDriveToReef(Units.inchesToMeters(4)),
                 candle.setLights(AnimationTypes.Align)));
 
         driver.a().whileTrue(alignAndDriveToSource(Units.inchesToMeters(0)));

@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -16,9 +17,9 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
     public class AlignAndDriveToReef extends Command {
     private final CommandSwerveDrivetrain drivetrain;
 
-    private final PIDController thetaController = new PIDController(3, 0, 0);
-    private final ProfiledPIDController yController = new ProfiledPIDController(3, 0, 0,new TrapezoidProfile.Constraints(Constants.Swerve.MaxSpeed, .5));
-    private final ProfiledPIDController xController = new ProfiledPIDController(3, 0, 0,new TrapezoidProfile.Constraints(Constants.Swerve.MaxSpeed, .5));
+    private final PIDController thetaController = new PIDController(3, 5, 0);
+    private final ProfiledPIDController yController = new ProfiledPIDController(3, 5, 0,new TrapezoidProfile.Constraints(Constants.Swerve.MaxSpeed, .5));
+    private final ProfiledPIDController xController = new ProfiledPIDController(3, 5, 0,new TrapezoidProfile.Constraints(Constants.Swerve.MaxSpeed, .5));
     private final Pose2d targetPose;
     private final double offset;
     private final Rotation2d rotationOffset;
@@ -49,8 +50,11 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
         yController.setGoal(offset);
         thetaController.enableContinuousInput(0, 2 * Math.PI);
         thetaController.setTolerance(Units.degreesToRadians(2));
-        yController.setTolerance(Units.inchesToMeters(-0.15));
-        xController.setTolerance(Units.inchesToMeters(0.15));
+        yController.setTolerance(Units.inchesToMeters(-0.4));
+        xController.setTolerance(Units.inchesToMeters(0.4));
+        yController.setIZone(Units.inchesToMeters(0.4)*5 );
+        xController.setIZone(Units.inchesToMeters(0.4) *5 );
+        thetaController.setIZone(Units.degreesToRadians(2)*5);
     }
 
     @Override
@@ -61,15 +65,15 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
         poseOffset = currentPose.minus(targetPose);
 
         double thetaVelocity = thetaController.calculate(poseOffset.getRotation().getRadians());
-        if (thetaController.atSetpoint()) {
+        if (Math.abs(thetaController.getError()) < Units.degreesToRadians(2)) {
             thetaVelocity = 0;
         }
         double yVelocityController = yController.calculate(poseOffset.getY());
-        if (yController.atSetpoint()) {
+        if (Math.abs(yController.getPositionError()) < Units.inchesToMeters(0.4)) {
             yVelocityController = 0;
         }
         double xVelocityController = xController.calculate(poseOffset.getX());
-        if (xController.atSetpoint()) {
+        if (Math.abs(xController.getPositionError()) <  Units.inchesToMeters(0.4)) {
             xVelocityController = 0;
         }
 
@@ -87,13 +91,16 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
         // System.out.println(offset.getRotation().getRadians());
         drivetrain.setControl(drivetrain.driveFieldRelative(fieldRelativeSpeeds));
         
-        
+        SmartDashboard.putNumber("x Offset", xController.getPositionError());
+        SmartDashboard.putNumber("y Offset", yController.getPositionError());
+        SmartDashboard.putNumber("theta", thetaController.getError());
+        SmartDashboard.putBooleanArray("COmmand end ", new Boolean[]{Math.abs(xController.getPositionError()) <  Units.inchesToMeters(0.4),Math.abs(yController.getPositionError()) <  Units.inchesToMeters(0.4),  (Math.abs(thetaController.getError()) <  Units.degreesToRadians(2))});
 
     }
 
     @Override
     public boolean isFinished() {
 
-        return Math.abs(poseOffset.getX()) < .1 && Math.abs(poseOffset.getY()) < .1 && thetaController.atSetpoint();
+        return Math.abs(xController.getPositionError()) <  Units.inchesToMeters(0.4) && Math.abs(yController.getPositionError()) <  Units.inchesToMeters(0.4) && (Math.abs(thetaController.getError()) <  Units.degreesToRadians(2));
     }
 }

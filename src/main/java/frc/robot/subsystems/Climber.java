@@ -66,14 +66,15 @@ public class Climber extends SubsystemBase {
 
   public Command climb(DoubleSupplier velocity){
     return run(()->{
-      /* 
-      if(getREVEncoderValue()<0 && velocity > 0){
+      
+      if((getREVEncoderValue()>0.98 && velocity.getAsDouble() > 0) || 
+        (getREVEncoderValue()<0.67 && velocity.getAsDouble() < 0 )){
         climberLeft.set(0);
       } else {
         climberLeft.set(velocity.getAsDouble()*14);
       }
-       */
-      climberLeft.setVoltage(velocity.getAsDouble()*14);
+      
+      //climberLeft.setVoltage(velocity.getAsDouble()*14);
     });
   }
 

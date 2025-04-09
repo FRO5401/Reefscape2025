@@ -11,11 +11,14 @@ import org.photonvision.PhotonCamera;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.hal.DriverStationJNI;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -28,6 +31,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.AlignAndDriveToReef;
 import frc.robot.Commands.AlignToTag;
+import frc.robot.Commands.Autos.JustCoralBlue;
+import frc.robot.Commands.Autos.JustCoralRed;
 import frc.robot.Commands.Autos.MiddleOnePieceBlue;
 import frc.robot.Commands.Autos.MiddleOnePieceRed;
 import frc.robot.Commands.Autos.SideOnePieceBlue;
@@ -105,6 +110,7 @@ public final class RobotContainer {
                                                                                                                      // with
                                                                                                                      // negative
                                                                                                                      // X
+                                        
                                                                                                                      // (left)
                         .withRotationalRate(
                                 -driver.getRightX() * Constants.Swerve.MaxAngularRate * elevator.getSpeedModifier()) // Drive
@@ -121,17 +127,18 @@ public final class RobotContainer {
                 maniuplator.setPosition(
                         IntakeConstants.HOLD_CORAL,
                         PivotConstants.STRAIGHTOUT),
+                
                 candle.setLights(AnimationTypes.HasAlgea)));
-/* 
-        hasCoral.onTrue(
-                new SequentialCommandGroup(
-                Commands.waitSeconds(.05),
-                new ParallelCommandGroup(
-                        maniuplator.stopIntake(),
-                        candle.setLights(AnimationTypes.HasCoral)
-                )).unless(hasAlgea));
 
-*/
+        // hasCoral.onTrue(
+        //         new SequentialCommandGroup(
+        //         Commands.waitSeconds(.05),
+        //         new ParallelCommandGroup(
+        //                 maniuplator.stopIntake(),
+        //                 candle.setLights(AnimationTypes.HasCoral)
+        //         )).unless(hasAlgea));
+
+
 
         // driver.a().whileTrue(drivetrain.applyRequest(() -> brake));
 
@@ -241,12 +248,12 @@ public final class RobotContainer {
 
         driver.x().whileTrue(new SequentialCommandGroup(
                 candle.setLights(AnimationTypes.SingleFade),
-                alignAndDriveToReef(Units.inchesToMeters(-4)),
+                alignAndDriveToReef(Units.inchesToMeters(-2.6)),
                 candle.setLights(AnimationTypes.Align)));
 
         driver.b().whileTrue(new SequentialCommandGroup(
                 candle.setLights(AnimationTypes.SingleFade),
-                alignAndDriveToReef(Units.inchesToMeters(4)),
+                alignAndDriveToReef(Units.inchesToMeters(2.6)),
                 candle.setLights(AnimationTypes.Align)));
 
         driver.a().whileTrue(alignAndDriveToSource(Units.inchesToMeters(0)));
@@ -269,7 +276,8 @@ public final class RobotContainer {
                             drivetrain,
                             offset,
                             alignmentPose,
-                            Rotation2d.kPi);
+                            Rotation2d.kPi,
+                            Units.inchesToMeters(.5));
                 },
                 Set.of(drivetrain));
     }
@@ -288,7 +296,8 @@ public final class RobotContainer {
                             drivetrain,
                             offset,
                             alignmentPose,
-                            Rotation2d.kPi);
+                            Rotation2d.kPi,
+                            Units.inchesToMeters(.5));
                 },
                 Set.of(drivetrain));
     }
@@ -306,7 +315,26 @@ public final class RobotContainer {
                             drivetrain,
                             offset,
                             alignmentPose,
-                            Rotation2d.kPi);
+                            Rotation2d.kPi,
+                            Units.inchesToMeters(.5));
+                },
+                Set.of(drivetrain));
+    }
+
+    public static Command alignAndDrive(int tag, double offset, double distanceOffset) {
+        return Commands.defer(
+                () -> {
+                    Pose2d alignmentPose = VisionConstants.aprilTagLayout.getTagPose(tag).get().toPose2d()
+                            .plus(
+                                    new Transform2d(
+                                            new Translation2d(distanceOffset, offset),
+                                            new Rotation2d()));
+                    return new AlignAndDriveToReef(
+                            drivetrain,
+                            offset,
+                            alignmentPose,
+                            Rotation2d.kPi,
+                            Units.inchesToMeters(3));
                 },
                 Set.of(drivetrain));
     }
@@ -341,12 +369,39 @@ public final class RobotContainer {
                 Set.of(drivetrain));
     }
 
+    public static Command alignToPiece(double offset) {
+        return Commands.defer(
+                () -> {
+                    Pose2d alignmentPose = drivetrain.findNearestSourceTagPose();
+                    return new AlignToTag(
+                            drivetrain,
+                            () -> driver.getLeftY(),
+                            () -> driver.getLeftX(),
+                            offset,
+                            alignmentPose,
+                            Rotation2d.kPi.plus(new Rotation2d()));
+                },
+                Set.of(drivetrain));
+    }
+
+public static void endgameRumble(){
+    if (DriverStation.isEnabled()){
+        if (DriverStationJNI.getMatchTime() <= 25 && DriverStationJNI.getMatchTime() >= 1 ){
+                Controls.xbox_operator.setRumble(RumbleType.kBothRumble, 1);
+    }else {
+      Controls.xbox_operator.setRumble(RumbleType.kBothRumble, 0);
+    }
+  }
+}
+
     public void chooseAuto() {
 
         chooser.addOption("1c1a blue mid", new MiddleOnePieceBlue(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
         chooser.addOption("1c1a red mid", new MiddleOnePieceRed(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
         chooser.addOption("1c1a blue side", new SideOnePieceBlue(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
         chooser.addOption("1c1a red side", new SideOnePieceRed(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        chooser.addOption("Just Coral red side", new JustCoralRed(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        chooser.addOption("Just Coral Blue side", new JustCoralBlue(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
         // chooser.addOption("Move Forward",
         // drivetrain.getAutoCommand(Trajectorys.onePiece));
         chooser.setDefaultOption("Do Nothing", elevator.setPosition(ElevatorConstants.PROCESSOR));

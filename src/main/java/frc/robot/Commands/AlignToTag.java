@@ -50,7 +50,7 @@ public class AlignToTag extends Command {
         yController.setSetpoint(offset);
         thetaController.enableContinuousInput(0, 2 * Math.PI);
         thetaController.setTolerance(Units.degreesToRadians(1));
-        yController.setTolerance(Units.inchesToMeters(0.2));
+        yController.setTolerance(Units.inchesToMeters(0.5));
     }
 
     @Override

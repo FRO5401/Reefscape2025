@@ -4,12 +4,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
@@ -46,7 +46,6 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.Utils.VisionHelper;
 import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
@@ -178,11 +177,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         rightCamera = m_rightcamera;
 
+        
+
         rightCamera.setPipelineIndex(0);
         rightPoseEstimator = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConstants.ROBOT_TO_RIGHT_CAM);
         
 
         pigeon2 = new Pigeon2(0, "Drivebase");
+
+        
     }
 
 
@@ -415,11 +418,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(PhotonPoseEstimator poseEstimator, PhotonCamera camera, List<PhotonPipelineResult> results) {
         camera.setPipelineIndex(0);
+
         if(!results.isEmpty()){
+            List<PhotonTrackedTarget> targets = results.get(0).targets;
             //Logger.recordOutput
             //(camera.getName() + "targets ",VisionHelper.getTagPoses(rightResults.get(0)));
-
-            return poseEstimator.update(results.get(0));
+            if (targets.size()==1){
+                if(targets.get(0).poseAmbiguity < .2){
+                    return poseEstimator.update(results.get(0));
+                }
+            } else {
+                return poseEstimator.update(results.get(0));
+            }
         }
         return Optional.empty();
         

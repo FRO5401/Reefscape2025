@@ -51,6 +51,7 @@ public class Robot extends LoggedRobot {
       });
 
       Logger.start();
+      
       //streamThread.setDaemon(true);
       //streamThread.start();
   }
@@ -94,10 +95,14 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    RobotContainer.endgameRumble();
+  }
 
   @Override
-  public void teleopExit() {}
+  public void teleopExit() {
+    Logger.end();
+  }
 
   @Override
   public void testInit() {

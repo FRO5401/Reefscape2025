@@ -41,7 +41,7 @@ public class Elevator extends SubsystemBase {
 
       Mechanism2d mech = new Mechanism2d(3, 3);
     // the mechanism root node
-    MechanismRoot2d root = mech.getRoot("root", 2.2,0);
+    MechanismRoot2d root = mech.getRoot("root", 2.1,0);
 
     MechanismLigament2d m_elevator = root.append(new MechanismLigament2d("Elevator", 0.1, 90));
 

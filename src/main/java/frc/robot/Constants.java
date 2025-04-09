@@ -22,6 +22,7 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import frc.robot.generated.TunerConstants;
 
+
 public class Constants {
     public static class ControlConstants{
         //  Controller Specifications
@@ -42,16 +43,20 @@ public class Constants {
             public static AprilTagFieldLayout aprilTagLayout =
             AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
-            public static final double REEF_DISTANCE = Units.feetToMeters(1.8);
-            public static final double TELEOP_REEF_DISTANCE = Units.feetToMeters(1.6);
+            public static final double REEF_DISTANCE = Units.feetToMeters(1.68);
+            public static final double TELEOP_REEF_DISTANCE = Units.feetToMeters(1.68);
             public static final double ALGEA_DISTANCE = Units.feetToMeters(.8);
-            public static final double BARGE_DISTANCE = Units.feetToMeters(4.1);
+            public static final double BARGE_DISTANCE = Units.feetToMeters(4.3);
+            public static final double DEALGEA_DISTANCE = Units.feetToMeters(3.8);
 
 
-            public static final double AUTO_DISTANCE = Units.feetToMeters(3);
+            public static final double AUTO_DISTANCE = Units.feetToMeters(4.8);
 
             public static final Transform3d ROBOT_TO_FRONT_CAM = new Transform3d(new Translation3d(Units.inchesToMeters(13), Units.inchesToMeters(11.5), Units.inchesToMeters(5)), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
             public static final Transform3d ROBOT_TO_RIGHT_CAM = new Transform3d(new Translation3d(Units.inchesToMeters(13), Units.inchesToMeters(-11.5), Units.inchesToMeters(5)), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+
+
+
 
     }
 
@@ -59,13 +64,13 @@ public class Constants {
         public static final int elevatorID = 13;
         public static final double SPEED_MODIFIER = 166;
         public static final double BARGE = 150-5;//-5
-        public static final double L4 = 140-6;//-6 + -9
-        public static final double L3 = 82-4;//-3 + -5
+        public static final double L4 = 140-7;//-9
+        public static final double L3 = 82-5;//-5
         
 
-        public static final double L2 = 53.91748046875-4;//-6
+        public static final double L2 = 53.91748046875-6;//-6
         //TODO Fix this pls
-        public static final double STATION = 52-2;//-7 at competition field
+        public static final double STATION = 52-7;//-7 at competition field
         public static final double PROCESSOR = 5;
         public static final double FLOOR = 1;
 
@@ -103,8 +108,8 @@ public class Constants {
             public static final double HOLD_ALGEA = 6;
             //Place coral 62.49993896484375
             public static final double TELEOP_REPEL_ALGEA = -0.58; //-0.7
-            public static final double TELEOP_REPEL_CORAL = -.8; //-0.7
-            public static final double AUTO_REPEL_ALGEA = -.58;
+            public static final double TELEOP_REPEL_CORAL = -.9; //-0.7
+            public static final double AUTO_REPEL_ALGEA = -.84;
             public static final double INTAKE_SPEED = 1;
             
         }
@@ -189,35 +194,17 @@ public class Constants {
                     2)
                 .setKinematics(Constants.Swerve.swerveKinematics);
 
-        public final static Trajectory onePiece =
-                TrajectoryGenerator.generateTrajectory(
-                    // Start at the origin facing the +X direction
-                    new Pose2d(0,0, new Rotation2d(Units.degreesToRadians(0))),
-                    // Pass through these two interior waypoints, making an 's' curve path
-                    List.of(new Translation2d(1,0)),
-                    // End 3 meters straight ahead of where we started, facing forward
-                    new Pose2d(2, 0, new Rotation2d(Units.degreesToRadians(0))),
-                    config);
-                
-                    public final static Trajectory onePieceReef = TrajectoryGenerator.generateTrajectory(
-                        // Start at the origin facing the +X direction
-                    new Pose2d(2, 0, new Rotation2d(Units.degreesToRadians(0))),
-                    // Pass through these two interior waypoints, making an 's' curve path
-                    List.of(new Translation2d(2.489185116263105,0)),
-                    // End 3 meters straight ahead of where we started, facing forward
-                    new Pose2d(3.25, 0, new Rotation2d(Units.degreesToRadians(0))),
-                    config);
 
-                    public final static Trajectory backup = TrajectoryGenerator.generateTrajectory(
-                        // Start at the origin facing the +X direction
-                    new Pose2d(3.25, 0, new Rotation2d(Units.degreesToRadians(0))),
-                    // Pass through these two interior waypoints, making an 's' curve path
-                    List.of(new Translation2d(2.489185116263105,0)),
-                    // End 3 meters straight ahead of where we started, facing forward
-                    new Pose2d(2, 0, new Rotation2d(Units.degreesToRadians(0))),
-                    config);
                     
-        
+                    public final static Trajectory backupFromReef =
+                    TrajectoryGenerator.generateTrajectory(
+                        // Start at the origin facing the +X direction
+                        new Pose2d(6.552,4.407, new Rotation2d(180)),
+                        // Pass through these two interior waypoints, making an 's' curve path
+                        List.of(new Translation2d(6.7752,4.407)),
+                        // End 3 meters straight ahead of where we started, facing forward
+                        new Pose2d(new Translation2d(6.7752,4.807), new Rotation2d(Units.degreesToRadians(0))),
+                        config);
 
 
         public final static Trajectory sCurveTrajectory =

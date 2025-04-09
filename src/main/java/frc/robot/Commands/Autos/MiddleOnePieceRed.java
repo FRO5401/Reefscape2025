@@ -30,18 +30,20 @@ public class MiddleOnePieceRed extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
 
-      new ParallelCommandGroup(elevator.setPosition(ElevatorConstants.PROCESSOR),manipulator.setPosition(IntakeConstants.HOLD_CORAL, PivotConstants.BARGE)),
+      new ParallelCommandGroup(elevator.setPosition(ElevatorConstants.L2),manipulator.setPosition(IntakeConstants.HOLD_CORAL, PivotConstants.BARGE)),
       
-      RobotContainer.alignAndDriveToReef(10,Units.inchesToMeters(-2.2), VisionConstants.AUTO_DISTANCE),
+      RobotContainer.alignAndDriveToReef(10,Units.inchesToMeters(-2.7), VisionConstants.AUTO_DISTANCE),
+      Commands.waitSeconds(.1),
       new ParallelCommandGroup(elevator.setPosition(ElevatorConstants.L4), manipulator.setPosition(IntakeConstants.HOLD_CORAL, PivotConstants.L4)),
-      RobotContainer.alignAndDriveToReef(10,Units.inchesToMeters(-2.2), VisionConstants.REEF_DISTANCE),
-      Commands.waitSeconds(1.2),
+      RobotContainer.alignAndDriveToReef(10,Units.inchesToMeters(-2.7), VisionConstants.REEF_DISTANCE),
+      Commands.waitSeconds(.5),
       manipulator.setClaw(IntakeConstants.HOLD_ALGEA),
       manipulator.setVelocity(()->-1),
       Commands.waitSeconds(.2),
       manipulator.setVelocity(()->0),
 
-      RobotContainer.alignAndDriveToReef(10,Units.inchesToMeters(-2.2), VisionConstants.AUTO_DISTANCE),
+      RobotContainer.alignAndDriveToReef(10,Units.inchesToMeters(0), VisionConstants.DEALGEA_DISTANCE),
+      Commands.waitSeconds(.2),
       new ParallelCommandGroup(
                         manipulator.setPosition(
                                 IntakeConstants.HOLD_ALGEA,
@@ -49,9 +51,9 @@ public class MiddleOnePieceRed extends SequentialCommandGroup {
                         elevator.setPosition(ElevatorConstants.L2 - 7)),
       Commands.waitSeconds(1),
       manipulator.setVelocity(()->1),
-      RobotContainer.alignAndDriveToReef(10,Units.inchesToMeters(0), VisionConstants.ALGEA_DISTANCE).until(hasAlgea),
-      RobotContainer.alignAndDriveToReef(10,Units.inchesToMeters(2.5), VisionConstants.BARGE_DISTANCE),
-      RobotContainer.alignAndDriveToReef(5,Units.inchesToMeters(2.5), VisionConstants.BARGE_DISTANCE),
+      RobotContainer.alignAndDrive(10,Units.inchesToMeters(0), VisionConstants.ALGEA_DISTANCE).until(hasAlgea),
+      RobotContainer.alignAndDrive(10,Units.inchesToMeters(0), VisionConstants.BARGE_DISTANCE),
+      RobotContainer.alignAndDrive(5,Units.inchesToMeters(2.5), VisionConstants.BARGE_DISTANCE),
 
       new ParallelCommandGroup(
         elevator.setPosition(ElevatorConstants.BARGE),

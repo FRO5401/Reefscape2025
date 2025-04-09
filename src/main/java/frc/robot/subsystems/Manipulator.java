@@ -83,7 +83,7 @@ public class Manipulator extends SubsystemBase {
     beamBreak = new DigitalInput(InfeedConstants.BEAM_BREAK_ID);
 
       globalConfig
-      .smartCurrentLimit(20)
+      .smartCurrentLimit(40)
       .idleMode(IdleMode.kBrake)
       .disableFollowerMode();
 
@@ -99,6 +99,7 @@ public class Manipulator extends SubsystemBase {
       .apply(globalConfig)
       .inverted(false)
       .disableFollowerMode()
+      .smartCurrentLimit(20)
       .encoder
         .positionConversionFactor(16);
       
@@ -107,6 +108,7 @@ public class Manipulator extends SubsystemBase {
     .apply(globalConfig)
     .inverted(false)
     .disableFollowerMode()
+    .smartCurrentLimit(20)
     .encoder
       .positionConversionFactor(16);
       
@@ -202,7 +204,8 @@ public Command expelCommand(Elevator elevator){
               Map.entry(ElevatorConstants.L4, setVelocity(()->IntakeConstants.TELEOP_REPEL_CORAL)),
               Map.entry(ElevatorConstants.L3, setVelocity(()->IntakeConstants.TELEOP_REPEL_CORAL)),
               Map.entry(ElevatorConstants.L2, setVelocity(()->IntakeConstants.TELEOP_REPEL_CORAL)),
-              Map.entry(ElevatorConstants.PROCESSOR, setVelocity(-0.3, -0.6))),
+              Map.entry(ElevatorConstants.PROCESSOR, setVelocity(()->-0.2)),
+              Map.entry(ElevatorConstants.FLOOR, setVelocity(()->-0.2))),
           elevator::getElevatorState);
 }
 

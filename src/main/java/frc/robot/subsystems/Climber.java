@@ -10,7 +10,6 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -67,8 +66,7 @@ public class Climber extends SubsystemBase {
   public Command climb(DoubleSupplier velocity){
     return run(()->{
       
-      if((getREVEncoderValue()>0.98 && velocity.getAsDouble() > 0) || 
-        (getREVEncoderValue()<0.67 && velocity.getAsDouble() < 0 )){
+      if((getREVEncoderValue()>0.98 && velocity.getAsDouble() > 0)){
         climberLeft.set(0);
       } else {
         climberLeft.set(velocity.getAsDouble()*14);

@@ -41,6 +41,7 @@ import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.InfeedConstants.IntakeConstants;
 import frc.robot.Constants.InfeedConstants.PivotConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.Utils.SwerveUtils;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CANdleSystem;
 import frc.robot.subsystems.CANdleSystem.AnimationTypes;
@@ -53,6 +54,8 @@ public final class RobotContainer {
 
     private static final PhotonCamera FrontCam = new PhotonCamera("Temp");
     private static final PhotonCamera FrontRight = new PhotonCamera("FrontRight");
+
+    
 
     public static PhotonCamera getFrontRight() {
         return FrontRight;
@@ -69,7 +72,7 @@ public final class RobotContainer {
 
     
     /* Setting up bindings for necessary control of the swerve drive platform */
-    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+    public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(Constants.Swerve.MaxSpeed * 0.01)
             .withRotationalDeadband(Constants.Swerve.MaxAngularRate * 0.01) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
@@ -90,6 +93,7 @@ public final class RobotContainer {
     }
 
     private void configureBindings() {
+        SwerveUtils.setupUtil();
         Trigger tiltingElevator = new Trigger(() -> Math.abs(drivetrain.getPitch()) > 25);
         Trigger hasAlgea = new Trigger(maniuplator.isCurrentSpiked());
 
@@ -99,27 +103,11 @@ public final class RobotContainer {
         drivetrain.setDefaultCommand(
                 // Drivetrain will execute this command periodically
                 drivetrain.applyRequest(() -> drive
-                        .withVelocityX(-driver.getLeftY() * Constants.Swerve.MaxSpeed * elevator.getSpeedModifier()) // Drive
-                                                                                                                     // forward
-                                                                                                                     // with
-                                                                                                                     // negative
-                                                                                                                     // Y
-                                                                                                                     // (forward)
-                        .withVelocityY(-driver.getLeftX() * Constants.Swerve.MaxSpeed * elevator.getSpeedModifier()) // Drive
-                                                                                                                     // left
-                                                                                                                     // with
-                                                                                                                     // negative
-                                                                                                                     // X
-                                        
-                                                                                                                     // (left)
+                        .withVelocityX(-driver.getLeftY() * Constants.Swerve.MaxSpeed * elevator.getSpeedModifier()) 
+                        .withVelocityY(-driver.getLeftX() * Constants.Swerve.MaxSpeed * elevator.getSpeedModifier())                                                                          
                         .withRotationalRate(
-                                -driver.getRightX() * Constants.Swerve.MaxAngularRate * elevator.getSpeedModifier()) // Drive
-                                                                                                                     // counterclockwise
-                                                                                                                     // with
-                                                                                                                     // negative
-                                                                                                                     // X
-                                                                                                                     // (left)
-                ));
+                                SwerveUtils.rotationPoint(new Rotation2d(-driver.getRightY(), -driver.getRightX()).getDegrees(), drivetrain.getYaw()) * Constants.Swerve.MaxAngularRate * elevator.getSpeedModifier()) 
+                .withDesaturateWheelSpeeds(true)));
 
         tiltingElevator.onTrue(elevator.setPosition(ElevatorConstants.PROCESSOR));
 
@@ -277,7 +265,7 @@ public final class RobotContainer {
                             offset,
                             alignmentPose,
                             Rotation2d.kPi,
-                            Units.inchesToMeters(.5));
+                            Units.inchesToMeters(2));
                 },
                 Set.of(drivetrain));
     }
@@ -316,7 +304,7 @@ public final class RobotContainer {
                             offset,
                             alignmentPose,
                             Rotation2d.kPi,
-                            Units.inchesToMeters(.5));
+                            Units.inchesToMeters(1));
                 },
                 Set.of(drivetrain));
     }

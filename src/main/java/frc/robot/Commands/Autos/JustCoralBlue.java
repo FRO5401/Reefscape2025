@@ -42,7 +42,7 @@ public class JustCoralBlue extends SequentialCommandGroup {
       Commands.waitSeconds(.2),
       manipulator.setVelocity(()->0),
 
-      RobotContainer.alignAndDrive(11,Units.inchesToMeters(0), VisionConstants.DEALGEA_DISTANCE),
+      RobotContainer.alignAndDrive(20,Units.inchesToMeters(0), VisionConstants.DEALGEA_DISTANCE),
       Commands.waitSeconds(.1),
       new ParallelCommandGroup(
                         manipulator.setPosition(

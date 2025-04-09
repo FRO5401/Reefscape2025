@@ -78,6 +78,19 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
     private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
+
+    private final SwerveRequest.RobotCentric robotCentricRequest = new SwerveRequest.RobotCentric()
+        .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+        .withDeadband(.1)
+        .withRotationalDeadband(.1)
+        .withDesaturateWheelSpeeds(true);
+
+    private final SwerveRequest.FieldCentric robotFieldCentric  = new SwerveRequest.FieldCentric()
+        .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+        .withDeadband(.1)
+        .withRotationalDeadband(.1)
+        .withDesaturateWheelSpeeds(true);
+
     public List<PhotonPipelineResult> frontResults;
     public List<PhotonPipelineResult> rightResults;
 
@@ -324,6 +337,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return Constants.Swerve.swerveKinematics.toChassisSpeeds(getState().ModuleStates);
     }
 
+    public SwerveRequest.RobotCentric getRobotCentricRequest(){
+        return this.robotCentricRequest;
+    }
+    public SwerveRequest.FieldCentric getFieldCentricRequest(){
+        return this.robotFieldCentric;
+    }
+
     @Override
     public void periodic() {
         frontResults = frontCamera.getAllUnreadResults();
@@ -512,6 +532,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public double getPitch(){
         return pigeon2.getPitch().getValueAsDouble();
+    }
+    public double getYaw(){
+        return pigeon2.getRotation2d().getDegrees();
     }
 
 }

@@ -21,8 +21,8 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
     Debouncer finished = new Debouncer(.15);
 
     private final PIDController thetaController = new PIDController(3, 1, 0.1);
-    private final ProfiledPIDController yController = new ProfiledPIDController(3.5, 0, 0.2,new TrapezoidProfile.Constraints(Constants.Swerve.MaxSpeed, .5));
-    private final ProfiledPIDController xController = new ProfiledPIDController(3.5, 0,  0.2,new TrapezoidProfile.Constraints(Constants.Swerve.MaxSpeed, .5));
+    private final ProfiledPIDController yController = new ProfiledPIDController(3.5, 1, 0.2,new TrapezoidProfile.Constraints(Constants.Swerve.MaxSpeed, .5));
+    private final ProfiledPIDController xController = new ProfiledPIDController(3.5, 1,  0.2,new TrapezoidProfile.Constraints(Constants.Swerve.MaxSpeed, .5));
     private final Pose2d targetPose;
     private final double offset;
     private final double tolerance;

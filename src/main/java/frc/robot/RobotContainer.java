@@ -55,6 +55,7 @@ public final class RobotContainer {
     private static final PhotonCamera FrontCam = new PhotonCamera("Temp");
     private static final PhotonCamera FrontRight = new PhotonCamera("FrontRight");
 
+
     
 
     public static PhotonCamera getFrontRight() {

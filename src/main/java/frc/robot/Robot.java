@@ -6,6 +6,7 @@ package frc.robot;
 
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.opencv.core.Mat;
 
 import edu.wpi.first.cameraserver.CameraServer;
@@ -49,8 +50,11 @@ public class Robot extends LoggedRobot {
         }
 
       });
-
+      // The log path can be read from anything, but this method is provided for convenience
+      String logPath = "logs";
+      Logger.addDataReceiver(new WPILOGWriter(logPath));
       Logger.start();
+      
       
       //streamThread.setDaemon(true);
       //streamThread.start();

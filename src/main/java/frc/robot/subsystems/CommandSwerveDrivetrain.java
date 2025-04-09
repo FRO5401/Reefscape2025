@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -46,6 +47,7 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.Utils.VisionHelper;
 import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
@@ -383,7 +385,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
 
         
-
+        
         
     }
 
@@ -441,8 +443,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         if(!results.isEmpty()){
             List<PhotonTrackedTarget> targets = results.get(0).targets;
-            //Logger.recordOutput
-            //(camera.getName() + "targets ",VisionHelper.getTagPoses(rightResults.get(0)));
+            Logger.recordOutput("Vison/"+camera.getName() + "targets",VisionHelper.getTagPoses(rightResults.get(0)));
             if (targets.size()==1){
                 if(targets.get(0).poseAmbiguity < .2){
                     return poseEstimator.update(results.get(0));

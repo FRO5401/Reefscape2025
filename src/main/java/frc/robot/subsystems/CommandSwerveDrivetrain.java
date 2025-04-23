@@ -443,7 +443,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         if(!results.isEmpty()){
             List<PhotonTrackedTarget> targets = results.get(0).targets;
-            Logger.recordOutput("Vison/"+camera.getName() + "targets",VisionHelper.getTagPoses(rightResults.get(0)));
+            Logger.recordOutput("Vision/"+camera.getName() + "targets",VisionHelper.getTagPoses(rightResults.get(0)));
             if (targets.size()==1){
                 if(targets.get(0).poseAmbiguity < .2){
                     return poseEstimator.update(results.get(0));

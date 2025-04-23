@@ -17,18 +17,21 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Manipulator;
+import frc.robot.subsystems.Turret;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class MiddleOnePieceBlue extends SequentialCommandGroup {
   /** Creates a new OnePiece. */
-  public MiddleOnePieceBlue(CommandSwerveDrivetrain drivetrain, Elevator elevator, Manipulator manipulator) {
+  public MiddleOnePieceBlue(CommandSwerveDrivetrain drivetrain, Elevator elevator, Manipulator manipulator, Turret turret) {
     Trigger hasAlgea = new Trigger(manipulator.isCurrentSpiked());
 
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
+
+      Commands.runOnce(()->turret.setTarget(VisionConstants.aprilTagLayout.getTagPose(10).get().toPose2d()), turret),
       
       new ParallelCommandGroup(elevator.setPosition(ElevatorConstants.L2),manipulator.setPosition(IntakeConstants.HOLD_CORAL, PivotConstants.BARGE)),
       
@@ -65,7 +68,7 @@ public class MiddleOnePieceBlue extends SequentialCommandGroup {
       manipulator.setVelocity(()->IntakeConstants.AUTO_REPEL_ALGEA),
       Commands.waitSeconds(.2),
       
-      elevator.setPosition(ElevatorConstants.L2) 
+      elevator.setPosition(ElevatorConstants.L2)
     );   
   }
 }

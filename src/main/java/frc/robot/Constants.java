@@ -232,6 +232,12 @@ public class Constants {
         public static final int RIGHT_SPARK_ID = 23;
         public static final int CLIMBER_ENCODER = 1;
     }
+
+    public class TurretConstants{
+        public enum TurretState {
+            Targeting,Intaking;
+        }
+    }
  
     public static final int CANdleID = 19;
     

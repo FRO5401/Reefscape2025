@@ -71,10 +71,17 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
         poseOffset = currentPose.minus(targetPose);
 
         double thetaVelocity = thetaController.calculate(poseOffset.getRotation().getRadians());
+        
     
         double yVelocityController = yController.calculate(poseOffset.getY());
        
         double xVelocityController = xController.calculate(poseOffset.getX());
+
+        if(atSetpoint()){
+            xVelocityController=0;
+            yVelocityController =0;
+            thetaVelocity =0;
+        }
         
 
         Rotation2d tagRotation = targetPose.getRotation();
@@ -107,10 +114,19 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
     @Override
     public void end(boolean interrupted) {
 
-        drivetrain.setControl(drivetrain.getRobotCentricRequest()
-            .withVelocityX(0)
-            .withVelocityY(0)
-            .withRotationalRate(0));
+        ChassisSpeeds tagRelativeCommandedVelocities = new ChassisSpeeds();
+
+        tagRelativeCommandedVelocities.vyMetersPerSecond = 0;
+        tagRelativeCommandedVelocities.omegaRadiansPerSecond = 0;
+        tagRelativeCommandedVelocities.vxMetersPerSecond = 0;
+
+        Rotation2d tagRotation = targetPose.getRotation();
+
+        ChassisSpeeds fieldRelativeSpeeds =
+                ChassisSpeeds.fromRobotRelativeSpeeds(tagRelativeCommandedVelocities, tagRotation);
+
+        // System.out.println(offset.getRotation().getRadians());
+        drivetrain.setControl(drivetrain.driveFieldRelative(fieldRelativeSpeeds));
 
     }
 

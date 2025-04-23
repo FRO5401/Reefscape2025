@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.util.List;
 import java.util.Set;
 
 import org.photonvision.PhotonCamera;
@@ -42,6 +43,7 @@ import frc.robot.Constants.InfeedConstants.IntakeConstants;
 import frc.robot.Constants.InfeedConstants.PivotConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Utils.SwerveUtils;
+import frc.robot.Utils.TrajectoryUtil;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CANdleSystem;
 import frc.robot.subsystems.CANdleSystem.AnimationTypes;
@@ -49,11 +51,14 @@ import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Manipulator;
+import frc.robot.subsystems.Turret;
 
 public final class RobotContainer {
 
     private static final PhotonCamera FrontCam = new PhotonCamera("Temp");
     private static final PhotonCamera FrontRight = new PhotonCamera("FrontRight");
+
+    
 
 
     
@@ -62,9 +67,7 @@ public final class RobotContainer {
         return FrontRight;
     }
 
-    Elevator elevator = new Elevator();
-    Manipulator maniuplator = new Manipulator();
-    CANdleSystem candle = new CANdleSystem();
+    
 
     private final SendableChooser<Command> chooser = new SendableChooser<>();
 
@@ -76,7 +79,8 @@ public final class RobotContainer {
     public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(Constants.Swerve.MaxSpeed * 0.01)
             .withRotationalDeadband(Constants.Swerve.MaxAngularRate * 0.01) // Add a 10% deadband
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+             // Use open-loop control for drive motors
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     private final static CommandXboxController driver = Controls.driver;
@@ -85,7 +89,10 @@ public final class RobotContainer {
 
     public final Telemetry logger = new Telemetry(Constants.Swerve.MaxSpeed);
 
-
+    Elevator elevator = new Elevator();
+    Manipulator maniuplator = new Manipulator();
+    CANdleSystem candle = new CANdleSystem();
+    Turret turret = new Turret(drivetrain::getPose);
 
 
     public RobotContainer() {
@@ -94,6 +101,7 @@ public final class RobotContainer {
     }
 
     private void configureBindings() {
+
         SwerveUtils.setupUtil();
         Trigger tiltingElevator = new Trigger(() -> Math.abs(drivetrain.getPitch()) > 25);
         Trigger hasAlgea = new Trigger(maniuplator.isCurrentSpiked());
@@ -107,8 +115,15 @@ public final class RobotContainer {
                         .withVelocityX(-driver.getLeftY() * Constants.Swerve.MaxSpeed * elevator.getSpeedModifier()) 
                         .withVelocityY(-driver.getLeftX() * Constants.Swerve.MaxSpeed * elevator.getSpeedModifier())                                                                          
                         .withRotationalRate(
-                                SwerveUtils.rotationPoint(new Rotation2d(-driver.getRightY(), -driver.getRightX()).getDegrees(), drivetrain.getYaw()) * Constants.Swerve.MaxAngularRate * elevator.getSpeedModifier()) 
-                .withDesaturateWheelSpeeds(true)));
+                               driver.getRightX()* Constants.Swerve.MaxAngularRate * elevator.getSpeedModifier()
+                        ) 
+                ));
+        driver.start().onTrue(Commands.runOnce(()->turret.setTarget(VisionConstants.aprilTagLayout.getTagPose(10).get().toPose2d())));
+        driver.back().onTrue(Commands.runOnce(()->turret.setTarget(VisionConstants.aprilTagLayout.getTagPose(21).get().toPose2d())));
+        driver.a().onTrue(turret.setTurret());
+
+
+
 
         tiltingElevator.onTrue(elevator.setPosition(ElevatorConstants.PROCESSOR));
 
@@ -385,12 +400,18 @@ public static void endgameRumble(){
 
     public void chooseAuto() {
 
-        chooser.addOption("1c1a blue mid", new MiddleOnePieceBlue(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        chooser.addOption("1c1a blue mid", new MiddleOnePieceBlue(drivetrain,elevator,maniuplator, turret).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
         chooser.addOption("1c1a red mid", new MiddleOnePieceRed(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
         chooser.addOption("1c1a blue side", new SideOnePieceBlue(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
         chooser.addOption("1c1a red side", new SideOnePieceRed(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
         chooser.addOption("Just Coral red side", new JustCoralRed(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
         chooser.addOption("Just Coral Blue side", new JustCoralBlue(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        chooser.addOption("test", drivetrain.getAutoCommand(TrajectoryUtil.generateTrajectory(
+                        drivetrain::getPose,
+                        // End 3 meters straight ahead of where we started, facing forward
+                        new Pose2d(new Translation2d(10,5), new Rotation2d(Units.degreesToRadians(90))),
+                        // Pass through these two interior waypoints, making an 's' curve path
+                        List.of(new Translation2d(6.7752,4.407)))));
         // chooser.addOption("Move Forward",
         // drivetrain.getAutoCommand(Trajectorys.onePiece));
         chooser.setDefaultOption("Do Nothing", elevator.setPosition(ElevatorConstants.PROCESSOR));

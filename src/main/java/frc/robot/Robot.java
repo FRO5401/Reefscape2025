@@ -4,67 +4,22 @@
 
 package frc.robot;
 
-import org.littletonrobotics.junction.LoggedRobot;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-import org.opencv.core.Mat;
-
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-public class Robot extends LoggedRobot {
-  Thread streamThread;
+public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
 
   public Robot() {
     m_robotContainer = new RobotContainer();
-    streamThread = new Thread(
-      () -> {
-        var camera = CameraServer.startAutomaticCapture();
-        var cameraWidth = 320;
-        var cameraHeight = 240;
-        //camera.setPixelFormat(PixelFormat.kGray);
-
-        camera.setResolution(cameraWidth, cameraHeight);
-        camera.setFPS(60);
-
-        var cvSink = CameraServer.getVideo();
-        var outputStream = CameraServer.putVideo("Driver Station",
-         cameraWidth, cameraHeight);
-        
-         // mats are memory expensive, it's best to just use one
-        var mat = new Mat();
-        // this can never be true the robot must be off for this to be true
-        while (!Thread.interrupted()) {
-          if (cvSink.grabFrame(mat) == 0) {
-            outputStream.notifyError(cvSink.getError());
-            continue;
-          }
-          long deltaTime = camera.getLastFrameTime();
-          SmartDashboard.putNumber("DriverStation Camera delay", deltaTime);
-          outputStream.putFrame(mat);
-        }
-
-      });
-      // The log path can be read from anything, but this method is provided for convenience
-      String logPath = "logs";
-      Logger.addDataReceiver(new WPILOGWriter(logPath));
-      Logger.start();
-      
-      
-      //streamThread.setDaemon(true);
-      //streamThread.start();
   }
-
-  
 
   @Override
   public void robotPeriodic() {
-    CommandScheduler.getInstance().run(); 
+    CommandScheduler.getInstance().run();
   }
 
   @Override
@@ -99,14 +54,10 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {
-    RobotContainer.endgameRumble();
-  }
+  public void teleopPeriodic() {}
 
   @Override
-  public void teleopExit() {
-    Logger.end();
-  }
+  public void teleopExit() {}
 
   @Override
   public void testInit() {
@@ -118,7 +69,4 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void testExit() {}
-
-  @Override
-  public void simulationPeriodic() {}
 }

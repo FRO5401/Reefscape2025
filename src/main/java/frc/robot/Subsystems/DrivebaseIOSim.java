@@ -4,11 +4,16 @@
 
 package frc.robot.Subsystems;
 
+import com.ctre.phoenix6.hardware.TalonFX;
+
 /** Add your docs here. */
 public class DrivebaseIOSim implements DrivebaseIO {
-
+    TalonFX leftFalcon = new TalonFX(0);
+    TalonFX rightFalcon = new TalonFX(0);
+    
     @Override
     public void updateInputs(DrivebaseIOInputs inputs) {
+        var leftSimState =
         // Volts going to drive motors
         inputs.leftOutputVolts = 0.0;
         inputs.rightOutputVolts = 0.0;

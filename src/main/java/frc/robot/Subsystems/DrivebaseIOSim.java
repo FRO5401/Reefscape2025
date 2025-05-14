@@ -7,6 +7,13 @@ package frc.robot.Subsystems;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotGearing;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotMotor;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotWheelSize;
+
 /** Add your docs here. */
 public class DrivebaseIOSim implements DrivebaseIO {
     TalonFX leftFalcon = new TalonFX(0);
@@ -15,23 +22,35 @@ public class DrivebaseIOSim implements DrivebaseIO {
     VoltageOut leftVoltage = new VoltageOut(0);
     VoltageOut rightVoltage = new VoltageOut(0);
 
+    DifferentialDrivetrainSim physicSim = DifferentialDrivetrainSim.createKitbotSim(
+        KitbotMotor.kDoubleFalcon500PerSide, 
+        KitbotGearing.k8p45, 
+        KitbotWheelSize.kSixInch, 
+        null // Only needed for noise simulation
+        );
+
     @Override
     public void updateInputs(DrivebaseIOInputs inputs) {
+        physicSim.update(0.20);
 
         var leftSimState = leftFalcon.getSimState();
+            leftSimState.setSupplyVoltage(RoboRioSim.getVInVoltage());
         var rightSimState = rightFalcon.getSimState();
+            rightSimState.setSupplyVoltage(RoboRioSim.getVInVoltage());
+
+        physicSim.setInputs(leftSimState.getMotorVoltage(), rightSimState.getMotorVoltage());
 
         // Volts going to drive motors
         inputs.leftOutputVolts = leftSimState.getMotorVoltage();
         inputs.rightOutputVolts = rightSimState.getMotorVoltage();
 
         //  Speed of drive train sides
-        inputs.leftVelocityMetersPerSecond = 0.0;
-        inputs.rightVelocityMetersPerSecond = 0.0;
+        inputs.leftVelocityMetersPerSecond = physicSim.getLeftVelocityMetersPerSecond();
+        inputs.rightVelocityMetersPerSecond = physicSim.getRightVelocityMetersPerSecond();
 
         //  Position on the field for odometry
-        inputs.leftPositionMeters = 0.0;
-        inputs.rightPositionMeters = 0.0;
+        inputs.leftPositionMeters = physicSim.getLeftPositionMeters();
+        inputs.rightPositionMeters = physicSim.getRightPositionMeters();
 
         //  Amperage and temperature of motors on drive train
         inputs.leftCurrentAmps = new double[] {leftSimState.getTorqueCurrent()};

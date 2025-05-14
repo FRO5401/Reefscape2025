@@ -11,15 +11,19 @@ public interface DrivebaseIO {
 
     @AutoLog
     public static class DrivebaseIOInputs{
+        // Volts going to drive motors
         public double leftOutputVolts = 0.0;
         public double rightOutputVolts = 0.0;
 
+        //  Speed of drive train sides
         public double leftVelocityMetersPerSecond = 0.0;
         public double rightVelocityMetersPerSecond = 0.0;
 
+        //  Position on the field for odometry
         public double leftPositionMeters = 0.0;
         public double rightPositionMeters = 0.0;
 
+        //  Amperage and temperature of motors on drive train
         public double[] leftCurrentAmps = new double[0];
         public double[] leftTempCelsius = new double[0];
         public double[] rightCurrentAmps = new double[0];

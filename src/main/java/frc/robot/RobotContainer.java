@@ -51,41 +51,47 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Manipulator;
 
 public final class RobotContainer {
+	/*	Subsystems */
+	private Climber climber = new Climber();
+	private Elevator elevator = new Elevator(); 
+	private Manipulator manipulator = new Manipulator();
+	private CANdleSystem candle = new CANdleSystem(); 
 
+	/*	Cameras / Vision */
     private static final PhotonCamera FrontCam = new PhotonCamera("Temp");
     private static final PhotonCamera FrontRight = new PhotonCamera("FrontRight");
-
-
-    
 
     public static PhotonCamera getFrontRight() {
         return FrontRight;
     }
 
-    Elevator elevator = new Elevator();
-    Manipulator maniuplator = new Manipulator();
-    CANdleSystem candle = new CANdleSystem();
-
+	/*	Autonomous Selector */
     private final SendableChooser<Command> chooser = new SendableChooser<>();
 
-    Climber climber = new Climber();
-    
-
-    
-    /* Setting up bindings for necessary control of the swerve drive platform */
+    /*	Swerve */
+	// Setting up bindings for necessary control of the swerve drive platform 
     public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(Constants.Swerve.MaxSpeed * 0.01)
             .withRotationalDeadband(Constants.Swerve.MaxAngularRate * 0.01) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+	
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+	public final static CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(FrontCam, FrontRight);
 
+	/*	Xbox Controllers */
     private final static CommandXboxController driver = Controls.driver;
     private final CommandXboxController operator = Controls.operator;
-    public final static CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(FrontCam, FrontRight);
 
+	/*	Logging */
     public final Telemetry logger = new Telemetry(Constants.Swerve.MaxSpeed);
 
-
+	/*	Command Triggers */
+	//		The robot starts tipping
+	private Trigger tiltingElevator = new Trigger(() -> Math.abs(drivetrain.getPitch()) > 25); 
+	//		Intake resistance spikes current, Robot has Algea
+	private Trigger hasAlgea = new Trigger(manipulator.isCurrentSpiked());
+	//		Beam Break triggers, robot has coral
+	private Trigger hasCoral = new Trigger(()-> manipulator.getBeamBreak()).debounce(.1);
 
 
     public RobotContainer() {
@@ -94,77 +100,86 @@ public final class RobotContainer {
     }
 
     private void configureBindings() {
-        SwerveUtils.setupUtil();
-        Trigger tiltingElevator = new Trigger(() -> Math.abs(drivetrain.getPitch()) > 25);
-        Trigger hasAlgea = new Trigger(maniuplator.isCurrentSpiked());
+		/*	Driver Controller */
+		/*		Swerve Control 	*/
+		SwerveUtils.setupUtil();
 
-        Trigger hasCoral = new Trigger(()-> maniuplator.getBeamBreak()).debounce(.1);
-        // Note that X is defined as forward according to WPILib convention,
-        // and Y is defined as to the left according to WPILib convention.
-        drivetrain.setDefaultCommand(
-                // Drivetrain will execute this command periodically
+        drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
+			// 	Note that X is defined as forward according to WPILib convention,
+        	// 	and Y is defined as to the left according to WPILib convention.
                 drivetrain.applyRequest(() -> drive
                         .withVelocityX(-driver.getLeftY() * Constants.Swerve.MaxSpeed * elevator.getSpeedModifier()) 
                         .withVelocityY(-driver.getLeftX() * Constants.Swerve.MaxSpeed * elevator.getSpeedModifier())                                                                          
                         .withRotationalRate(
-                                SwerveUtils.rotationPoint(new Rotation2d(-driver.getRightY(), -driver.getRightX()).getDegrees(), drivetrain.getYaw()) * Constants.Swerve.MaxAngularRate * elevator.getSpeedModifier()) 
+                                SwerveUtils.rotationPoint(new Rotation2d(
+										-driver.getRightY(), 
+										-driver.getRightX()).getDegrees(), 
+										drivetrain.getYaw()) * Constants.Swerve.MaxAngularRate * elevator.getSpeedModifier()) 
                 .withDesaturateWheelSpeeds(true)));
 
+		// 			Reset the field-centric heading on left bumper press
+		driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+
+		/*		LEDs and Autimation 	*/
+		//			Climb LED sequence
+		driver.povUp().onTrue(candle.runOnce(() -> {
+            candle.clearAllAnims();
+            candle.changeAnimation(AnimationTypes.Climb);
+        }));
+
+		//			Allignment To Reef Left Branch 
+        driver.x().whileTrue(new SequentialCommandGroup(
+                candle.setLights(AnimationTypes.SingleFade),
+                alignAndDriveToReef(Units.inchesToMeters(-2.6)),
+                candle.setLights(AnimationTypes.Align)));
+
+		//			Allignment To Reef Right Branch
+        driver.b().whileTrue(new SequentialCommandGroup(
+                candle.setLights(AnimationTypes.SingleFade),
+                alignAndDriveToReef(Units.inchesToMeters(2.6)),
+                candle.setLights(AnimationTypes.Align)));
+
+		//			Allignment To Source
+        driver.a().whileTrue(alignAndDriveToSource(Units.inchesToMeters(0)));
+
+		//			Logging
+		drivetrain.registerTelemetry(logger::telemeterize);
+
+		/*	Operator Controller */
+
+		/*	Automation */
+		//		Lowers elevator if tipping
         tiltingElevator.onTrue(elevator.setPosition(ElevatorConstants.PROCESSOR));
 
+		//		Lifts manipulator after intaking algea
+		//			LED change for having algea
         hasAlgea.onTrue(new ParallelCommandGroup(
-                maniuplator.setPosition(
+                manipulator.setPosition(
                         IntakeConstants.HOLD_CORAL,
                         PivotConstants.STRAIGHTOUT),
                 
                 candle.setLights(AnimationTypes.HasAlgea)));
 
-        // hasCoral.onTrue(
-        //         new SequentialCommandGroup(
-        //         Commands.waitSeconds(.05),
-        //         new ParallelCommandGroup(
-        //                 maniuplator.stopIntake(),
-        //                 candle.setLights(AnimationTypes.HasCoral)
-        //         )).unless(hasAlgea));
-
-
-
-        // driver.a().whileTrue(drivetrain.applyRequest(() -> brake));
-
-
-        // Run SysId routines when holding back/start and X/Y.
-        // Note that each routine should be run exactly once in a single log.
-        // driver.back().and(driver.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        // driver.back().and(driver.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        // driver.start().and(driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        // driver.start().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
-
-        // reset the field-centric heading on left bumper press
-        driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
-
-        driver.povUp().onTrue(candle.runOnce(() -> {
-            candle.clearAllAnims();
-            candle.changeAnimation(AnimationTypes.Climb);
-        }));
-
+        
+        
         operator.y().onTrue(new ParallelCommandGroup(
                 elevator.setPosition(
                         ElevatorConstants.L4),
-                maniuplator.setPosition(
+                manipulator.setPosition(
                         IntakeConstants.HOLD_CORAL,
                         PivotConstants.L4)));
 
         operator.b().onTrue(new ParallelCommandGroup(
                 elevator.setPosition(
                         ElevatorConstants.L3),
-                maniuplator.setPosition(
+                manipulator.setPosition(
                         IntakeConstants.HOLD_CORAL,
                         PivotConstants.PLACE_CORAL)));
 
         operator.a().onTrue(new ParallelCommandGroup(
                 elevator.setPosition(
                         ElevatorConstants.L2),
-                maniuplator.setPosition(
+                manipulator.setPosition(
                         IntakeConstants.HOLD_CORAL,
                         PivotConstants.PLACE_CORAL)));
 
@@ -172,16 +187,16 @@ public final class RobotContainer {
                 elevator.setPosition(
                         ElevatorConstants.STATION),
                 new SequentialCommandGroup(
-                        maniuplator.setPosition(
+                        manipulator.setPosition(
                                 IntakeConstants.HOLD_CORAL,
                                 PivotConstants.STATION),
-                        maniuplator.setVelocity(() -> IntakeConstants.INTAKE_SPEED)),
+                        manipulator.setVelocity(() -> IntakeConstants.INTAKE_SPEED)),
                 candle.setLights(AnimationTypes.Looking)));
 
         // Straightens out intake and position to hold coral
         operator.povLeft().onTrue(
                 new ParallelCommandGroup(
-                        maniuplator.setPosition(
+                        manipulator.setPosition(
                                 IntakeConstants.HOLD_ALGEA,
                                 PivotConstants.STRAIGHTOUT),
                         elevator.setPosition(ElevatorConstants.L2 - 6)));
@@ -189,7 +204,7 @@ public final class RobotContainer {
         // Straightens out intake
         operator.povRight().onTrue(
                 new ParallelCommandGroup(
-                        maniuplator.setPosition(
+                        manipulator.setPosition(
                                 IntakeConstants.HOLD_ALGEA,
                                 PivotConstants.STRAIGHTOUT),
                         elevator.setPosition(ElevatorConstants.L3 - 7)));
@@ -197,20 +212,20 @@ public final class RobotContainer {
         // Sucks in piece
         operator.leftTrigger(.01).whileTrue(
                 new ParallelCommandGroup(
-                        maniuplator.setVelocity(()->IntakeConstants.INTAKE_SPEED),
+                        manipulator.setVelocity(()->IntakeConstants.INTAKE_SPEED),
                         candle.setLights(AnimationTypes.Looking)));
 
         // Repels piece in intake
         operator.rightTrigger(.01).whileTrue(
                 new SequentialCommandGroup(
-                        maniuplator.expelCommand(elevator),
-                        maniuplator.setClaw(IntakeConstants.HOLD_ALGEA),
+                        manipulator.expelCommand(elevator),
+                        manipulator.setClaw(IntakeConstants.HOLD_ALGEA),
                         candle.setLights(AnimationTypes.Looking)));
 
         // Moves Elevator Up to score in barge
         operator.povUp().onTrue(new ParallelCommandGroup(
                 elevator.setPosition(ElevatorConstants.BARGE),
-                maniuplator.setPosition(
+                manipulator.setPosition(
                         IntakeConstants.HOLD_ALGEA,
                         PivotConstants.BARGE),
                 candle.setLights(AnimationTypes.Rainbow)));
@@ -218,37 +233,44 @@ public final class RobotContainer {
         // Moves Elevator Down
         operator.povDown().onTrue(new ParallelCommandGroup(
                 elevator.setPosition(ElevatorConstants.PROCESSOR),
-                maniuplator.setPosition(
+                manipulator.setPosition(
                         IntakeConstants.HOLD_CORAL,
                         PivotConstants.STRAIGHTOUT)
         ));
 
         operator.start().onTrue(new ParallelCommandGroup(
                 elevator.setPosition(ElevatorConstants.FLOOR),
-                maniuplator.setPosition(
+                manipulator.setPosition(
                         IntakeConstants.HOLD_ALGEA,
                         PivotConstants.FLOOR_PICKUP + 2)));
 
-        operator.leftBumper().onTrue(maniuplator.stopIntake());
+        operator.leftBumper().onTrue(manipulator.stopIntake());
 
         climber.setDefaultCommand(climber.climb(()->operator.getLeftY()));
 
-        drivetrain.registerTelemetry(logger::telemeterize);
-
-        driver.x().whileTrue(new SequentialCommandGroup(
-                candle.setLights(AnimationTypes.SingleFade),
-                alignAndDriveToReef(Units.inchesToMeters(-2.6)),
-                candle.setLights(AnimationTypes.Align)));
-
-        driver.b().whileTrue(new SequentialCommandGroup(
-                candle.setLights(AnimationTypes.SingleFade),
-                alignAndDriveToReef(Units.inchesToMeters(2.6)),
-                candle.setLights(AnimationTypes.Align)));
-
-        driver.a().whileTrue(alignAndDriveToSource(Units.inchesToMeters(0)));
-
         operator.rightStick().whileTrue(climber.climb(()-> 1).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
+		/*	Unused Code */
+		//	Automates stopping Intake with coral
+		//		LED change for having coral
+		// hasCoral.onTrue(
+        //         new SequentialCommandGroup(
+        //         Commands.waitSeconds(.05),
+        //         new ParallelCommandGroup(
+        //                 manipulator.stopIntake(),
+        //                 candle.setLights(AnimationTypes.HasCoral)
+        //         )).unless(hasAlgea));
+
+		//	Drivetrain breaking/slowing
+        // driver.a().whileTrue(drivetrain.applyRequest(() -> brake));
+		
+		/*	Sys ID: Drivetrain PID values */
+        // Run SysId routines when holding back/start and X/Y.
+        // Note that each routine should be run exactly once in a single log.
+        // driver.back().and(driver.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        // driver.back().and(driver.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        // driver.start().and(driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        // driver.start().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
     }
 
@@ -385,12 +407,12 @@ public static void endgameRumble(){
 
     public void chooseAuto() {
 
-        chooser.addOption("1c1a blue mid", new MiddleOnePieceBlue(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-        chooser.addOption("1c1a red mid", new MiddleOnePieceRed(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-        chooser.addOption("1c1a blue side", new SideOnePieceBlue(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-        chooser.addOption("1c1a red side", new SideOnePieceRed(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-        chooser.addOption("Just Coral red side", new JustCoralRed(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-        chooser.addOption("Just Coral Blue side", new JustCoralBlue(drivetrain,elevator,maniuplator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        chooser.addOption("1c1a blue mid", new MiddleOnePieceBlue(drivetrain,elevator,manipulator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        chooser.addOption("1c1a red mid", new MiddleOnePieceRed(drivetrain,elevator,manipulator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        chooser.addOption("1c1a blue side", new SideOnePieceBlue(drivetrain,elevator,manipulator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        chooser.addOption("1c1a red side", new SideOnePieceRed(drivetrain,elevator,manipulator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        chooser.addOption("Just Coral red side", new JustCoralRed(drivetrain,elevator,manipulator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        chooser.addOption("Just Coral Blue side", new JustCoralBlue(drivetrain,elevator,manipulator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
         // chooser.addOption("Move Forward",
         // drivetrain.getAutoCommand(Trajectorys.onePiece));
         chooser.setDefaultOption("Do Nothing", elevator.setPosition(ElevatorConstants.PROCESSOR));

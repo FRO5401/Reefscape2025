@@ -57,7 +57,7 @@ public final class RobotContainer {
 	private Elevator elevator = new Elevator(); 
 	private Manipulator manipulator = new Manipulator();
 	private CANdleSystem candle = new CANdleSystem(); 
-
+	
 	/*	Cameras / Vision */
     private static final PhotonCamera FrontCam = new PhotonCamera("Temp");
     private static final PhotonCamera FrontRight = new PhotonCamera("FrontRight");

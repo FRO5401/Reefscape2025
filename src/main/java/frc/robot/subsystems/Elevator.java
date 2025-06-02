@@ -28,25 +28,22 @@ import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
 
 public class Elevator extends SubsystemBase {
-  private final TalonFX elevator;
-  Slot0Configs slot0Configs;
+    private final TalonFX elevator;
+    private Slot0Configs slot0Configs;
 
-  PositionVoltage PositionPID;
-  
+    private PositionVoltage PositionPID;
 
-  
-  
-  //Used because PID controllers arent perfect, therefore just saves the ideal value of the pose, which is then passed to change in feed speed;
-  double state = 0;
+    //Used because PID controllers arent perfect, therefore just saves the ideal value of the pose, which is then passed to change in feed speed;
+    private double state = 0;
 
-    LoggedMechanism2d mech = new LoggedMechanism2d(3, 3);
+    private LoggedMechanism2d mech = new LoggedMechanism2d(3, 3);
     // the mechanism root node
-    LoggedMechanismRoot2d root = mech.getRoot("root", 2.1,0);
+    private LoggedMechanismRoot2d root = mech.getRoot("root", 2.1,0);
 
-    LoggedMechanismLigament2d m_elevator = root.append(new LoggedMechanismLigament2d("Elevator", 0.1, 90));
+    private LoggedMechanismLigament2d m_elevator = root.append(new LoggedMechanismLigament2d("Elevator", 0.1, 90));
 
-  /** Creates a new Elevator. */
-  public Elevator() {
+    /** Creates a new Elevator. */
+    public Elevator() {
     elevator = new TalonFX(ElevatorConstants.elevatorID);
     elevator.setNeutralMode(NeutralModeValue.Brake);
 

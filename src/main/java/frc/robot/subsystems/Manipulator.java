@@ -34,42 +34,42 @@ import frc.robot.Constants.InfeedConstants.IntakeConstants;
 public class Manipulator extends SubsystemBase {
   /***  Rev ***/
   /*      Motors */
-  SparkMax pivot = new SparkMax(InfeedConstants.PivotConstants.PIVOT_ID, MotorType.kBrushless);
+  private final SparkMax pivot = new SparkMax(InfeedConstants.PivotConstants.PIVOT_ID, MotorType.kBrushless);
 
-  SparkMax intakeLeft = new SparkMax(InfeedConstants.IntakeConstants.INTAKE_MOTOR_LEFT, MotorType.kBrushless);
-  SparkMax intakeRight = new SparkMax(InfeedConstants.IntakeConstants.INTAKE_MOTOR_RIGHT, MotorType.kBrushless);
+  private final SparkMax intakeLeft = new SparkMax(InfeedConstants.IntakeConstants.INTAKE_MOTOR_LEFT, MotorType.kBrushless);
+  private final SparkMax intakeRight = new SparkMax(InfeedConstants.IntakeConstants.INTAKE_MOTOR_RIGHT, MotorType.kBrushless);
 
-  SparkMax rotateLeft = new SparkMax(InfeedConstants.IntakeConstants.ROTATE_MOTOR_LEFT, MotorType.kBrushless);
-  SparkMax rotateRight = new SparkMax(InfeedConstants.IntakeConstants.ROTATE_MOTOR_RIGHT, MotorType.kBrushless);
+  private final SparkMax rotateLeft = new SparkMax(InfeedConstants.IntakeConstants.ROTATE_MOTOR_LEFT, MotorType.kBrushless);
+  private final SparkMax rotateRight = new SparkMax(InfeedConstants.IntakeConstants.ROTATE_MOTOR_RIGHT, MotorType.kBrushless);
 
   /*      Encoders */
-  RelativeEncoder pivotEncoeer = pivot.getEncoder();
+  private RelativeEncoder pivotEncoeer = pivot.getEncoder();
 
-  RelativeEncoder rotateLeftEncoder = rotateLeft.getEncoder();
-  RelativeEncoder rotateRightEncoder = rotateRight.getEncoder();
+  private RelativeEncoder rotateLeftEncoder = rotateLeft.getEncoder();
+  private RelativeEncoder rotateRightEncoder = rotateRight.getEncoder();
 
   /*      PID */
-  SparkClosedLoopController PivotPID = pivot.getClosedLoopController();
+  private SparkClosedLoopController PivotPID = pivot.getClosedLoopController();
 
-  SparkClosedLoopController rotateLeftPID = rotateLeft.getClosedLoopController();
-  SparkClosedLoopController rotateRightPID = rotateRight.getClosedLoopController();
+  private SparkClosedLoopController rotateLeftPID = rotateLeft.getClosedLoopController();
+  private SparkClosedLoopController rotateRightPID = rotateRight.getClosedLoopController();
 
   /*      Configs */
-  SparkMaxConfig globalConfig;
+  private SparkMaxConfig globalConfig;
 
-  SparkMaxConfig pivotConfig;
+  private SparkMaxConfig pivotConfig;
 
-  SparkMaxConfig intakeLeftConfig;
-  SparkMaxConfig intakeRightConfig;
+  private SparkMaxConfig intakeLeftConfig;
+  private SparkMaxConfig intakeRightConfig;
 
-  SparkMaxConfig rotateLeftConfig;
-  SparkMaxConfig rotateRightConfig;
+  private SparkMaxConfig rotateLeftConfig;
+  private SparkMaxConfig rotateRightConfig;
 
   //  Beam Break for coral detection
-  DigitalInput beamBreak = new DigitalInput(InfeedConstants.BEAM_BREAK_ID);;
+  private DigitalInput beamBreak = new DigitalInput(InfeedConstants.BEAM_BREAK_ID);;
 
   //.02 is the schedular cycle time, 
-  Debouncer currentFilter = new Debouncer(.15, DebounceType.kBoth); 
+  private Debouncer currentFilter = new Debouncer(.15, DebounceType.kBoth); 
 
   /** Creates a new Maniuplator. */
   public Manipulator() {
@@ -117,7 +117,6 @@ public class Manipulator extends SubsystemBase {
       .idleMode(IdleMode.kBrake)
       .encoder
         .positionConversionFactor(13.8);
-      
       
     rotateLeftConfig.closedLoop
       .feedbackSensor(FeedbackSensor.kPrimaryEncoder)

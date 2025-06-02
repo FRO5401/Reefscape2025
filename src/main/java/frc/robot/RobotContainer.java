@@ -90,7 +90,7 @@ public final class RobotContainer {
 	private Trigger tiltingElevator = new Trigger(() -> Math.abs(drivetrain.getPitch()) > 25); 
 	//		Intake resistance spikes current, Robot has Algea
 	private Trigger hasAlgea = new Trigger(manipulator.isCurrentSpiked());
-	//		Beam Break triggers, robot has coral
+	//		Beam Break triggers, Robot has Coral
 	private Trigger hasCoral = new Trigger(()-> manipulator.getBeamBreak()).debounce(.1);
 
 
@@ -101,6 +101,7 @@ public final class RobotContainer {
 
     private void configureBindings() {
 		/*	Driver Controller */
+
 		/*		Swerve Control 	*/
 		SwerveUtils.setupUtil();
 
@@ -115,8 +116,8 @@ public final class RobotContainer {
 										-driver.getRightY(), 
 										-driver.getRightX()).getDegrees(), 
 										drivetrain.getYaw()) * Constants.Swerve.MaxAngularRate * elevator.getSpeedModifier()) 
-                .withDesaturateWheelSpeeds(true)));
-
+                .withDesaturateWheelSpeeds(true)
+		));
 		// 			Reset the field-centric heading on left bumper press
 		driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
@@ -126,26 +127,121 @@ public final class RobotContainer {
             candle.clearAllAnims();
             candle.changeAnimation(AnimationTypes.Climb);
         }));
-
 		//			Allignment To Reef Left Branch 
         driver.x().whileTrue(new SequentialCommandGroup(
                 candle.setLights(AnimationTypes.SingleFade),
                 alignAndDriveToReef(Units.inchesToMeters(-2.6)),
-                candle.setLights(AnimationTypes.Align)));
-
+                candle.setLights(AnimationTypes.Align)
+		));
 		//			Allignment To Reef Right Branch
         driver.b().whileTrue(new SequentialCommandGroup(
                 candle.setLights(AnimationTypes.SingleFade),
                 alignAndDriveToReef(Units.inchesToMeters(2.6)),
-                candle.setLights(AnimationTypes.Align)));
+                candle.setLights(AnimationTypes.Align)
+		));
 
-		//			Allignment To Source
         driver.a().whileTrue(alignAndDriveToSource(Units.inchesToMeters(0)));
-
-		//			Logging
 		drivetrain.registerTelemetry(logger::telemeterize);
 
 		/*	Operator Controller */
+
+		/*		Scoring Positions */
+		//			L2 Coral
+        operator.a().onTrue(new ParallelCommandGroup(
+                elevator.setPosition(
+                        ElevatorConstants.L2),
+                manipulator.setPosition(
+                        IntakeConstants.HOLD_CORAL,
+                        PivotConstants.PLACE_CORAL)));
+		//			L3 Coral
+        operator.b().onTrue(new ParallelCommandGroup(
+                elevator.setPosition(
+                        ElevatorConstants.L3),
+                manipulator.setPosition(
+                        IntakeConstants.HOLD_CORAL,
+                        PivotConstants.PLACE_CORAL)
+		));
+		//			L4 Coral
+		operator.y().onTrue(new ParallelCommandGroup(
+                elevator.setPosition(
+                        ElevatorConstants.L4),
+                manipulator.setPosition(
+                        IntakeConstants.HOLD_CORAL,
+                        PivotConstants.L4)
+		));
+		//			Processor Algea
+		operator.povDown().onTrue(new ParallelCommandGroup(
+				elevator.setPosition(ElevatorConstants.PROCESSOR),
+				manipulator.setPosition(
+						IntakeConstants.HOLD_CORAL,
+						PivotConstants.STRAIGHTOUT)
+		));
+		//			Barge Algea
+        operator.povUp().onTrue(new ParallelCommandGroup(
+                elevator.setPosition(ElevatorConstants.BARGE),
+                manipulator.setPosition(
+                        IntakeConstants.HOLD_ALGEA,
+                        PivotConstants.BARGE),
+                candle.setLights(AnimationTypes.Rainbow)
+		));		
+
+		/*		Pick-Up / Hold Positions */
+		//			Intaking
+		operator.leftTrigger(.01).whileTrue(
+                new ParallelCommandGroup(
+                        manipulator.setVelocity(()->IntakeConstants.INTAKE_SPEED),
+                        candle.setLights(AnimationTypes.Looking)
+		));
+		//			Expelling
+		operator.rightTrigger(.01).whileTrue(
+			new SequentialCommandGroup(
+					manipulator.expelCommand(elevator),
+					manipulator.setClaw(IntakeConstants.HOLD_ALGEA),
+					candle.setLights(AnimationTypes.Looking)
+		));
+
+        operator.leftBumper().onTrue(manipulator.stopIntake());
+		
+		//			Station Pick-Up Coral
+        operator.x().onTrue(new ParallelCommandGroup(
+                elevator.setPosition(
+                        ElevatorConstants.STATION),
+                new SequentialCommandGroup(
+                        manipulator.setPosition(
+                                IntakeConstants.HOLD_CORAL,
+                                PivotConstants.STATION),
+                        manipulator.setVelocity(() -> IntakeConstants.INTAKE_SPEED)),
+                candle.setLights(AnimationTypes.Looking)
+		));
+		//			Floor Pick-Up Algea
+		operator.start().onTrue(new ParallelCommandGroup(
+			elevator.setPosition(ElevatorConstants.FLOOR),
+			manipulator.setPosition(
+					IntakeConstants.HOLD_ALGEA,
+					PivotConstants.FLOOR_PICKUP)
+		));
+		//			L2 Reef Algea
+		operator.povLeft().onTrue(
+			new ParallelCommandGroup(
+					manipulator.setPosition(
+							IntakeConstants.HOLD_ALGEA,
+							PivotConstants.STRAIGHTOUT),
+					elevator.setPosition(ElevatorConstants.L2 - 6)
+		));
+		//			L3 Reef Algea
+		operator.povRight().onTrue(
+			new ParallelCommandGroup(
+					manipulator.setPosition(
+							IntakeConstants.HOLD_ALGEA,
+							PivotConstants.STRAIGHTOUT),
+					elevator.setPosition(ElevatorConstants.L3 - 7)
+		));
+		
+		/*		Climbing */
+
+		climber.setDefaultCommand(climber.climb(()->operator.getLeftY()));
+
+		operator.rightStick().whileTrue(climber.climb(()-> 1).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
 		/*	Automation */
 		//		Lowers elevator if tipping
@@ -158,99 +254,11 @@ public final class RobotContainer {
                         IntakeConstants.HOLD_CORAL,
                         PivotConstants.STRAIGHTOUT),
                 
-                candle.setLights(AnimationTypes.HasAlgea)));
-
-        
-        
-        operator.y().onTrue(new ParallelCommandGroup(
-                elevator.setPosition(
-                        ElevatorConstants.L4),
-                manipulator.setPosition(
-                        IntakeConstants.HOLD_CORAL,
-                        PivotConstants.L4)));
-
-        operator.b().onTrue(new ParallelCommandGroup(
-                elevator.setPosition(
-                        ElevatorConstants.L3),
-                manipulator.setPosition(
-                        IntakeConstants.HOLD_CORAL,
-                        PivotConstants.PLACE_CORAL)));
-
-        operator.a().onTrue(new ParallelCommandGroup(
-                elevator.setPosition(
-                        ElevatorConstants.L2),
-                manipulator.setPosition(
-                        IntakeConstants.HOLD_CORAL,
-                        PivotConstants.PLACE_CORAL)));
-
-        operator.x().onTrue(new ParallelCommandGroup(
-                elevator.setPosition(
-                        ElevatorConstants.STATION),
-                new SequentialCommandGroup(
-                        manipulator.setPosition(
-                                IntakeConstants.HOLD_CORAL,
-                                PivotConstants.STATION),
-                        manipulator.setVelocity(() -> IntakeConstants.INTAKE_SPEED)),
-                candle.setLights(AnimationTypes.Looking)));
-
-        // Straightens out intake and position to hold coral
-        operator.povLeft().onTrue(
-                new ParallelCommandGroup(
-                        manipulator.setPosition(
-                                IntakeConstants.HOLD_ALGEA,
-                                PivotConstants.STRAIGHTOUT),
-                        elevator.setPosition(ElevatorConstants.L2 - 6)));
-
-        // Straightens out intake
-        operator.povRight().onTrue(
-                new ParallelCommandGroup(
-                        manipulator.setPosition(
-                                IntakeConstants.HOLD_ALGEA,
-                                PivotConstants.STRAIGHTOUT),
-                        elevator.setPosition(ElevatorConstants.L3 - 7)));
-
-        // Sucks in piece
-        operator.leftTrigger(.01).whileTrue(
-                new ParallelCommandGroup(
-                        manipulator.setVelocity(()->IntakeConstants.INTAKE_SPEED),
-                        candle.setLights(AnimationTypes.Looking)));
-
-        // Repels piece in intake
-        operator.rightTrigger(.01).whileTrue(
-                new SequentialCommandGroup(
-                        manipulator.expelCommand(elevator),
-                        manipulator.setClaw(IntakeConstants.HOLD_ALGEA),
-                        candle.setLights(AnimationTypes.Looking)));
-
-        // Moves Elevator Up to score in barge
-        operator.povUp().onTrue(new ParallelCommandGroup(
-                elevator.setPosition(ElevatorConstants.BARGE),
-                manipulator.setPosition(
-                        IntakeConstants.HOLD_ALGEA,
-                        PivotConstants.BARGE),
-                candle.setLights(AnimationTypes.Rainbow)));
-
-        // Moves Elevator Down
-        operator.povDown().onTrue(new ParallelCommandGroup(
-                elevator.setPosition(ElevatorConstants.PROCESSOR),
-                manipulator.setPosition(
-                        IntakeConstants.HOLD_CORAL,
-                        PivotConstants.STRAIGHTOUT)
-        ));
-
-        operator.start().onTrue(new ParallelCommandGroup(
-                elevator.setPosition(ElevatorConstants.FLOOR),
-                manipulator.setPosition(
-                        IntakeConstants.HOLD_ALGEA,
-                        PivotConstants.FLOOR_PICKUP + 2)));
-
-        operator.leftBumper().onTrue(manipulator.stopIntake());
-
-        climber.setDefaultCommand(climber.climb(()->operator.getLeftY()));
-
-        operator.rightStick().whileTrue(climber.climb(()-> 1).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+                candle.setLights(AnimationTypes.HasAlgea)
+		));
 
 		/*	Unused Code */
+
 		//	Automates stopping Intake with coral
 		//		LED change for having coral
 		// hasCoral.onTrue(

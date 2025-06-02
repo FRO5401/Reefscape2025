@@ -134,7 +134,7 @@ public class Constants {
             //takes algea out and possibly place on L2 and L3
             public static final double PLACE_CORAL = -62.49993896484375*2;
             public static final double CLEAR_ALGEA =-40.49993896484375*2;
-            public static final double FLOOR_PICKUP =-50*2;
+            public static final double FLOOR_PICKUP =-50*2 + 2;
 
             //Gets Coral from station
             public static final double STATION = -25*2;

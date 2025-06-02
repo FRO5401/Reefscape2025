@@ -21,75 +21,70 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
 
 public class Climber extends SubsystemBase {
-  /** Creates a new Climber. */
-  SparkMax climberLeft;
-  SparkMax climberRight;
-  SparkMaxConfig climberGlobal;
-  SparkMaxConfig climberLeftConfig;
-  SparkMaxConfig climberRightConfig;
-  RelativeEncoder climberEncoder;
-  DutyCycleEncoder REVEncoder;
+    /** Creates a new Climber. */
+    private final SparkMax climberLeft = new SparkMax(ClimberConstants.LEFT_SPARK_ID, MotorType.kBrushless);;
+    private SparkMaxConfig climberGlobal;
+    private SparkMaxConfig climberLeftConfig;
+    private SparkMaxConfig climberRightConfig;
+    private RelativeEncoder climberEncoder;
+    private DutyCycleEncoder REVEncoder = new DutyCycleEncoder(ClimberConstants.CLIMBER_ENCODER);;
 
-  public Climber() {
-    climberLeft = new SparkMax(ClimberConstants.LEFT_SPARK_ID, MotorType.kBrushless);
-    REVEncoder = new DutyCycleEncoder(ClimberConstants.CLIMBER_ENCODER);
+    public Climber() { 
     
-    climberGlobal = new SparkMaxConfig();
-    climberLeftConfig = new SparkMaxConfig();
-    climberRightConfig = new SparkMaxConfig();
+        climberGlobal = new SparkMaxConfig();
+        climberLeftConfig = new SparkMaxConfig();
+        climberRightConfig = new SparkMaxConfig();
 
-    climberGlobal
-      .smartCurrentLimit(80)
-      .idleMode(IdleMode.kBrake);
+        climberGlobal
+            .smartCurrentLimit(80)
+            .idleMode(IdleMode.kBrake);
 
-    climberLeftConfig
-      .apply(climberGlobal)
-      .inverted(true)
-      .smartCurrentLimit(80)
-      
-      .encoder
-      .positionConversionFactor(225);
+        climberLeftConfig
+            .apply(climberGlobal)
+            .inverted(true)
+            .smartCurrentLimit(80)
+            .encoder
+                .positionConversionFactor(225);
 
+        climberRightConfig
+            .apply(climberGlobal)
+            .follow(climberLeft, true)
+            .smartCurrentLimit(80)
+            .encoder
+                .positionConversionFactor(225);
 
-    climberRightConfig
-      .apply(climberGlobal)
-      .follow(climberLeft, true)
-      .smartCurrentLimit(80)
-      .encoder
-        .positionConversionFactor(225);
-
-
-    climberLeft.configure(climberLeftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        climberLeft.configure(climberLeftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     
-  }
+    }
 
-  public Command climb(DoubleSupplier velocity){
-    return run(()->{
+    public Command climb(DoubleSupplier velocity){
+        return run(()->{
       
-      if((getREVEncoderValue()>0.98 && velocity.getAsDouble() > 0)){
-        climberLeft.set(0);
-      } else {
-        climberLeft.set(velocity.getAsDouble()*14);
-      }
+        if((getREVEncoderValue()>0.98 && velocity.getAsDouble() > 0)){
+            climberLeft.set(0);
+        } else {
+            climberLeft.set(velocity.getAsDouble()*14);
+        }
       
-      //climberLeft.setVoltage(velocity.getAsDouble()*14);
-    });
-  }
+        });
+    }
 
-  public Command stopClimb() {
-    return runOnce(()->climberLeft.set(0));
-  }
+    public Command stopClimb() {
+        return runOnce(()->climberLeft.set(0));
+    }
 
-  public double getEncoderValue() {
-    return climberEncoder.getPosition();
-  }
-  public double getREVEncoderValue(){
-    return REVEncoder.get();
-  }
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Rev Encoder", getREVEncoderValue());
-    //SmartDashboard.putNumber("Climber Rotate Position", climberEncoder.getPosition());
-  }
+    public double getEncoderValue() {
+        return climberEncoder.getPosition();
+    }
+
+    public double getREVEncoderValue(){
+        return REVEncoder.get();
+    }
+
+    @Override
+    public void periodic() {
+        // This method will be called once per scheduler run
+        SmartDashboard.putNumber("Rev Encoder", getREVEncoderValue());
+        //SmartDashboard.putNumber("Climber Rotate Position", climberEncoder.getPosition());
+    }
 }

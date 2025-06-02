@@ -20,18 +20,19 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.util.Units;
-import static edu.wpi.first.units.Units.Amps;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import static edu.wpi.first.units.Units.Amps;
+
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
 
 public class Elevator extends SubsystemBase {
-    private final TalonFX elevator;
-    private Slot0Configs slot0Configs;
-
-    private PositionVoltage PositionPID;
+    private final TalonFX elevator = new TalonFX(ElevatorConstants.elevatorID);;
+    private Slot0Configs slot0Configs = new Slot0Configs();
+    private TalonFXConfiguration config = new TalonFXConfiguration();
+    private PositionVoltage PositionPID  = new PositionVoltage(0).withSlot(0);;
 
     //Used because PID controllers arent perfect, therefore just saves the ideal value of the pose, which is then passed to change in feed speed;
     private double state = 0;
@@ -44,71 +45,63 @@ public class Elevator extends SubsystemBase {
 
     /** Creates a new Elevator. */
     public Elevator() {
-    elevator = new TalonFX(ElevatorConstants.elevatorID);
-    elevator.setNeutralMode(NeutralModeValue.Brake);
+        elevator.setNeutralMode(NeutralModeValue.Brake);
 
+        config.withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimit(Amps.of(120)).withSupplyCurrentLimit(Amps.of(80)));
+        config.withMotorOutput(new MotorOutputConfigs().withInverted(InvertedValue.CounterClockwise_Positive));
+        slot0Configs.kP = Constants.ElevatorConstants.KP; // An error of 1 rotation results in 2.4 V output
+        slot0Configs.kI = Constants.ElevatorConstants.KI; // no output for integrated error
+        slot0Configs.kD = Constants.ElevatorConstants.KD; // A velocity of 1 rps results in 0.1 V output
+        slot0Configs.kA=Constants.ElevatorConstants.KA;
+        slot0Configs.kV=Constants.ElevatorConstants.KV;
+        slot0Configs.kG=Constants.ElevatorConstants.KG;
+        slot0Configs.GravityType=GravityTypeValue.Elevator_Static;
 
-    slot0Configs = new Slot0Configs();
-    TalonFXConfiguration config = new TalonFXConfiguration();
-    config.withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimit(Amps.of(120)).withSupplyCurrentLimit(Amps.of(80)));
-    config.withMotorOutput(new MotorOutputConfigs().withInverted(InvertedValue.CounterClockwise_Positive));
-    slot0Configs.kP = Constants.ElevatorConstants.KP; // An error of 1 rotation results in 2.4 V output
-    slot0Configs.kI = Constants.ElevatorConstants.KI; // no output for integrated error
-    slot0Configs.kD = Constants.ElevatorConstants.KD; // A velocity of 1 rps results in 0.1 V output
-    slot0Configs.kA=Constants.ElevatorConstants.KA;
-    slot0Configs.kV=Constants.ElevatorConstants.KV;
-    slot0Configs.kG=Constants.ElevatorConstants.KG;
-    slot0Configs.GravityType=GravityTypeValue.Elevator_Static;
-    
+        elevator.getConfigurator().apply(slot0Configs);
+        elevator.getConfigurator().apply(config);
 
-    elevator.getConfigurator().apply(slot0Configs);
-    elevator.getConfigurator().apply(config);
+        elevator.getConfigurator().apply(slot0Configs);
+        elevator.setPosition(0);
 
-    PositionPID = new PositionVoltage(0).withSlot(0);
-    elevator.getConfigurator().apply(slot0Configs);
-    elevator.setPosition(0);
+    }
 
+    public void moveElevator(double speed){
+        elevator.set(speed);
+    }
 
-  }
-  public void moveElevator(double speed){
-    elevator.set(speed);
-  }
-
-      /**
+    /**
      * returns the inverse of the elevator position as a percent to slow down the robot
-     */
-  public double getSpeedModifier(){
-    return (Math.pow(Math.E, -3*(elevator.getPosition().getValueAsDouble()/ElevatorConstants.SPEED_MODIFIER)));
-  }
+    */
+    public double getSpeedModifier(){
+        return (Math.pow(Math.E, -3*(elevator.getPosition().getValueAsDouble()/ElevatorConstants.SPEED_MODIFIER)));
+    }
 
-  public double getElevatorState(){
-    Logger.recordOutput("Elevator/Elevator state", state);
-    return state;
-  }
+    public double getElevatorState(){
+            Logger.recordOutput("Elevator/Elevator state", state);
+        return state;
+    }
+ 
+    public Command setPosition(double pose) {
+        // Inline construction of command goes here.
+        // Subsystem::RunOnce implicitly requires `this` subsystem.
 
-  @Override
-  public void periodic() {
-    SmartDashboard.putData("Elevator State", mech);
+        return runOnce(
+            () -> {
+                elevator.setControl(PositionPID.withPosition(pose));
+                state = pose;
+                m_elevator.setLength(((Units.inchesToMeters(state*(.75*Math.PI)))/4+.25));
+            });
+    }
 
-    SmartDashboard.putNumber("Elevator current", elevator.getSupplyCurrent().getValueAsDouble());
-    SmartDashboard.putNumber("Stator current", elevator.getStatorCurrent().getValueAsDouble());
+    @Override
+    public void periodic() {
+        SmartDashboard.putData("Elevator State", mech);
 
-    Logger.recordOutput("Elevator/Elevator state", mech);
-    // This method will be called once per scheduler run
+        SmartDashboard.putNumber("Elevator current", elevator.getSupplyCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("Stator current", elevator.getStatorCurrent().getValueAsDouble());
 
-  }
+        Logger.recordOutput("Elevator/Elevator state", mech);
+        // This method will be called once per scheduler run
+    }
 
-  public Command setPosition(double pose) {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
-
-    return runOnce(
-        () -> {
-          elevator.setControl(PositionPID.withPosition(pose));
-          state = pose;
-          m_elevator.setLength(((Units.inchesToMeters(state*(.75*Math.PI)))/4+.25));
-        });
-  }
-
-  
 }

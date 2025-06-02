@@ -55,15 +55,15 @@ public class Manipulator extends SubsystemBase {
     private SparkClosedLoopController rotateRightPID = rotateRight.getClosedLoopController();
 
     /*      Configs */
-    private SparkMaxConfig globalConfig;
+    private SparkMaxConfig globalConfig = new SparkMaxConfig();
 
-    private SparkMaxConfig pivotConfig;
+    private SparkMaxConfig pivotConfig = new SparkMaxConfig();
 
-    private SparkMaxConfig intakeLeftConfig;
-    private SparkMaxConfig intakeRightConfig;
+    private SparkMaxConfig intakeLeftConfig = new SparkMaxConfig();
+    private SparkMaxConfig intakeRightConfig = new SparkMaxConfig();
 
-    private SparkMaxConfig rotateLeftConfig;
-    private SparkMaxConfig rotateRightConfig;
+    private SparkMaxConfig rotateLeftConfig = new SparkMaxConfig();
+    private SparkMaxConfig rotateRightConfig = new SparkMaxConfig();
 
     //  Beam Break for coral detection
     private DigitalInput beamBreak = new DigitalInput(InfeedConstants.BEAM_BREAK_ID);;
@@ -73,13 +73,6 @@ public class Manipulator extends SubsystemBase {
 
     /** Creates a new Maniuplator. */
     public Manipulator() {
-
-        globalConfig = new SparkMaxConfig();
-        intakeLeftConfig = new SparkMaxConfig();
-        intakeRightConfig = new SparkMaxConfig();
-        rotateLeftConfig = new SparkMaxConfig();
-        rotateRightConfig = new SparkMaxConfig();
-        pivotConfig = new SparkMaxConfig();
 
         globalConfig
             .smartCurrentLimit(40)

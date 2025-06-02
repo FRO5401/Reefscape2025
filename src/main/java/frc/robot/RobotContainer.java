@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.util.Set;
 
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.photonvision.PhotonCamera;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -67,6 +68,7 @@ public final class RobotContainer {
 
 	/*	Autonomous Selector */
     private final SendableChooser<Command> chooser = new SendableChooser<>();
+	private final LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<>("Auto Chooser");
 
     /*	Swerve */
 	// Setting up bindings for necessary control of the swerve drive platform 
@@ -100,9 +102,9 @@ public final class RobotContainer {
     }
 
     private void configureBindings() {
-		/*	Driver Controller */
+		/***	Driver Controller ***/
 
-		/*		Swerve Control 	*/
+		/**	Swerve Control 	**/
 		SwerveUtils.setupUtil();
 
         drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
@@ -121,7 +123,7 @@ public final class RobotContainer {
 		// 			Reset the field-centric heading on left bumper press
 		driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-		/*		LEDs and Autimation 	*/
+		/**		LEDs and Autimation 	**/
 		//			Climb LED sequence
 		driver.povUp().onTrue(candle.runOnce(() -> {
             candle.clearAllAnims();
@@ -143,9 +145,9 @@ public final class RobotContainer {
         driver.a().whileTrue(alignAndDriveToSource(Units.inchesToMeters(0)));
 		drivetrain.registerTelemetry(logger::telemeterize);
 
-		/*	Operator Controller */
+		/***	Operator Controller ***/
 
-		/*		Scoring Positions */
+		/**		Scoring Positions **/
 		//			L2 Coral
         operator.a().onTrue(new ParallelCommandGroup(
                 elevator.setPosition(
@@ -185,7 +187,7 @@ public final class RobotContainer {
                 candle.setLights(AnimationTypes.Rainbow)
 		));		
 
-		/*		Pick-Up / Hold Positions */
+		/**		Pick-Up / Hold Positions **/
 		//			Intaking
 		operator.leftTrigger(.01).whileTrue(
                 new ParallelCommandGroup(
@@ -201,7 +203,7 @@ public final class RobotContainer {
 		));
 
         operator.leftBumper().onTrue(manipulator.stopIntake());
-		
+
 		//			Station Pick-Up Coral
         operator.x().onTrue(new ParallelCommandGroup(
                 elevator.setPosition(
@@ -237,13 +239,13 @@ public final class RobotContainer {
 					elevator.setPosition(ElevatorConstants.L3 - 7)
 		));
 		
-		/*		Climbing */
+		/**		Climbing **/
 
 		climber.setDefaultCommand(climber.climb(()->operator.getLeftY()));
 
 		operator.rightStick().whileTrue(climber.climb(()-> 1).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
-		/*	Automation */
+		/***	Automation ***/
 		//		Lowers elevator if tipping
         tiltingElevator.onTrue(elevator.setPosition(ElevatorConstants.PROCESSOR));
 
@@ -257,7 +259,7 @@ public final class RobotContainer {
                 candle.setLights(AnimationTypes.HasAlgea)
 		));
 
-		/*	Unused Code */
+		/***	Unused Code ***/
 
 		//	Automates stopping Intake with coral
 		//		LED change for having coral
@@ -415,23 +417,19 @@ public static void endgameRumble(){
 
     public void chooseAuto() {
 
-        chooser.addOption("1c1a blue mid", new MiddleOnePieceBlue(drivetrain,elevator,manipulator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-        chooser.addOption("1c1a red mid", new MiddleOnePieceRed(drivetrain,elevator,manipulator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-        chooser.addOption("1c1a blue side", new SideOnePieceBlue(drivetrain,elevator,manipulator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-        chooser.addOption("1c1a red side", new SideOnePieceRed(drivetrain,elevator,manipulator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-        chooser.addOption("Just Coral red side", new JustCoralRed(drivetrain,elevator,manipulator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-        chooser.addOption("Just Coral Blue side", new JustCoralBlue(drivetrain,elevator,manipulator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-        // chooser.addOption("Move Forward",
-        // drivetrain.getAutoCommand(Trajectorys.onePiece));
-        chooser.setDefaultOption("Do Nothing", elevator.setPosition(ElevatorConstants.PROCESSOR));
+        autoChooser.addOption("1c1a blue mid", new MiddleOnePieceBlue(drivetrain,elevator,manipulator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        autoChooser.addOption("1c1a red mid", new MiddleOnePieceRed(drivetrain,elevator,manipulator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        autoChooser.addOption("1c1a blue side", new SideOnePieceBlue(drivetrain,elevator,manipulator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        autoChooser.addOption("1c1a red side", new SideOnePieceRed(drivetrain,elevator,manipulator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        autoChooser.addOption("Just Coral red side", new JustCoralRed(drivetrain,elevator,manipulator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        autoChooser.addOption("Just Coral Blue side", new JustCoralBlue(drivetrain,elevator,manipulator).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
-        Shuffleboard.getTab("Autonomous").add(chooser);
-        SmartDashboard.putData(chooser);
+		autoChooser.addDefaultOption("Do Nothing", elevator.setPosition(ElevatorConstants.PROCESSOR));
 
     }
 
     public Command getAutonomousCommand() {
-        return chooser.getSelected();
+        return autoChooser.get();
     }
 
 }

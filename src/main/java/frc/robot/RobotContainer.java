@@ -67,7 +67,6 @@ public final class RobotContainer {
     }
 
 	/*	Autonomous Selector */
-    private final SendableChooser<Command> chooser = new SendableChooser<>();
 	private final LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<>("Auto Chooser");
 
     /*	Swerve */

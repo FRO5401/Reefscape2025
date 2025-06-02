@@ -26,52 +26,53 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.InfeedConstants;
 import frc.robot.Constants.InfeedConstants.IntakeConstants;
 
-
 public class Manipulator extends SubsystemBase {
+  /***  Rev ***/
+  /*      Motors */
+  SparkMax pivot = new SparkMax(InfeedConstants.PivotConstants.PIVOT_ID, MotorType.kBrushless);
+
   SparkMax intakeLeft = new SparkMax(InfeedConstants.IntakeConstants.INTAKE_MOTOR_LEFT, MotorType.kBrushless);
   SparkMax intakeRight = new SparkMax(InfeedConstants.IntakeConstants.INTAKE_MOTOR_RIGHT, MotorType.kBrushless);
 
   SparkMax rotateLeft = new SparkMax(InfeedConstants.IntakeConstants.ROTATE_MOTOR_LEFT, MotorType.kBrushless);
   SparkMax rotateRight = new SparkMax(InfeedConstants.IntakeConstants.ROTATE_MOTOR_RIGHT, MotorType.kBrushless);
 
-  SparkMax pivot = new SparkMax(InfeedConstants.PivotConstants.PIVOT_ID, MotorType.kBrushless);
-
-  //.02 is the schedular cycle time, 
-  Debouncer currentFilter = new Debouncer(.15, DebounceType.kBoth);
-
-
-  
+  /*      Encoders */
+  RelativeEncoder pivotEncoeer = pivot.getEncoder();
 
   RelativeEncoder rotateLeftEncoder = rotateLeft.getEncoder();
   RelativeEncoder rotateRightEncoder = rotateRight.getEncoder();
 
-
-  RelativeEncoder pivotEncoeer = pivot.getEncoder();
+  /*      PID */
+  SparkClosedLoopController PivotPID = pivot.getClosedLoopController();
 
   SparkClosedLoopController rotateLeftPID = rotateLeft.getClosedLoopController();
   SparkClosedLoopController rotateRightPID = rotateRight.getClosedLoopController();
 
-
-  SparkClosedLoopController PivotPID = pivot.getClosedLoopController();
-  
-  
+  /*      Configs */
   SparkMaxConfig globalConfig;
-  SparkMaxConfig intakeLeftConfig;
-  SparkMaxConfig intakeRightConfig;
-  SparkMaxConfig rotateLeftConfig;
-  SparkMaxConfig rotateRightConfig;
+
   SparkMaxConfig pivotConfig;
 
-  DigitalInput beamBreak;
+  SparkMaxConfig intakeLeftConfig;
+  SparkMaxConfig intakeRightConfig;
+
+  SparkMaxConfig rotateLeftConfig;
+  SparkMaxConfig rotateRightConfig;
+
+  //  Beam Break for coral detection
+  DigitalInput beamBreak = new DigitalInput(InfeedConstants.BEAM_BREAK_ID);;
+
+  //.02 is the schedular cycle time, 
+  Debouncer currentFilter = new Debouncer(.15, DebounceType.kBoth); 
 
   /** Creates a new Maniuplator. */
   public Manipulator() {
-
-    
 
     globalConfig = new SparkMaxConfig();
     intakeLeftConfig = new SparkMaxConfig();
@@ -80,12 +81,10 @@ public class Manipulator extends SubsystemBase {
     rotateRightConfig = new SparkMaxConfig();
     pivotConfig = new SparkMaxConfig();
 
-    beamBreak = new DigitalInput(InfeedConstants.BEAM_BREAK_ID);
-
-      globalConfig
-      .smartCurrentLimit(40)
-      .idleMode(IdleMode.kBrake)
-      .disableFollowerMode();
+    globalConfig
+    .smartCurrentLimit(40)
+    .idleMode(IdleMode.kBrake)
+    .disableFollowerMode();
 
     intakeLeftConfig
       .apply(globalConfig)
@@ -103,15 +102,13 @@ public class Manipulator extends SubsystemBase {
       .encoder
         .positionConversionFactor(16);
       
-    
     rotateRightConfig
-    .apply(globalConfig)
-    .inverted(false)
-    .disableFollowerMode()
-    .smartCurrentLimit(20)
-    .encoder
-      .positionConversionFactor(16);
-      
+      .apply(globalConfig)
+      .inverted(false)
+      .disableFollowerMode()
+      .smartCurrentLimit(20)
+      .encoder
+        .positionConversionFactor(16);
 
     pivotConfig
       .apply(globalConfig)
@@ -128,21 +125,17 @@ public class Manipulator extends SubsystemBase {
         InfeedConstants.IntakeConstants.ROTATE_kI,
         InfeedConstants.IntakeConstants.ROTATE_kD);
 
-      rotateRightConfig.closedLoop
+    rotateRightConfig.closedLoop
       .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
       .pid(InfeedConstants.IntakeConstants.ROTATE_KP,
-      InfeedConstants.IntakeConstants.ROTATE_kI,
+        InfeedConstants.IntakeConstants.ROTATE_kI,
         InfeedConstants.IntakeConstants.ROTATE_kD);
-      
-      
 
     pivotConfig.closedLoop
       .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
       .p(InfeedConstants.PivotConstants.PIVOT_KP)
       .i(InfeedConstants.PivotConstants.PIVOT_KI)
       .d(InfeedConstants.PivotConstants.PIVOT_KD);
-
-
       
     intakeLeft.configure(intakeLeftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     intakeRight.configure(intakeRightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -150,96 +143,93 @@ public class Manipulator extends SubsystemBase {
     rotateRight.configure(rotateRightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     pivot.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-
-    //Start position of encoders
+    /*  Encoder Starting Position */
     rotateLeftEncoder.setPosition(0);
     rotateRightEncoder.setPosition(0);
 
     pivotEncoeer.setPosition(0);
   }
- public Command zeroPinch(){
-  return runOnce(()->{
-    rotateLeftEncoder.setPosition(0);
-    pivotEncoeer.setPosition(0);
-  });
- }
 
- public Command setPosition(double rotatePosition, double pivotPosition){
-  return runOnce(()->{
-    rotateLeftPID.setReference(rotatePosition, ControlType.kPosition);
-    rotateRightPID.setReference(-rotatePosition, ControlType.kPosition);
-    PivotPID.setReference(pivotPosition, ControlType.kPosition);
-  });
- }
+  public Command zeroPinch(){
+    return runOnce(()->{
+      rotateLeftEncoder.setPosition(0);
+      pivotEncoeer.setPosition(0);
+    });
+  }
 
- public Command setClaw(double rotatePosition){
-  return runOnce(()->{
-    rotateLeftPID.setReference(rotatePosition, ControlType.kPosition);
-    rotateRightPID.setReference(-rotatePosition, ControlType.kPosition);
-  });
-}
+  public Command setPosition(double rotatePosition, double pivotPosition){
+    return runOnce(()->{
+      rotateLeftPID.setReference(rotatePosition, ControlType.kPosition);
+      rotateRightPID.setReference(-rotatePosition, ControlType.kPosition);
+      PivotPID.setReference(pivotPosition, ControlType.kPosition);
+    });
+  }
 
+  public Command setClaw(double rotatePosition){
+    return runOnce(()->{
+      rotateLeftPID.setReference(rotatePosition, ControlType.kPosition);
+      rotateRightPID.setReference(-rotatePosition, ControlType.kPosition);
+    });
+  }
 
 //overloaded to make it so that we can add backspin to the algea if needed
- public Command setVelocity(double leftVelocity, double rightVelocity){
-  return runOnce(()->{
-    intakeLeft.set(leftVelocity);
-    intakeRight.set(rightVelocity);
-  });
- }
+  public Command setVelocity(double leftVelocity, double rightVelocity){
+    return runOnce(()->{
+      intakeLeft.set(leftVelocity);
+      intakeRight.set(rightVelocity);
+    });
+  }
 
- public Command setVelocity(DoubleSupplier velocity){
-  return runOnce(()->{
-    intakeLeft.set(velocity.getAsDouble());
-    intakeRight.set(velocity.getAsDouble());
-  });
- }
+  public Command setVelocity(DoubleSupplier velocity){
+    return runOnce(()->{
+      intakeLeft.set(velocity.getAsDouble());
+      intakeRight.set(velocity.getAsDouble());
+    });
+  }
 
      //selects the command based off of elevator pose
-public Command expelCommand(Elevator elevator){
-      return new SelectCommand<>(
-          // Maps elevator state to different manipulator speeds
-          Map.ofEntries(
-              Map.entry(ElevatorConstants.BARGE, setVelocity(IntakeConstants.TELEOP_REPEL_ALGEA, 0)),
-              Map.entry(ElevatorConstants.L4, setVelocity(()->IntakeConstants.TELEOP_REPEL_CORAL)),
-              Map.entry(ElevatorConstants.L3, setVelocity(()->IntakeConstants.TELEOP_REPEL_CORAL)),
-              Map.entry(ElevatorConstants.L2, setVelocity(()->IntakeConstants.TELEOP_REPEL_CORAL)),
-              Map.entry(ElevatorConstants.PROCESSOR, setVelocity(()->-0.2)),
-              Map.entry(ElevatorConstants.FLOOR, setVelocity(()->-0.2))),
-          elevator::getElevatorState);
-}
+  public Command expelCommand(Elevator elevator){
+    return new SelectCommand<>(
+        // Maps elevator state to different manipulator speeds
+      Map.ofEntries(
+          Map.entry(ElevatorConstants.BARGE, setVelocity(IntakeConstants.TELEOP_REPEL_ALGEA, 0)),
+          Map.entry(ElevatorConstants.L4, setVelocity(()->IntakeConstants.TELEOP_REPEL_CORAL)),
+          Map.entry(ElevatorConstants.L3, setVelocity(()->IntakeConstants.TELEOP_REPEL_CORAL)),
+          Map.entry(ElevatorConstants.L2, setVelocity(()->IntakeConstants.TELEOP_REPEL_CORAL)),
+          Map.entry(ElevatorConstants.PROCESSOR, setVelocity(()->-0.2)),
+          Map.entry(ElevatorConstants.FLOOR, setVelocity(()->-0.2))),
+        elevator::getElevatorState);
+  }
 
+  public Command stopIntake(){
+    return runOnce(()->{
+      intakeLeft.set(0);
+      intakeRight.set(0);
+    });
+  }
 
+  public Command setRotation(DoubleSupplier position){
+    return runOnce(()->{
+      rotateLeft.set(position.getAsDouble());
+      rotateRight.set(-position.getAsDouble());
+    });
+  }
 
- public Command stopIntake(){
-  return runOnce(()->{
-    intakeLeft.set(0);
-    intakeRight.set(0);
-  });
- }
+  public boolean getBeamBreak(){
+    return !beamBreak.get();
+  }
 
- public Command setRotation(DoubleSupplier position){
-  return runOnce(()->{
-    rotateLeft.set(position.getAsDouble());
-    rotateRight.set(-position.getAsDouble());
-  });
- }
+  public double rightIntakeCurrent(){
+    return intakeRight.getOutputCurrent();
+  }
 
- public boolean getBeamBreak(){
-  return !beamBreak.get();
- }
+  public double leftIntakeCurrent(){
+    return intakeLeft.getOutputCurrent();
+  }
 
- public double rightIntakeCurrent(){
-  return intakeRight.getOutputCurrent();
- }
-
- public double leftIntakeCurrent(){
-  return intakeLeft.getOutputCurrent();
- }
-
- public BooleanSupplier isCurrentSpiked(){
-  return ()->currentFilter.calculate((leftIntakeCurrent()>21));
- }
+  public BooleanSupplier isCurrentSpiked(){
+    return ()->currentFilter.calculate((leftIntakeCurrent()>21));
+  }
 
   @Override
   public void periodic() {

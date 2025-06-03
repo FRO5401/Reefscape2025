@@ -28,22 +28,23 @@ import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.InfeedConstants;
-import frc.robot.Constants.InfeedConstants.IntakeConstants;
+import frc.robot.Constants.ManipulatorConstants;
+import frc.robot.Constants.ManipulatorConstants.IntakeConstants;
+import frc.robot.Constants.ManipulatorConstants.PivotConstants;
 
 public class Manipulator extends SubsystemBase {
     /***  Rev ***/
     /*      Motors */
-    private final SparkMax pivot = new SparkMax(InfeedConstants.PivotConstants.PIVOT_ID, MotorType.kBrushless);
+    private final SparkMax pivot = new SparkMax(PivotConstants.PIVOT_ID, MotorType.kBrushless);
 
-    private final SparkMax intakeLeft = new SparkMax(InfeedConstants.IntakeConstants.INTAKE_MOTOR_LEFT, MotorType.kBrushless);
-    private final SparkMax intakeRight = new SparkMax(InfeedConstants.IntakeConstants.INTAKE_MOTOR_RIGHT, MotorType.kBrushless);
+    private final SparkMax intakeLeft = new SparkMax(IntakeConstants.INTAKE_MOTOR_LEFT, MotorType.kBrushless);
+    private final SparkMax intakeRight = new SparkMax(IntakeConstants.INTAKE_MOTOR_RIGHT, MotorType.kBrushless);
 
-    private final SparkMax rotateLeft = new SparkMax(InfeedConstants.IntakeConstants.ROTATE_MOTOR_LEFT, MotorType.kBrushless);
-    private final SparkMax rotateRight = new SparkMax(InfeedConstants.IntakeConstants.ROTATE_MOTOR_RIGHT, MotorType.kBrushless);
+    private final SparkMax rotateLeft = new SparkMax(IntakeConstants.ROTATE_MOTOR_LEFT, MotorType.kBrushless);
+    private final SparkMax rotateRight = new SparkMax(IntakeConstants.ROTATE_MOTOR_RIGHT, MotorType.kBrushless);
 
     /*      Encoders */
-    private RelativeEncoder pivotEncoeer = pivot.getEncoder();
+    private RelativeEncoder pivotEncoder = pivot.getEncoder();
 
     private RelativeEncoder rotateLeftEncoder = rotateLeft.getEncoder();
     private RelativeEncoder rotateRightEncoder = rotateRight.getEncoder();
@@ -66,7 +67,7 @@ public class Manipulator extends SubsystemBase {
     private SparkMaxConfig rotateRightConfig = new SparkMaxConfig();
 
     //  Beam Break for coral detection
-    private DigitalInput beamBreak = new DigitalInput(InfeedConstants.BEAM_BREAK_ID);;
+    private DigitalInput beamBreak = new DigitalInput(ManipulatorConstants.BEAM_BREAK_ID);;
 
     //.02 is the schedular cycle time, 
     private Debouncer currentFilter = new Debouncer(.15, DebounceType.kBoth); 
@@ -75,59 +76,60 @@ public class Manipulator extends SubsystemBase {
     public Manipulator() {
 
         globalConfig
-            .smartCurrentLimit(40)
             .idleMode(IdleMode.kBrake)
             .disableFollowerMode();
 
         intakeLeftConfig
             .apply(globalConfig)
+            .smartCurrentLimit(IntakeConstants.MINION_STALL_CURRENT)
             .inverted(false);
     
         intakeRightConfig
             .apply(globalConfig)
+            .smartCurrentLimit(IntakeConstants.MINION_STALL_CURRENT)
             .inverted(true);
 
         rotateLeftConfig
             .apply(globalConfig)
             .inverted(false)
             .disableFollowerMode()
-            .smartCurrentLimit(20)
+            .smartCurrentLimit(IntakeConstants.NEO550_STALL_CURRENT)
             .encoder
-                .positionConversionFactor(16);
+                .positionConversionFactor(IntakeConstants.ROTATE_GEAR_RATIO);
       
         rotateRightConfig
             .apply(globalConfig)
             .inverted(false)
             .disableFollowerMode()
-            .smartCurrentLimit(20)
+            .smartCurrentLimit(IntakeConstants.NEO550_STALL_CURRENT)
             .encoder
-                .positionConversionFactor(16);
+                .positionConversionFactor(IntakeConstants.ROTATE_GEAR_RATIO);
 
         pivotConfig
             .apply(globalConfig)
             .inverted(true)
-            .smartCurrentLimit(50)
+            .smartCurrentLimit(PivotConstants.NEO1650_STALL_CURRENT)
             .idleMode(IdleMode.kBrake)
             .encoder
-                .positionConversionFactor(13.8);
+                .positionConversionFactor(PivotConstants.GEAR_RATIO);
       
         rotateLeftConfig.closedLoop
             .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-            .p(InfeedConstants.IntakeConstants.ROTATE_KP)
-            .i(InfeedConstants.IntakeConstants.ROTATE_kI)
-            .d(InfeedConstants.IntakeConstants.ROTATE_kD);
+            .p(IntakeConstants.ROTATE_KP)
+            .i(IntakeConstants.ROTATE_kI)
+            .d(IntakeConstants.ROTATE_kD);
 
         rotateRightConfig.closedLoop
             .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-            .p(InfeedConstants.IntakeConstants.ROTATE_KP)
-            .i(InfeedConstants.IntakeConstants.ROTATE_kI)
-            .d(InfeedConstants.IntakeConstants.ROTATE_kD);
+            .p(IntakeConstants.ROTATE_KP)
+            .i(IntakeConstants.ROTATE_kI)
+            .d(IntakeConstants.ROTATE_kD);
 
         pivotConfig.closedLoop
             .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-            .p(InfeedConstants.PivotConstants.PIVOT_KP)
-            .i(InfeedConstants.PivotConstants.PIVOT_KI)
-            .d(InfeedConstants.PivotConstants.PIVOT_KD);
+            .p(PivotConstants.PIVOT_KP)
+            .i(PivotConstants.PIVOT_KI)
+            .d(PivotConstants.PIVOT_KD);
       
         intakeLeft.configure(intakeLeftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         intakeRight.configure(intakeRightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -139,13 +141,14 @@ public class Manipulator extends SubsystemBase {
         rotateLeftEncoder.setPosition(0);
         rotateRightEncoder.setPosition(0);
 
-        pivotEncoeer.setPosition(0);
+        pivotEncoder.setPosition(0);
     }
 
-    public Command zeroPinch(){
+    public Command zeroManipulator(){
         return runOnce(()->{
             rotateLeftEncoder.setPosition(0);
-            pivotEncoeer.setPosition(0);
+            rotateRightEncoder.setPosition(0);
+            pivotEncoder.setPosition(0);
         });
     }
 
@@ -184,12 +187,12 @@ public class Manipulator extends SubsystemBase {
         return new SelectCommand<>(
             // Maps elevator state to different manipulator speeds
             Map.ofEntries(
-                Map.entry(ElevatorConstants.BARGE, setVelocity(IntakeConstants.TELEOP_REPEL_ALGEA, 0)),
-                Map.entry(ElevatorConstants.L4, setVelocity(()->IntakeConstants.TELEOP_REPEL_CORAL)),
-                Map.entry(ElevatorConstants.L3, setVelocity(()->IntakeConstants.TELEOP_REPEL_CORAL)),
-                Map.entry(ElevatorConstants.L2, setVelocity(()->IntakeConstants.TELEOP_REPEL_CORAL)),
-                Map.entry(ElevatorConstants.PROCESSOR, setVelocity(()->-0.2)),
-                Map.entry(ElevatorConstants.FLOOR, setVelocity(()->-0.2))
+                Map.entry(ElevatorConstants.BARGE, setVelocity(IntakeConstants.TELEOP_EXPEL_ALGEA, 0)),
+                Map.entry(ElevatorConstants.L4, setVelocity(()->IntakeConstants.TELEOP_EXPEL_CORAL)),
+                Map.entry(ElevatorConstants.L3, setVelocity(()->IntakeConstants.TELEOP_EXPEL_CORAL)),
+                Map.entry(ElevatorConstants.L2, setVelocity(()->IntakeConstants.TELEOP_EXPEL_CORAL)),
+                Map.entry(ElevatorConstants.PROCESSOR, setVelocity(()->IntakeConstants.LOW_ALGEA_EXPEL)),
+                Map.entry(ElevatorConstants.FLOOR, setVelocity(()->IntakeConstants.LOW_ALGEA_EXPEL))
             ),
             elevator::getElevatorState
         );
@@ -222,7 +225,7 @@ public class Manipulator extends SubsystemBase {
     }
 
     public BooleanSupplier isCurrentSpiked(){
-        return ()->currentFilter.calculate((leftIntakeCurrent()>21));
+        return ()->currentFilter.calculate((leftIntakeCurrent()>IntakeConstants.ALGEA_CURRENT_SPIKE));
     }
 
     @Override

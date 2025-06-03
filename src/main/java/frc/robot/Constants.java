@@ -56,7 +56,8 @@ public class Constants {
                 new Translation3d(Units.inchesToMeters(13), Units.inchesToMeters(-11.5), Units.inchesToMeters(5)),
                 new Rotation3d(0, 0, 0)); // Cam mounted facing forward, half a meter forward of center, half a meter up
                                           // from center.
-
+        public static final double RIGHT_REEF_OFFSET = 2.6;
+        public static final double LEFT_REEF_OFFSET = -2.6;
     }
 
     public class ElevatorConstants {
@@ -80,7 +81,7 @@ public class Constants {
         public static final double KG = 2.4;
     }
 
-    public class InfeedConstants {
+    public class ManipulatorConstants {
 
         public static final int BEAM_BREAK_ID = 0;
 
@@ -105,11 +106,16 @@ public class Constants {
             // Sides parallel to hold algea
             public static final double HOLD_ALGEA = 6;
             // Place coral 62.49993896484375
-            public static final double TELEOP_REPEL_ALGEA = -0.58; // -0.7
-            public static final double TELEOP_REPEL_CORAL = -.9; // -0.7
-            public static final double AUTO_REPEL_ALGEA = -.84;
+            public static final double TELEOP_EXPEL_ALGEA = -0.58; // -0.7
+            public static final double TELEOP_EXPEL_CORAL = -.9; // -0.7
+            public static final double AUTO_EXPEL_ALGEA = -.84;
             public static final double INTAKE_SPEED = 1;
+            public static final double LOW_ALGEA_EXPEL = -0.2;
 
+            public static final int MINION_STALL_CURRENT = 40;
+            public static final int NEO550_STALL_CURRENT = 20;
+            public static final int ROTATE_GEAR_RATIO = 16;
+            public static final double ALGEA_CURRENT_SPIKE = 21;
         }
 
         public class PivotConstants {
@@ -137,6 +143,9 @@ public class Constants {
 
             // Gets Coral from station
             public static final double STATION = -25 * 2;
+
+            public static final int NEO1650_STALL_CURRENT = 50;
+            public static final double GEAR_RATIO = 13.8;
         }
 
     }
@@ -185,6 +194,7 @@ public class Constants {
         public static final double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts
                                                                                                   // desired top speed
         public static final double MaxAngularRate = RotationsPerSecond.of(1).in(RadiansPerSecond);
+
     }
 
     public static final class Trajectorys {
@@ -224,9 +234,10 @@ public class Constants {
     }
 
     public class ClimberConstants {
-        public static final int LEFT_SPARK_ID = 24;
-        public static final int RIGHT_SPARK_ID = 23;
-        public static final int CLIMBER_ENCODER = 1;
+        public static final int CLIMBER_ID = 24;
+        public static final int CLIMBER_ENCODER_CHANNEL = 1;
+        public static final int GEAR_RATIO = 225;
+        public static final int STALL_CURRENT = 80;
     }
 
     public static final int CANdleID = 19;

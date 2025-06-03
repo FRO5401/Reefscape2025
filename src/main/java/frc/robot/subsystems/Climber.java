@@ -22,38 +22,28 @@ import frc.robot.Constants.ClimberConstants;
 
 public class Climber extends SubsystemBase {
     /** Creates a new Climber. */
-    private final SparkMax climberLeft = new SparkMax(ClimberConstants.LEFT_SPARK_ID, MotorType.kBrushless);;
+    private final SparkMax climberLeft = new SparkMax(ClimberConstants.CLIMBER_ID, MotorType.kBrushless);;
     private SparkMaxConfig climberGlobal;
-    private SparkMaxConfig climberLeftConfig;
-    private SparkMaxConfig climberRightConfig;
+    private SparkMaxConfig climberConfig;
     private RelativeEncoder climberEncoder;
-    private DutyCycleEncoder REVEncoder = new DutyCycleEncoder(ClimberConstants.CLIMBER_ENCODER);;
+    private DutyCycleEncoder REVEncoder = new DutyCycleEncoder(ClimberConstants.CLIMBER_ENCODER_CHANNEL);;
 
     public Climber() { 
     
         climberGlobal = new SparkMaxConfig();
-        climberLeftConfig = new SparkMaxConfig();
-        climberRightConfig = new SparkMaxConfig();
+        climberConfig = new SparkMaxConfig();
 
         climberGlobal
-            .smartCurrentLimit(80)
+            .smartCurrentLimit(ClimberConstants.STALL_CURRENT)
             .idleMode(IdleMode.kBrake);
 
-        climberLeftConfig
+        climberConfig
             .apply(climberGlobal)
             .inverted(true)
-            .smartCurrentLimit(80)
             .encoder
-                .positionConversionFactor(225);
+                .positionConversionFactor(ClimberConstants.GEAR_RATIO);
 
-        climberRightConfig
-            .apply(climberGlobal)
-            .follow(climberLeft, true)
-            .smartCurrentLimit(80)
-            .encoder
-                .positionConversionFactor(225);
-
-        climberLeft.configure(climberLeftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        climberLeft.configure(climberConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     
     }
 

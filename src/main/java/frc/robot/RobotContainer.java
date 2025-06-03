@@ -20,9 +20,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -39,8 +36,8 @@ import frc.robot.Commands.Autos.MiddleOnePieceRed;
 import frc.robot.Commands.Autos.SideOnePieceBlue;
 import frc.robot.Commands.Autos.SideOnePieceRed;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.InfeedConstants.IntakeConstants;
-import frc.robot.Constants.InfeedConstants.PivotConstants;
+import frc.robot.Constants.ManipulatorConstants.IntakeConstants;
+import frc.robot.Constants.ManipulatorConstants.PivotConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Utils.SwerveUtils;
 import frc.robot.generated.TunerConstants;
@@ -76,7 +73,7 @@ public final class RobotContainer {
             .withRotationalDeadband(Constants.Swerve.MaxAngularRate * 0.01) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 	
-    private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+    //private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 	public final static CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(FrontCam, FrontRight);
 
 	/*	Xbox Controllers */
@@ -92,7 +89,7 @@ public final class RobotContainer {
 	//		Intake resistance spikes current, Robot has Algea
 	private Trigger hasAlgea = new Trigger(manipulator.isCurrentSpiked());
 	//		Beam Break triggers, Robot has Coral
-	private Trigger hasCoral = new Trigger(()-> manipulator.getBeamBreak()).debounce(.1);
+	//private Trigger hasCoral = new Trigger(()-> manipulator.getBeamBreak()).debounce(.1);
 
 
     public RobotContainer() {
@@ -131,13 +128,13 @@ public final class RobotContainer {
 		//			Allignment To Reef Left Branch 
         driver.x().whileTrue(new SequentialCommandGroup(
                 candle.setLights(AnimationTypes.SingleFade),
-                alignAndDriveToReef(Units.inchesToMeters(-2.6)),
+                alignAndDriveToReef(Units.inchesToMeters(VisionConstants.LEFT_REEF_OFFSET)),
                 candle.setLights(AnimationTypes.Align)
 		));
 		//			Allignment To Reef Right Branch
         driver.b().whileTrue(new SequentialCommandGroup(
                 candle.setLights(AnimationTypes.SingleFade),
-                alignAndDriveToReef(Units.inchesToMeters(2.6)),
+                alignAndDriveToReef(Units.inchesToMeters(VisionConstants.RIGHT_REEF_OFFSET)),
                 candle.setLights(AnimationTypes.Align)
 		));
 

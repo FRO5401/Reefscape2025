@@ -8,7 +8,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ManipulatorConstants.IntakeConstants;
 import frc.robot.Constants.ManipulatorConstants.PivotConstants;
@@ -24,7 +23,6 @@ import frc.robot.subsystems.Manipulator;
 public class JustCoralRed extends SequentialCommandGroup {
     /** Creates a new OnePiece. */
     public JustCoralRed(CommandSwerveDrivetrain drivetrain, Elevator elevator, Manipulator manipulator) {
-        Trigger hasAlgea = new Trigger(manipulator.isCurrentSpiked());
 
         // Add your commands in the addCommands() call, e.g.
         // addCommands(new FooCommand(), new BarCommand());

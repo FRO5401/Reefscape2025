@@ -22,48 +22,50 @@ import frc.robot.subsystems.Manipulator;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class SideOnePieceBlue extends SequentialCommandGroup {
-  /** Creates a new OnePiece. */
-  public SideOnePieceBlue(CommandSwerveDrivetrain drivetrain, Elevator elevator, Manipulator manipulator) {
-    Trigger hasAlgea = new Trigger(manipulator.isCurrentSpiked());
+    /** Creates a new OnePiece. */
+    public SideOnePieceBlue(CommandSwerveDrivetrain drivetrain, Elevator elevator, Manipulator manipulator) {
+        Trigger hasAlgea = new Trigger(manipulator.isCurrentSpiked());
 
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
-    addCommands(
-      
-      new ParallelCommandGroup(elevator.setPosition(ElevatorConstants.PROCESSOR),manipulator.setPosition(IntakeConstants.HOLD_CORAL, PivotConstants.BARGE)),
-      
-      RobotContainer.alignAndDrive(20,Units.inchesToMeters(-2.8), VisionConstants.AUTO_DISTANCE),
-      new ParallelCommandGroup(elevator.setPosition(ElevatorConstants.L4), manipulator.setPosition(IntakeConstants.HOLD_CORAL, PivotConstants.L4)),
-      RobotContainer.alignAndDriveToReef(20,Units.inchesToMeters(-2.8), VisionConstants.REEF_DISTANCE),
-      Commands.waitSeconds(.5),
-      manipulator.setClaw(IntakeConstants.HOLD_ALGEA),
-      manipulator.setVelocity(()->-1),
-      Commands.waitSeconds(.2),
-      manipulator.setVelocity(()->0),
+        // Add your commands in the addCommands() call, e.g.
+        // addCommands(new FooCommand(), new BarCommand());
+        addCommands(
 
-      RobotContainer.alignAndDrive(20,Units.inchesToMeters(0), VisionConstants.DEALGEA_DISTANCE),
-      Commands.waitSeconds(.1),
-      new ParallelCommandGroup(
+                new ParallelCommandGroup(elevator.setPosition(ElevatorConstants.PROCESSOR),
+                        manipulator.setPosition(IntakeConstants.HOLD_CORAL, PivotConstants.BARGE)),
+
+                RobotContainer.alignAndDrive(20, Units.inchesToMeters(-2.8), VisionConstants.AUTO_DISTANCE),
+                new ParallelCommandGroup(elevator.setPosition(ElevatorConstants.L4),
+                        manipulator.setPosition(IntakeConstants.HOLD_CORAL, PivotConstants.L4)),
+                RobotContainer.alignAndDriveToReef(20, Units.inchesToMeters(-2.8), VisionConstants.REEF_DISTANCE),
+                Commands.waitSeconds(.5),
+                manipulator.setClaw(IntakeConstants.HOLD_ALGEA),
+                manipulator.setVelocity(() -> -1),
+                Commands.waitSeconds(.2),
+                manipulator.setVelocity(() -> 0),
+
+                RobotContainer.alignAndDrive(20, Units.inchesToMeters(0), VisionConstants.DEALGEA_DISTANCE),
+                Commands.waitSeconds(.1),
+                new ParallelCommandGroup(
                         manipulator.setPosition(
                                 IntakeConstants.HOLD_ALGEA,
                                 PivotConstants.STRAIGHTOUT),
                         elevator.setPosition(ElevatorConstants.L3 - 7)),
-      Commands.waitSeconds(1),
-      manipulator.setVelocity(()->1),
-      RobotContainer.alignAndDrive(20,Units.inchesToMeters(0), VisionConstants.ALGEA_DISTANCE).until(hasAlgea),
-      RobotContainer.alignAndDrive(20,Units.inchesToMeters(0), VisionConstants.BARGE_DISTANCE),
-      RobotContainer.alignAndDrive(14,Units.inchesToMeters(0), VisionConstants.BARGE_DISTANCE),
+                Commands.waitSeconds(1),
+                manipulator.setVelocity(() -> 1),
+                RobotContainer.alignAndDrive(20, Units.inchesToMeters(0), VisionConstants.ALGEA_DISTANCE)
+                        .until(hasAlgea),
+                RobotContainer.alignAndDrive(20, Units.inchesToMeters(0), VisionConstants.BARGE_DISTANCE),
+                RobotContainer.alignAndDrive(14, Units.inchesToMeters(0), VisionConstants.BARGE_DISTANCE),
 
-      new ParallelCommandGroup(
-        elevator.setPosition(ElevatorConstants.BARGE),
-        manipulator.setPosition(
-                IntakeConstants.HOLD_ALGEA,
-                PivotConstants.BARGE)),
+                new ParallelCommandGroup(
+                        elevator.setPosition(ElevatorConstants.BARGE),
+                        manipulator.setPosition(
+                                IntakeConstants.HOLD_ALGEA,
+                                PivotConstants.BARGE)),
 
-      Commands.waitSeconds(2),
-      manipulator.setVelocity(()->IntakeConstants.AUTO_REPEL_ALGEA),
-      Commands.waitSeconds(.2),
-      elevator.setPosition(ElevatorConstants.L2) 
-    );   
-  }
+                Commands.waitSeconds(2),
+                manipulator.setVelocity(() -> IntakeConstants.AUTO_REPEL_ALGEA),
+                Commands.waitSeconds(.2),
+                elevator.setPosition(ElevatorConstants.L2));
+    }
 }

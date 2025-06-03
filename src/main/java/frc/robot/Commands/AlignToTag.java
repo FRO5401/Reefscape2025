@@ -23,7 +23,6 @@ public class AlignToTag extends Command {
     private final double offset;
     private final Rotation2d rotationOffset;
 
-
     public AlignToTag(
             CommandSwerveDrivetrain drivetrain,
             DoubleSupplier xVelocity,
@@ -55,7 +54,8 @@ public class AlignToTag extends Command {
 
     @Override
     public void execute() {
-        // double currentHeading = drivetrain.getState().Pose.getRotation().getRadians();
+        // double currentHeading =
+        // drivetrain.getState().Pose.getRotation().getRadians();
         Pose2d currentPose = drivetrain.getState().Pose;
 
         Transform2d offset = currentPose.minus(targetPose);
@@ -71,21 +71,20 @@ public class AlignToTag extends Command {
 
         Rotation2d tagRotation = targetPose.getRotation();
 
-        ChassisSpeeds driverCommandedVelocities =
-                new ChassisSpeeds(xVelocity.getAsDouble() , yVelocity.getAsDouble(), 0);
+        ChassisSpeeds driverCommandedVelocities = new ChassisSpeeds(xVelocity.getAsDouble(), yVelocity.getAsDouble(),
+                0);
 
-        ChassisSpeeds fieldCommandedVelocities =
-                ChassisSpeeds.fromRobotRelativeSpeeds(
-                        driverCommandedVelocities, drivetrain.getPose().getRotation());
+        ChassisSpeeds fieldCommandedVelocities = ChassisSpeeds.fromRobotRelativeSpeeds(
+                driverCommandedVelocities, drivetrain.getPose().getRotation());
 
-        ChassisSpeeds tagRelativeCommandedVelocities =
-                ChassisSpeeds.fromFieldRelativeSpeeds(fieldCommandedVelocities, tagRotation);
+        ChassisSpeeds tagRelativeCommandedVelocities = ChassisSpeeds.fromFieldRelativeSpeeds(fieldCommandedVelocities,
+                tagRotation);
 
         tagRelativeCommandedVelocities.vyMetersPerSecond = yVelocityController;
         tagRelativeCommandedVelocities.omegaRadiansPerSecond = thetaVelocity;
 
-        ChassisSpeeds fieldRelativeSpeeds =
-                ChassisSpeeds.fromRobotRelativeSpeeds(tagRelativeCommandedVelocities, tagRotation);
+        ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(tagRelativeCommandedVelocities,
+                tagRotation);
 
         // System.out.println(offset.getRotation().getRadians());
         drivetrain.setControl(drivetrain.driveFieldRelative(fieldRelativeSpeeds));

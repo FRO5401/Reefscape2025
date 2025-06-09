@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -231,9 +233,9 @@ public class Manipulator extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        SmartDashboard.putBoolean("HasCoral", getBeamBreak());
-        SmartDashboard.putBoolean("HasAlgea", isCurrentSpiked().getAsBoolean());
-        SmartDashboard.putNumber("Pivot Current", pivot.getOutputCurrent());
-
+        SmartDashboard.putBoolean("Manipulator/HasCoral", getBeamBreak());
+        SmartDashboard.putBoolean("Manipulator/HasAlgea", isCurrentSpiked().getAsBoolean());
+        SmartDashboard.putNumber("Manipulator/Pivot-Current", pivot.getOutputCurrent());
+        Logger.recordOutput("Manipulator/Pivot-Position", pivotEncoder.getPosition());
   }
 }

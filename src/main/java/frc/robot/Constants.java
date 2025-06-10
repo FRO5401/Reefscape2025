@@ -17,12 +17,28 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
+
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import frc.robot.generated.TunerConstants;
 
-public class Constants {
+public final class Constants {
+    public static final Mode simMode = Mode.SIM;
+    public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
+
+    public static enum Mode {
+        /** Running on a real robot. */
+        REAL,
+
+        /** Running a physics simulator. */
+        SIM,
+
+        /** Replaying from a log file. */
+        REPLAY
+    }
+
     public static class ControlConstants {
         // Controller Specifications
         public static final int XBOX_CONTROLLER_DRIVER = 0;

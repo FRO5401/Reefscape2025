@@ -33,6 +33,7 @@ import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ManipulatorConstants;
 import frc.robot.Constants.ManipulatorConstants.IntakeConstants;
 import frc.robot.Constants.ManipulatorConstants.PivotConstants;
+import frc.robot.subsystems.OldSubsystems.Elevator;
 
 public class Manipulator extends SubsystemBase {
     /***  Rev ***/

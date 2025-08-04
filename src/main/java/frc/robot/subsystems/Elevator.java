@@ -5,9 +5,6 @@
 package frc.robot.subsystems;
 
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
@@ -21,6 +18,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.util.Units;
 import static edu.wpi.first.units.Units.Amps;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -39,11 +39,11 @@ public class Elevator extends SubsystemBase {
   //Used because PID controllers arent perfect, therefore just saves the ideal value of the pose, which is then passed to change in feed speed;
   double state = 0;
 
-    LoggedMechanism2d mech = new LoggedMechanism2d(3, 3);
+      Mechanism2d mech = new Mechanism2d(3, 3);
     // the mechanism root node
-    LoggedMechanismRoot2d root = mech.getRoot("root", 2.1,0);
+    MechanismRoot2d root = mech.getRoot("root", 2.1,0);
 
-    LoggedMechanismLigament2d m_elevator = root.append(new LoggedMechanismLigament2d("Elevator", 0.1, 90));
+    MechanismLigament2d m_elevator = root.append(new MechanismLigament2d("Elevator", 0.1, 90));
 
   /** Creates a new Elevator. */
   public Elevator() {
@@ -85,7 +85,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public double getElevatorState(){
-    Logger.recordOutput("Elevator/Elevator state", state);
+    Logger.recordOutput("Elevator state", state);
     return state;
   }
 
@@ -95,8 +95,6 @@ public class Elevator extends SubsystemBase {
 
     SmartDashboard.putNumber("Elevator current", elevator.getSupplyCurrent().getValueAsDouble());
     SmartDashboard.putNumber("Stator current", elevator.getStatorCurrent().getValueAsDouble());
-
-    Logger.recordOutput("Elevator/Elevator state", mech);
     // This method will be called once per scheduler run
 
   }

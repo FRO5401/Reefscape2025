@@ -10,7 +10,7 @@ public class VisionHelper {
         if(!results.getTargets().isEmpty()){
             Pose3d[] poses = new Pose3d[results.targets.size()];
             var targets = results.getTargets();
-            for(int i=0; i<targets.size()-1; i++){
+            for(int i=0; i<targets.size(); i++){
                 poses[i] = VisionConstants.aprilTagLayout.getTagPose(results.getTargets().get(i).fiducialId).get();
             }
             return poses;

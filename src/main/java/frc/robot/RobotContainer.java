@@ -106,7 +106,8 @@ public final class RobotContainer {
                         .withVelocityX(-driver.getLeftY() * Constants.Swerve.MaxSpeed * elevator.getSpeedModifier()) 
                         .withVelocityY(-driver.getLeftX() * Constants.Swerve.MaxSpeed * elevator.getSpeedModifier())                                                                          
                         .withRotationalRate(
-                                SwerveUtils.rotationPoint(new Rotation2d(-driver.getRightY(), -driver.getRightX()).getDegrees(), drivetrain.getYaw()) * Constants.Swerve.MaxAngularRate * elevator.getSpeedModifier()) 
+                                        -driver.getRightX() * Constants.Swerve.MaxAngularRate * elevator.getSpeedModifier())
+                                        //new Rotation2d(-driver.getRightY(), -driver.getRightX()).getDegrees(), drivetrain.getYaw()) * Constants.Swerve.MaxAngularRate * elevator.getSpeedModifier()) 
                 .withDesaturateWheelSpeeds(true)));
 
         tiltingElevator.onTrue(elevator.setPosition(ElevatorConstants.PROCESSOR));

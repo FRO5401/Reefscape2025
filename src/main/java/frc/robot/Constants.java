@@ -63,7 +63,7 @@ public class Constants {
     public class ElevatorConstants{ 
         public static final int elevatorID = 13;
         public static final double SPEED_MODIFIER = 166;
-        public static final double BARGE = 150-5;//-5
+        public static final double BARGE = 150-4;//-5
         public static final double L4 = 140-3;//-9
         public static final double L3 = 82-0;//-5
         

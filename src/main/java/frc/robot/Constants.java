@@ -64,13 +64,13 @@ public class Constants {
         public static final int elevatorID = 13;
         public static final double SPEED_MODIFIER = 166;
         public static final double BARGE = 150-5;//-5
-        public static final double L4 = 140-7;//-9
-        public static final double L3 = 82-5;//-5
+        public static final double L4 = 140-3;//-9
+        public static final double L3 = 82-0;//-5
         
 
-        public static final double L2 = 53.91748046875-6;//-6
+        public static final double L2 = 53.91748046875-1;//-6
         //TODO Fix this pls
-        public static final double STATION = 52-7;//-7 at competition field
+        public static final double STATION = 52-4;//-7 at competition field
         public static final double PROCESSOR = 5;
         public static final double FLOOR = 1;
 
